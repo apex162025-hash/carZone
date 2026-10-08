@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carzen · Customer</title>
+  <script>
+    try {
+      const l = localStorage.getItem("carzen_lang") || "ar";
+      document.documentElement.lang = l;
+      document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+      if (localStorage.getItem("carzen_theme") === "dark") document.documentElement.dataset.theme = "dark";
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="../shared/css/tokens.css" />
+  <link rel="stylesheet" href="../shared/css/base.css" />
+  <link rel="stylesheet" href="../shared/css/components.css" />
+  <link rel="stylesheet" href="./css/app.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body class="stage-body">
+  <div class="stage">
+    <div class="stage-copy">
+      <img src="../shared/assets/logo.svg" alt="" />
+      <h2>Carzen</h2>
+      <p class="muted">تطبيق العميل · معاينة للمستثمرين</p>
+    </div>
+    <div class="device">
+      <div class="device-inner">
+        <div class="status-bar">
+          <span class="num" id="status-time">3:30</span>
+          <span class="status-icons"><span>5G</span><span class="num">100%</span></span>
+        </div>
+        <div id="app" class="app"></div>
+        <nav id="tabbar" class="tabbar"></nav>
+      </div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/lucide@0.511.0/dist/umd/lucide.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

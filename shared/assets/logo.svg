@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Carzen">
+  <rect width="64" height="64" rx="18" fill="#1463FF"/>
+  <path d="M16 40c8-16 12-20 16-20s8 4 16 20" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="32" cy="24" r="4" fill="#12C8B6"/>
+</svg>

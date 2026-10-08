@@ -1,0 +1,85 @@
+/* Carzen design tokens — rebrand by editing this file only. */
+:root {
+  --c-primary-50: #eef4ff;
+  --c-primary-100: #dce8ff;
+  --c-primary-600: #1463ff;
+  --c-primary-700: #0e4fd6;
+  --c-accent-100: #d5f7f3;
+  --c-accent-500: #12c8b6;
+  --c-ink-900: #0b1b33;
+  --c-ink-700: #2b3a55;
+  --c-ink-500: #64748b;
+  --c-ink-300: #cbd5e1;
+  --c-bg: #f5f8fc;
+  --c-surface: #ffffff;
+  --c-line: #e6ecf4;
+  --c-success: #16a34a;
+  --c-warning: #f59e0b;
+  --c-danger: #e5484d;
+  --c-info: #0ea5e9;
+  --st-pending: #f59e0b;
+  --st-confirmed: #1463ff;
+  --st-waiting: #7c5cfc;
+  --st-in_service: #12c8b6;
+  --st-completed: #16a34a;
+  --st-cancelled: #e5484d;
+  --st-no_show: #64748b;
+  --pay-pending: #f59e0b;
+  --pay-paid: #16a34a;
+  --pay-refunded: #64748b;
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 40px;
+  --s-9: 56px;
+  --sh-1: 0 1px 2px rgba(20, 99, 255, 0.06), 0 4px 12px rgba(20, 99, 255, 0.05);
+  --sh-2: 0 8px 24px rgba(20, 99, 255, 0.08);
+  --sh-3: 0 18px 50px rgba(20, 99, 255, 0.14);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur: 200ms;
+  --font-ar: "IBM Plex Sans Arabic", "Plus Jakarta Sans", sans-serif;
+  --font-en: "Plus Jakarta Sans", "IBM Plex Sans Arabic", sans-serif;
+  --fs-12: 12px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-18: 18px;
+  --fs-22: 22px;
+  --fs-28: 28px;
+  --fs-36: 36px;
+  --tab-h: 64px;
+  --status-h: 44px;
+  --slide: 1;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --c-primary-50: #12203a;
+  --c-primary-100: #1a2e55;
+  --c-primary-600: #4c86ff;
+  --c-primary-700: #1463ff;
+  --c-accent-100: #0e2e2c;
+  --c-accent-500: #12c8b6;
+  --c-ink-900: #f8fafc;
+  --c-ink-700: #d6deea;
+  --c-ink-500: #93a0b8;
+  --c-ink-300: #3d4c66;
+  --c-bg: #0b1220;
+  --c-surface: #121a2b;
+  --c-line: #243044;
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --sh-2: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --sh-3: 0 18px 50px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+[dir="rtl"] {
+  --slide: -1;
+}

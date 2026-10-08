@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carzen Demo</title>
+  <script>
+    try {
+      const l = localStorage.getItem("carzen_lang") || "ar";
+      document.documentElement.lang = l;
+      document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+      if (localStorage.getItem("carzen_theme") === "dark") document.documentElement.dataset.theme = "dark";
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="./shared/css/tokens.css" />
+  <link rel="stylesheet" href="./shared/css/base.css" />
+  <link rel="stylesheet" href="./shared/css/components.css" />
+  <link rel="stylesheet" href="./customer/css/app.css" />
+  <style>
+    .launch { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+    .launch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
+    .launch a.card { padding: 20px; display: flex; flex-direction: column; gap: 8px; min-height: 140px; color: inherit; }
+  </style>
+</head>
+<body>
+  <main class="launch">
+    <img src="./shared/assets/logo.svg" width="56" height="56" alt="" />
+    <h1 style="font-size:36px;margin-block:12px">Carzen</h1>
+    <p class="muted">سوق ومغسلة في نظام واحد — القاهرة</p>
+    <div class="launch-grid">
+      <a class="card" href="./customer/index.html#/"><b>تطبيق العميل</b><span class="small muted">Customer app</span><span class="btn sm" style="margin-top:auto">فتح</span></a>
+      <a class="card" href="./wash/employee/index.html"><b>تطبيق الموظف</b><span class="small muted">Prompt 2</span></a>
+      <a class="card" href="./wash/dashboard/index.html"><b>لوحة المغسلة</b><span class="small muted">Prompt 2</span></a>
+      <a class="card" href="./wash/register/index.html"><b>طلب انضمام</b><span class="small muted">Prompt 2</span></a>
+      <a class="card" href="./admin/index.html"><b>إدارة المنصة</b><span class="small muted">Prompt 3</span></a>
+    </div>
+    <button class="btn ghost" id="reset" style="margin-top:24px">إعادة ضبط بيانات العرض</button>
+  </main>
+  <script type="module">
+    import { resetDb } from "./shared/js/db.js";
+    import { mountDemoBar } from "./shared/js/demo-bar.js";
+    import { applyLang } from "./shared/js/i18n.js";
+    applyLang();
+    mountDemoBar({ surface: "launcher" });
+    document.getElementById("reset").addEventListener("click", () => resetDb());
+  </script>
+</body>
+</html>
