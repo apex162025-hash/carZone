@@ -18,3 +18,25 @@
 - The demo bar can force the next confirm to fail once with “slot taken”, so that recovery can be shown before the wash app exists.
 - OTP is prefilled with `123456` and the phone with Ahmed’s number. Any other code still follows the invalid / expired / lock rules.
 - Reset restores the database, clock, session, draft and onboarding flag, and keeps language and theme.
+- Built Employee app in `/wash/employee` inside a responsive 390x844 mobile phone stage matching the customer app design tokens and logical properties.
+- Start-shift gate on Employee app blocks order operations until an active shift is started, recording start time and initial cash expectation.
+- Walk-in orders start directly in `waiting` status; typing plate or phone triggers instant recognition of returning customers (e.g., Ahmed Hassan with 7 visits, usual service preselected). Prices are computed strictly through `pricing` and cannot be manually entered.
+- When all bays are occupied, walk-in creation displays an estimated wait banner (~20 min) without rejecting the order.
+- Check-in supports camera simulation, 5-character code entry (`5K8P2`), and search; early and late arrivals display contextual badges.
+- Employee discounts are capped at 10%; attempts above this threshold require manager PIN (`1234`), which audits the override under the manager.
+- Ending a shift is blocked while in-service or unpaid orders exist; difference calculation requires a documented reason and dispatches an alert to the owner.
+- Wash Dashboard `/wash/dashboard` enforces role scoping: Khaled Mansour (Owner) has all-branch access and switcher; Mohamed Adel (Branch Manager) is locked to Nasr City and has read-only access to services.
+- Live operations board features a 5-column Kanban layout with a real-time bay utilization meter, overdue indicators, and state progression actions.
+- Partner registration wizard `/wash/register` includes an interactive Leaflet map pin picker, service templates, simulated document uploads, and live application status tracking.
+- Built Platform Admin dashboard in `/admin` with hash-routed SPA architecture (`#/dashboard`, `#/customers`, `#/orders`, etc.) with responsive collapsible sidebar matching tokens and CSS logical properties.
+- Implemented high-performance data table pattern across all entities with column sorting, live search, quick filter chips, pagination, CSV export, and right slide-over drawer for quick inspection.
+- Role-based access control (RBAC) enforced on navigation, route guards, and service mutations across all 4 admin personas (Sara Nabil · Super, Omar Fathy · Operations, Nour Salem · Finance, Mona Adel · Support).
+- Sensitive administrative mutations (suspension, review hiding, order cancellation, business data edits, commission overrides) mandate documented reason prompt modals recorded in the immutable audit log.
+- Wash suspension view displays an impact preview of upcoming bookings with choice to cancel or retain them, and immediately hides the wash from discovery.
+- Financial transactions are non-editable by design; provided "Flag for finance review" workflow with internal notes and dispatch to Finance admins.
+- Seeded discrepancy transaction provides a dedicated side-by-side modal displaying booking invoice, cashier ledger, and audit trail for reconciliation.
+- Added Leaflet map integration for physical coverage inspection on branches and location verification during wash application reviews.
+- Applications review screen includes an interactive 6-point verification checklist, internal notes, and one-click approval with automatic business, branch, and owner provisioning.
+- Built interactive Roles × Modules permission matrix editor allowing Super Admin to dynamically customize module permissions with immediate effect.
+- Provided global command palette (`Ctrl/⌘ K`) searching across customers, vehicles/plates, washes, branches, and orders with keyboard navigation and role scoping.
+- Added 15-minute simulated idle session timeout modal triggerable from demo bar and automatic activity watcher.

@@ -3,21 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Carzen · Wash dashboard</title>
+  <title>Carzen · لوحة تحكم المغسلة</title>
+  <script>
+    try {
+      const l = localStorage.getItem("carzen_lang") || "ar";
+      document.documentElement.lang = l;
+      document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+      if (localStorage.getItem("carzen_theme") === "dark") document.documentElement.dataset.theme = "dark";
+      if (!localStorage.getItem("carzen_staff_id")) {
+        localStorage.setItem("carzen_staff_id", "st_owner_biz_carzen");
+      }
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="../../shared/css/tokens.css" />
   <link rel="stylesheet" href="../../shared/css/base.css" />
   <link rel="stylesheet" href="../../shared/css/components.css" />
-  <link rel="stylesheet" href="../../customer/css/app.css" />
+  <link rel="stylesheet" href="./css/dashboard.css" />
 </head>
 <body>
-  <main class="pad" style="max-width:560px;margin:40px auto">
-    <h1>لوحة المغسلة</h1>
-    <p class="muted">هذه الواجهة تُبنى في الأمر ٢.</p>
-    <a class="btn" href="../../index.html">العودة</a>
-  </main>
-  <script type="module">
-    import { mountDemoBar } from "../../shared/js/demo-bar.js";
-    mountDemoBar({ surface: "dashboard" });
-  </script>
+  <div class="dash-layout">
+    <!-- Sidebar -->
+    <aside id="dash-sidebar" class="dash-sidebar"></aside>
+
+    <!-- Main Container -->
+    <div class="dash-main">
+      <header id="dash-topbar" class="dash-topbar"></header>
+      <main id="dash-content" class="dash-content"></main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@0.511.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+  <script type="module" src="./js/main.js"></script>
 </body>
 </html>

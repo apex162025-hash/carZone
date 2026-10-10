@@ -1,0 +1,272 @@
+/* Carzen Wash Dashboard Styles */
+.dash-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--c-bg);
+}
+
+/* Sidebar */
+.dash-sidebar {
+  width: 250px;
+  background: var(--c-surface);
+  border-inline-end: 1px solid var(--c-line);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.dash-brand {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-block-end: 1px solid var(--c-line);
+}
+.dash-brand img { width: 36px; height: 36px; }
+.dash-brand-title { font-size: 18px; font-weight: 800; }
+.dash-brand-sub { font-size: 11px; color: var(--c-ink-500); }
+
+.dash-nav {
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.dash-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  color: var(--c-ink-700);
+  font-size: 14px;
+  font-weight: 650;
+  transition: all var(--dur) var(--ease);
+}
+.dash-nav a:hover {
+  background: var(--c-primary-50);
+  color: var(--c-primary-600);
+}
+.dash-nav a.active {
+  background: var(--c-primary-600);
+  color: #fff;
+}
+.dash-nav a svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.dash-user-badge {
+  padding: 14px 16px;
+  border-block-start: 1px solid var(--c-line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Main Area */
+.dash-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Top bar */
+.dash-topbar {
+  height: 64px;
+  background: var(--c-surface);
+  border-block-end: 1px solid var(--c-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+}
+
+.dash-content {
+  padding: 24px;
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin-inline: auto;
+}
+
+/* Mobile responsive hamburger */
+@media (max-width: 1024px) {
+  .dash-sidebar {
+    position: fixed;
+    transform: translateX(calc(var(--slide) * -260px));
+    transition: transform var(--dur) var(--ease);
+  }
+  .dash-sidebar.open { transform: translateX(0); }
+}
+
+/* KPI Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-block-end: 24px;
+}
+
+.kpi-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+  padding: 18px;
+  box-shadow: var(--sh-1);
+}
+.kpi-card .lbl { font-size: 13px; font-weight: 650; color: var(--c-ink-500); }
+.kpi-card .val { font-size: 26px; font-weight: 800; margin-block: 4px; }
+.kpi-card .delta { font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+.delta.up { color: var(--c-success); }
+.delta.down { color: var(--c-danger); }
+
+/* Live Kanban Board */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(240px, 1fr));
+  gap: 16px;
+  overflow-x: auto;
+  padding-block-end: 20px;
+}
+
+.kanban-col {
+  background: color-mix(in srgb, var(--c-surface) 60%, var(--c-bg));
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.kanban-col-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block-end: 10px;
+  margin-block-end: 10px;
+  border-block-end: 2px solid var(--c-line);
+}
+
+.kanban-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.kanban-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-sm);
+  padding: 12px;
+  box-shadow: var(--sh-1);
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.kanban-card:hover { transform: translateY(-2px); box-shadow: var(--sh-2); }
+.kanban-card.overdue { border-color: var(--c-danger); background: color-mix(in srgb, var(--c-danger) 4%, var(--c-surface)); }
+
+/* Schedule grid */
+.schedule-grid-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+}
+
+.schedule-row {
+  display: grid;
+  grid-template-columns: 120px repeat(6, 1fr);
+  border-block-end: 1px solid var(--c-line);
+  min-width: 800px;
+}
+.schedule-row:last-child { border-block-end: 0; }
+.schedule-time-cell {
+  padding: 12px 14px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--c-ink-500);
+  background: var(--c-bg);
+  border-inline-end: 1px solid var(--c-line);
+}
+.schedule-bay-cell {
+  padding: 8px;
+  border-inline-end: 1px dashed var(--c-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bay-occupied {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--r-sm);
+  background: var(--c-primary-50);
+  border: 1px solid var(--c-primary-600);
+  color: var(--c-primary-700);
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+.bay-blocked {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--c-warning) 16%, var(--c-surface));
+  border: 1px solid var(--c-warning);
+  color: var(--c-ink-700);
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Drawer overlay */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 27, 51, 0.45);
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+}
+.drawer-panel {
+  width: min(540px, 100%);
+  background: var(--c-surface);
+  height: 100%;
+  overflow-y: auto;
+  box-shadow: var(--sh-3);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  animation: drawer-in var(--dur) var(--ease);
+}
+@keyframes drawer-in {
+  from { transform: translateX(calc(var(--slide) * 100%)); }
+  to { transform: translateX(0); }
+}
+
+/* Alert feed items */
+.alert-feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  margin-block-end: 8px;
+}
+.alert-feed-item.warning { border-color: var(--c-warning); background: color-mix(in srgb, var(--c-warning) 8%, var(--c-surface)); }
+.alert-feed-item.danger { border-color: var(--c-danger); background: color-mix(in srgb, var(--c-danger) 8%, var(--c-surface)); }

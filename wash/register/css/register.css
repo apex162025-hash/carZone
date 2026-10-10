@@ -1,0 +1,198 @@
+/* Carzen Partner Registration Wizard Styles */
+.reg-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(640px 380px at 15% 0%, rgba(20, 99, 255, 0.12), transparent 70%),
+    radial-gradient(540px 320px at 85% 100%, rgba(18, 200, 182, 0.12), transparent 70%),
+    var(--c-bg);
+  padding: 32px 16px 80px;
+}
+
+.reg-container {
+  max-width: 780px;
+  margin-inline: auto;
+}
+
+.reg-header {
+  text-align: center;
+  margin-block-end: 28px;
+}
+
+.reg-header img {
+  margin-inline: auto;
+  margin-block-end: 12px;
+}
+
+.reg-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: 32px;
+  padding: 12px 16px;
+  background: var(--c-surface);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-1);
+  border: 1px solid var(--c-line);
+  overflow-x: auto;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-14);
+  font-weight: 700;
+  color: var(--c-ink-500);
+  white-space: nowrap;
+}
+
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c-line);
+  color: var(--c-ink-700);
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-12);
+}
+
+.step-item.active {
+  color: var(--c-primary-600);
+}
+
+.step-item.active .step-num {
+  background: var(--c-primary-600);
+  color: #fff;
+}
+
+.step-item.done {
+  color: var(--c-success);
+}
+
+.step-item.done .step-num {
+  background: var(--c-success);
+  color: #fff;
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--c-line);
+  margin-inline: 10px;
+  min-width: 16px;
+}
+
+.reg-card {
+  background: var(--c-surface);
+  border-radius: var(--r-lg);
+  padding: 32px;
+  box-shadow: var(--sh-2);
+  border: 1px solid var(--c-line);
+}
+
+.reg-card h2 {
+  font-size: var(--fs-22);
+  margin-block-end: 8px;
+}
+
+.reg-card p.sub {
+  color: var(--c-ink-500);
+  font-size: var(--fs-14);
+  margin-block-end: 24px;
+}
+
+.reg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .reg-grid { grid-template-columns: 1fr; }
+  .reg-card { padding: 20px 16px; }
+  .step-text { display: none; }
+}
+
+.reg-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block-start: 28px;
+  padding-block-start: 20px;
+  border-block-start: 1px solid var(--c-line);
+}
+
+.map-container {
+  height: 240px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--c-line);
+  margin-block-start: 8px;
+}
+
+.service-template-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+  margin-block-end: 10px;
+  background: var(--c-bg);
+  transition: border-color var(--dur) var(--ease);
+}
+
+.service-template-item.selected {
+  border-color: var(--c-primary-600);
+  background: var(--c-primary-50);
+}
+
+.hours-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 8px;
+  border-block-end: 1px solid var(--c-line);
+}
+
+.file-dropzone {
+  border: 2px dashed var(--c-line);
+  border-radius: var(--r-md);
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--c-bg);
+  transition: border-color var(--dur) var(--ease);
+}
+
+.file-dropzone:hover {
+  border-color: var(--c-primary-600);
+}
+
+.file-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-sm);
+  margin-block-start: 8px;
+}
+
+.status-hero {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.status-icon-lg {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin-inline: auto;
+  margin-block-end: 20px;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+}

@@ -3,16 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Carzen · Apply</title>
+  <title>Carzen · طلب انضمام شريك مغسلة</title>
+  <script>
+    try {
+      const l = localStorage.getItem("carzen_lang") || "ar";
+      document.documentElement.lang = l;
+      document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+      if (localStorage.getItem("carzen_theme") === "dark") document.documentElement.dataset.theme = "dark";
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="../../shared/css/tokens.css" />
   <link rel="stylesheet" href="../../shared/css/base.css" />
   <link rel="stylesheet" href="../../shared/css/components.css" />
+  <link rel="stylesheet" href="./css/register.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
-<body>
-  <main class="pad" style="max-width:560px;margin:40px auto">
-    <h1>طلب انضمام مغسلة</h1>
-    <p class="muted">هذه الواجهة تُبنى في الأمر ٢.</p>
-    <a class="btn" href="../../index.html">العودة</a>
-  </main>
+<body class="reg-page">
+  <div class="reg-container">
+    <header class="reg-header">
+      <img src="../../shared/assets/logo.svg" width="48" height="48" alt="Carzen" />
+      <h1 style="font-size:var(--fs-28);margin-block:8px 4px">انضم كشريك في شبكة كارزن</h1>
+      <p class="muted">منظومة التشغيل اليومي وزيادة مبيعات مغاسل السيارات في القاهرة</p>
+    </header>
+
+    <div id="steps-bar" class="reg-steps"></div>
+    <div id="wizard-content"></div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@0.511.0/dist/umd/lucide.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module">
+    import { initRegister } from "./js/register.js";
+    import { mountDemoBar } from "../../shared/js/demo-bar.js";
+
+    initRegister();
+    mountDemoBar({ surface: "wash" });
+  </script>
 </body>
 </html>

@@ -3,20 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Carzen · Admin</title>
+  <title>Carzen · لوحة إدارة المنصة</title>
+  <script>
+    try {
+      const l = localStorage.getItem("carzen_lang") || "ar";
+      document.documentElement.lang = l;
+      document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+      if (localStorage.getItem("carzen_theme") === "dark") document.documentElement.dataset.theme = "dark";
+      if (!localStorage.getItem("carzen_admin_id")) {
+        localStorage.setItem("carzen_admin_id", "au_sara");
+      }
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
   <link rel="stylesheet" href="../shared/css/tokens.css" />
   <link rel="stylesheet" href="../shared/css/base.css" />
   <link rel="stylesheet" href="../shared/css/components.css" />
-  <link rel="stylesheet" href="../customer/css/app.css" />
+  <link rel="stylesheet" href="./css/admin.css" />
 </head>
 <body>
-  <main class="pad" style="max-width:560px;margin:40px auto">
-    <h1>إدارة المنصة</h1>
-    <p class="muted">هذه الواجهة تُبنى في الأمر ٣. البلاغات التي ينشئها العميل تُحفظ في قاعدة البيانات التجريبية.</p>
-    <a class="btn" href="../index.html">العودة</a>
-  </main>
+  <!-- Admin Application Root -->
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="app-sidebar"></aside>
+    <div class="admin-main">
+      <header class="admin-topbar" id="app-topbar"></header>
+      <main class="admin-content" id="app-content"></main>
+    </div>
+  </div>
+
+  <!-- Pinned CDN Dependencies -->
+  <script src="https://unpkg.com/lucide@0.511.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+
+  <!-- App Bootstrap -->
   <script type="module">
+    import { initApp } from "./js/app.js";
     import { mountDemoBar } from "../shared/js/demo-bar.js";
+
+    initApp();
     mountDemoBar({ surface: "admin" });
   </script>
 </body>

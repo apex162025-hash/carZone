@@ -4,11 +4,25 @@ const WASH = {
   employee: ["collect_payment", "run_service", "discount"],
 };
 
-const ADMIN = {
+export const ADMIN_DEFAULTS = {
   super: ["*"],
-  operations: ["dashboard", "washes", "applications", "branches", "orders", "complaints", "reports_ops"],
-  finance: ["dashboard", "transactions", "payouts", "reports_finance"],
-  support: ["dashboard", "complaints", "customers", "orders"],
+  operations: [
+    "dashboard", "washes", "applications", "branches", "orders", "complaints",
+    "reports", "reports_ops", "offers", "featured",
+    "approve_application", "reject_application", "request_changes_application",
+    "suspend_wash", "reactivate_wash", "activate_branch", "deactivate_branch",
+    "cancel_order", "correct_order", "manage_complaint", "manage_offers", "manage_featured"
+  ],
+  finance: [
+    "dashboard", "finance", "transactions", "commission", "payouts",
+    "reports", "reports_finance", "orders_read",
+    "manage_commission", "mark_payout_paid", "review_discrepancy"
+  ],
+  support: [
+    "dashboard", "customers", "complaints", "reviews", "orders_read",
+    "suspend_customer", "reactivate_customer", "manage_complaint",
+    "hide_review", "restore_review"
+  ],
 };
 
 const PERM_KEY = {
@@ -37,8 +51,18 @@ export function can(actor, action, scope = {}) {
     return true;
   }
   if (actor.type === "admin") {
-    const allowed = ADMIN[actor.role] || [];
-    return allowed.includes("*") || allowed.includes(action);
+    // Check if custom matrix exists in settings
+    let matrix = ADMIN_DEFAULTS;
+    try {
+      const raw = localStorage.getItem("carzen_admin_roles_matrix");
+      if (raw) matrix = JSON.parse(raw);
+    } catch { /* use defaults */ }
+
+    const allowed = matrix[actor.role] || ADMIN_DEFAULTS[actor.role] || [];
+    if (allowed.includes("*")) return true;
+    if (action === "orders" && allowed.includes("orders_read")) return true;
+    if (action === "reports" && (allowed.includes("reports_ops") || allowed.includes("reports_finance"))) return true;
+    return allowed.includes(action);
   }
   return false;
 }
