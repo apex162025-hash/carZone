@@ -56,14 +56,7 @@ export function saveFilters(f) {
   sessionStorage.setItem("carzen_filters", JSON.stringify(f));
 }
 
-export function theme() {
-  return localStorage.getItem("carzen_theme") === "dark" ? "dark" : "light";
-}
-export function setTheme(mode) {
-  localStorage.setItem("carzen_theme", mode);
-  if (mode === "dark") document.documentElement.dataset.theme = "dark";
-  else delete document.documentElement.dataset.theme;
-}
+export { theme, setTheme } from "../../shared/js/theme.js";
 
 export function notifPrefs() {
   try { return { reminders: true, offers: true, ...JSON.parse(localStorage.getItem("carzen_notif_prefs") || "{}") }; }

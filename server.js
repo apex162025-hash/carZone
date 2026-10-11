@@ -26,11 +26,22 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  const urlPath = decodeURIComponent(req.url.split("?")[0]);
+  let urlPath = decodeURIComponent(req.url.split("?")[0]);
+  
+  // Normalize any nested shared asset/module requests to the root /shared directory
+  if (urlPath.includes("/shared/")) {
+    urlPath = "/shared/" + urlPath.split("/shared/")[1];
+  }
+
   let filePath = path.join(__dirname, urlPath);
 
-  // If path is directory, look for index.html
+  // If path is directory, ensure trailing slash for relative resolution, then look for index.html
   if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+    if (!urlPath.endsWith("/")) {
+      res.writeHead(301, { Location: urlPath + "/" + (req.url.includes("?") ? "?" + req.url.split("?")[1] : "") });
+      res.end();
+      return;
+    }
     filePath = path.join(filePath, "index.html");
   }
 

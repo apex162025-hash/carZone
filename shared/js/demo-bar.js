@@ -1,14 +1,14 @@
 import { t, setLang, getLang, L } from "./i18n.js";
 import { get, resetDb, advanceClock, now } from "./db.js";
 import { setFlag, isOffline, isFlaky, isPresent } from "./net.js";
-import { setTheme, theme } from "../../customer/js/state.js";
+import { setTheme, theme } from "./theme.js";
 import { simulateAppBooking, advanceOrder, processReminders } from "./services/orders.js";
 import { toast } from "./ui.js";
 
 function prefix() {
   const p = location.pathname;
-  if (p.includes("/wash/")) return "../..";
-  if (p.includes("/customer/") || p.includes("/admin/")) return "..";
+  if (p.includes("/wash/") || p.endsWith("/wash")) return "../..";
+  if (p.includes("/customer/") || p.endsWith("/customer") || p.includes("/admin/") || p.endsWith("/admin")) return "..";
   return ".";
 }
 
