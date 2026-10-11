@@ -1,6 +1,6 @@
-import { get } from "../../../shared/js/db.js";
-import { t } from "../../../shared/js/i18n.js";
-import { toast } from "../../../shared/js/ui.js";
+import { get } from "../../../../shared/js/db.js";
+import { t } from "../../../../shared/js/i18n.js";
+import { toast } from "../../../../shared/js/ui.js";
 
 export function dashLoginScreen(root) {
   root.innerHTML = `

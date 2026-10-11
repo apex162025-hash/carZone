@@ -1,9 +1,9 @@
-import { get, mutate, now } from "../../../shared/js/db.js";
-import { t, L } from "../../../shared/js/i18n.js";
-import { formatTime } from "../../../shared/js/format.js";
-import { paintIcons } from "../../../shared/js/dom.js";
-import { toast, sheet } from "../../../shared/js/ui.js";
-import { blockSlot, unblockSlot } from "../../../shared/js/services/wash.js";
+import { get, mutate, now } from "../../../../shared/js/db.js";
+import { t, L } from "../../../../shared/js/i18n.js";
+import { formatTime } from "../../../../shared/js/format.js";
+import { paintIcons } from "../../../../shared/js/dom.js";
+import { toast, sheet } from "../../../../shared/js/ui.js";
+import { blockSlot, unblockSlot } from "../../../../shared/js/services/wash.js";
 import { currentStaff, selectedBranchId } from "../state.js";
 
 export function scheduleScreen(root) {

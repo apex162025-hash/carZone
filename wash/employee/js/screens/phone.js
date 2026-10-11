@@ -1,10 +1,10 @@
-import { get, mutate, now } from "../../../shared/js/db.js";
-import { t, L } from "../../../shared/js/i18n.js";
-import { money, formatPlate, formatTime, formatDate } from "../../../shared/js/format.js";
-import { paintIcons } from "../../../shared/js/dom.js";
-import { toast } from "../../../shared/js/ui.js";
-import { slotStarts } from "../../../shared/js/services/availability.js";
-import { findCustomerOrVehicle, createPhoneBooking } from "../../../shared/js/services/wash.js";
+import { get, mutate, now } from "../../../../shared/js/db.js";
+import { t, L } from "../../../../shared/js/i18n.js";
+import { money, formatPlate, formatTime, formatDate } from "../../../../shared/js/format.js";
+import { paintIcons } from "../../../../shared/js/dom.js";
+import { toast } from "../../../../shared/js/ui.js";
+import { slotStarts } from "../../../../shared/js/services/availability.js";
+import { findCustomerOrVehicle, createPhoneBooking } from "../../../../shared/js/services/wash.js";
 import { currentStaff, currentBranch } from "../state.js";
 
 export function phoneBookingScreen(root) {

@@ -1,7 +1,7 @@
-import { get, mutate, now } from "../../../shared/js/db.js";
-import { t, L } from "../../../shared/js/i18n.js";
-import { toast } from "../../../shared/js/ui.js";
-import { startShift } from "../../../shared/js/services/wash.js";
+import { get, mutate, now } from "../../../../shared/js/db.js";
+import { t, L } from "../../../../shared/js/i18n.js";
+import { toast } from "../../../../shared/js/ui.js";
+import { startShift } from "../../../../shared/js/services/wash.js";
 import { currentStaff, currentBranch, hasActiveShift } from "../state.js";
 
 export function loginScreen(root) {

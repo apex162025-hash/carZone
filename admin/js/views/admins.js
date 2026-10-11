@@ -1,5 +1,5 @@
 import { t, getLang } from "../../../shared/js/i18n.js";
-import { getAdminUsers, saveAdminUser, toggleAdminUserStatus } from "../services/admin.js";
+import { getAdminUsers, saveAdminUser, toggleAdminUserStatus } from "../../../shared/js/services/admin.js";
 import { createDataTable } from "../components/table.js";
 import { getCurrentAdmin, checkPermission } from "../auth.js";
 import { confirmModal } from "../components/modal.js";

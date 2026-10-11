@@ -1,6 +1,6 @@
 import { t, getLang } from "../../../shared/js/i18n.js";
 import { formatDateTime } from "../../../shared/js/format.js";
-import { getAdminNotifications, markNotificationRead } from "../services/admin.js";
+import { getAdminNotifications, markNotificationRead } from "../../../shared/js/services/admin.js";
 
 export async function renderNotifications() {
   const container = document.createElement("div");

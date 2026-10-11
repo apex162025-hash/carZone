@@ -1,4 +1,4 @@
-import { globalSearch } from "../services/admin.js";
+import { globalSearch } from "../../../shared/js/services/admin.js";
 import { getCurrentAdmin } from "../auth.js";
 import { getLang } from "../../../shared/js/i18n.js";
 

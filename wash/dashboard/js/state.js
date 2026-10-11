@@ -1,4 +1,4 @@
-import { get, mutate, now } from "../../shared/js/db.js";
+import { get, mutate, now } from "../../../shared/js/db.js";
 
 export function currentStaffId() {
   return localStorage.getItem("carzen_staff_id") || "st_owner_biz_carzen";

@@ -1,6 +1,6 @@
 import { t, getLang } from "../../../shared/js/i18n.js";
 import { money } from "../../../shared/js/format.js";
-import { getMarketplaceHealth } from "../services/admin.js";
+import { getMarketplaceHealth } from "../../../shared/js/services/admin.js";
 import { get } from "../../../shared/js/db.js";
 
 let reportChart = null;

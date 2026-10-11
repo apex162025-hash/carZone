@@ -1,7 +1,7 @@
-import { get, mutate, now } from "../../../shared/js/db.js";
-import { t, L } from "../../../shared/js/i18n.js";
-import { money, formatTime, minutesLabel } from "../../../shared/js/format.js";
-import { paintIcons } from "../../../shared/js/dom.js";
+import { get, mutate, now } from "../../../../shared/js/db.js";
+import { t, L } from "../../../../shared/js/i18n.js";
+import { money, formatTime, minutesLabel } from "../../../../shared/js/format.js";
+import { paintIcons } from "../../../../shared/js/dom.js";
 import {
   currentStaff,
   isOwner,

@@ -8,7 +8,7 @@ import {
   getPayouts,
   markPayoutPaid,
   getWashes,
-} from "../services/admin.js";
+} from "../../../shared/js/services/admin.js";
 import { createDataTable } from "../components/table.js";
 import { showDiscrepancyModal, promptReasonModal, confirmModal } from "../components/modal.js";
 import { getCurrentAdmin, checkPermission } from "../auth.js";

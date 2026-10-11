@@ -1,10 +1,10 @@
-import { applyLang, onLang, t } from "../../shared/js/i18n.js";
-import { get, subscribe, now, load } from "../../shared/js/db.js";
-import { parseHash, matchRoute } from "../../shared/js/router.js";
-import { paintIcons } from "../../shared/js/dom.js";
-import { toast } from "../../shared/js/ui.js";
-import { formatTime } from "../../shared/js/format.js";
-import { mountDemoBar } from "../../shared/js/demo-bar.js";
+import { applyLang, onLang, t } from "../../../shared/js/i18n.js";
+import { get, subscribe, now, load } from "../../../shared/js/db.js";
+import { parseHash, matchRoute } from "../../../shared/js/router.js";
+import { paintIcons } from "../../../shared/js/dom.js";
+import { toast } from "../../../shared/js/ui.js";
+import { formatTime } from "../../../shared/js/format.js";
+import { mountDemoBar } from "../../../shared/js/demo-bar.js";
 import { currentStaff, currentBranch, hasActiveShift } from "./state.js";
 
 import { loginScreen, startShiftGate } from "./screens/auth.js";

@@ -1,6 +1,6 @@
 import { t, getLang } from "../../../shared/js/i18n.js";
 import { formatDateTime, formatDate } from "../../../shared/js/format.js";
-import { getBranches, toggleBranchActive } from "../services/admin.js";
+import { getBranches, toggleBranchActive } from "../../../shared/js/services/admin.js";
 import { createDataTable } from "../components/table.js";
 import { openDrawer } from "../components/drawer.js";
 import { promptReasonModal } from "../components/modal.js";

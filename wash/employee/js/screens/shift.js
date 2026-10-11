@@ -1,9 +1,9 @@
-import { get, mutate, now } from "../../../shared/js/db.js";
-import { t, L } from "../../../shared/js/i18n.js";
-import { money, formatTime, formatDateTime } from "../../../shared/js/format.js";
-import { paintIcons } from "../../../shared/js/dom.js";
-import { toast, sheet } from "../../../shared/js/ui.js";
-import { endShift } from "../../../shared/js/services/wash.js";
+import { get, mutate, now } from "../../../../shared/js/db.js";
+import { t, L } from "../../../../shared/js/i18n.js";
+import { money, formatTime, formatDateTime } from "../../../../shared/js/format.js";
+import { paintIcons } from "../../../../shared/js/dom.js";
+import { toast, sheet } from "../../../../shared/js/ui.js";
+import { endShift } from "../../../../shared/js/services/wash.js";
 import { currentStaff, currentBranch, currentShift } from "../state.js";
 
 export function shiftScreen(root) {

@@ -1,8 +1,8 @@
-import { get, subscribe, now } from "../../shared/js/db.js";
-import { t, L, getLang, setLang, applyLang } from "../../shared/js/i18n.js";
-import { paintIcons } from "../../shared/js/dom.js";
-import { toast } from "../../shared/js/ui.js";
-import { submitWashApplication, updateWashApplication } from "../../shared/js/services/wash.js";
+import { get, subscribe, now } from "../../../shared/js/db.js";
+import { t, L, getLang, setLang, applyLang } from "../../../shared/js/i18n.js";
+import { paintIcons } from "../../../shared/js/dom.js";
+import { toast } from "../../../shared/js/ui.js";
+import { submitWashApplication, updateWashApplication } from "../../../shared/js/services/wash.js";
 
 let currentStep = 1;
 let mapInstance = null;

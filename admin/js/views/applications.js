@@ -1,6 +1,6 @@
 import { t, getLang } from "../../../shared/js/i18n.js";
 import { formatDate, formatDateTime } from "../../../shared/js/format.js";
-import { getApplications, getApplicationById, approveApplication, rejectApplication, requestChangesApplication } from "../services/admin.js";
+import { getApplications, getApplicationById, approveApplication, rejectApplication, requestChangesApplication } from "../../../shared/js/services/admin.js";
 import { createDataTable } from "../components/table.js";
 import { promptReasonModal, confirmModal } from "../components/modal.js";
 import { getCurrentAdmin, checkPermission } from "../auth.js";

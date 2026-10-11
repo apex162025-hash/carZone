@@ -1,5 +1,5 @@
 import { t, getLang } from "../../../shared/js/i18n.js";
-import { getOwners, toggleStaffSuspended } from "../services/admin.js";
+import { getOwners, toggleStaffSuspended } from "../../../shared/js/services/admin.js";
 import { createDataTable } from "../components/table.js";
 import { promptReasonModal } from "../components/modal.js";
 import { getCurrentAdmin, checkPermission } from "../auth.js";

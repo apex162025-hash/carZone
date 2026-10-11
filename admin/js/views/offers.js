@@ -1,6 +1,6 @@
 import { t, getLang } from "../../../shared/js/i18n.js";
 import { formatDate } from "../../../shared/js/format.js";
-import { getOffers, saveOffer } from "../services/admin.js";
+import { getOffers, saveOffer } from "../../../shared/js/services/admin.js";
 import { createDataTable } from "../components/table.js";
 import { getCurrentAdmin, checkPermission } from "../auth.js";
 import { get } from "../../../shared/js/db.js";

@@ -1,6 +1,6 @@
 import { t, getLang } from "../../../shared/js/i18n.js";
 import { formatDateTime, formatDate, money } from "../../../shared/js/format.js";
-import { getWashes, getWashDetails, suspendWash, reactivateWash, updateBusinessDataAsAdmin } from "../services/admin.js";
+import { getWashes, getWashDetails, suspendWash, reactivateWash, updateBusinessDataAsAdmin } from "../../../shared/js/services/admin.js";
 import { createDataTable } from "../components/table.js";
 import { openDrawer } from "../components/drawer.js";
 import { promptReasonModal, confirmModal } from "../components/modal.js";

@@ -1,6 +1,6 @@
 import { t, getLang } from "../../../shared/js/i18n.js";
 import { formatDateTime } from "../../../shared/js/format.js";
-import { getAuditLogs } from "../services/admin.js";
+import { getAuditLogs } from "../../../shared/js/services/admin.js";
 import { createDataTable } from "../components/table.js";
 
 export async function renderAudit() {
