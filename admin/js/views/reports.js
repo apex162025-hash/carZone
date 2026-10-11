@@ -222,8 +222,8 @@ async function renderStandardReportView(tab) {
           datasets: [{
             label: tab.toUpperCase(),
             data: chartData,
-            backgroundColor: tab === "revenue" ? "rgba(20, 99, 255, 0.12)" : "#1463ff",
-            borderColor: "#1463ff",
+            backgroundColor: tab === "revenue" ? "rgba(28, 36, 89, 0.12)" : "#1C2459",
+            borderColor: "#1C2459",
             fill: tab === "revenue",
             borderRadius: 6,
           }],

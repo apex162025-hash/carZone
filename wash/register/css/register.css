@@ -2,8 +2,8 @@
 .reg-page {
   min-height: 100vh;
   background:
-    radial-gradient(640px 380px at 15% 0%, rgba(20, 99, 255, 0.12), transparent 70%),
-    radial-gradient(540px 320px at 85% 100%, rgba(18, 200, 182, 0.12), transparent 70%),
+    radial-gradient(640px 380px at 15% 0%, rgba(28, 36, 89, 0.12), transparent 70%),
+    radial-gradient(540px 320px at 85% 100%, rgba(245, 255, 103, 0.18), transparent 70%),
     var(--c-bg);
   padding: 32px 16px 80px;
 }

@@ -5,21 +5,21 @@
   place-items: center;
   padding: 28px 16px 72px;
   background:
-    radial-gradient(520px 320px at 12% 0%, rgba(20, 99, 255, 0.16), transparent 60%),
-    radial-gradient(420px 280px at 100% 100%, rgba(18, 200, 182, 0.18), transparent 55%),
-    #e8eef8;
+    radial-gradient(520px 320px at 12% 0%, rgba(28, 36, 89, 0.15), transparent 60%),
+    radial-gradient(420px 280px at 100% 100%, rgba(245, 255, 103, 0.22), transparent 55%),
+    #e9ecf5;
 }
-[data-theme="dark"] .stage { background: #070d18; }
+[data-theme="dark"] .stage { background: #080a1c; }
 .stage-copy { display: none; }
 
 .device {
   width: 390px;
   height: 844px;
   max-height: calc(100dvh - 48px);
-  background: #0b1b33;
+  background: #1C2459;
   border-radius: 40px;
   padding: 10px;
-  box-shadow: 0 24px 60px rgba(11, 27, 51, 0.28);
+  box-shadow: 0 24px 60px rgba(28, 36, 89, 0.35);
 }
 .device-inner {
   position: relative;
@@ -116,7 +116,7 @@
 }
 .hero {
   margin: 4px 16px 8px; border-radius: var(--r-lg); padding: 18px;
-  background: linear-gradient(135deg, var(--c-primary-600), #12c8b6);
+  background: linear-gradient(135deg, var(--c-primary-600), #2c387a);
   color: white; border: 0; text-align: start; width: calc(100% - 32px);
   min-height: 108px; box-shadow: var(--sh-2); position: relative; overflow: hidden;
 }
@@ -124,7 +124,7 @@
 .hero span { opacity: 0.92; font-size: var(--fs-14); }
 .hero:after {
   content: ""; position: absolute; inset-inline-end: -20px; inset-block-end: -30px;
-  width: 120px; height: 80px; border-radius: 50%; background: rgba(255,255,255,.18);
+  width: 120px; height: 80px; border-radius: 50%; background: rgba(245, 255, 103, 0.22);
 }
 .active-card, .prompt-card { margin: 8px 16px; padding: 14px; display: flex; gap: 12px; align-items: center; }
 .hscroll { display: flex; gap: 12px; overflow-x: auto; padding: 0 16px 8px; scroll-snap-type: inline mandatory; }
@@ -135,11 +135,11 @@
 }
 .cat-grid { display: flex; flex-wrap: wrap; gap: 12px; padding-inline: 16px; }
 .cat b { display: block; }
-.offer-card { width: 260px; padding: 14px; background: var(--c-accent-100); border: 0; text-align: start; }
+.offer-card { width: 260px; padding: 14px; background: var(--c-accent-100); border: 1px solid rgba(245, 255, 103, 0.6); text-align: start; }
 .map-preview {
   margin: 8px 16px 24px; height: 140px; border-radius: var(--r-lg); border: 0; overflow: hidden;
   position: relative; color: white; display: flex; align-items: flex-end; padding: 14px;
-  background: linear-gradient(160deg, #1463ff, #0e4fd6);
+  background: linear-gradient(160deg, #1C2459, #28357a);
 }
 .wash-card { width: 240px; padding: 0; overflow: hidden; text-align: start; }
 .wash-card.wide { width: auto; margin: 0 16px 12px; display: grid; grid-template-columns: 112px 1fr; }

@@ -20,6 +20,8 @@
 .btn.ghost { background: transparent; color: var(--c-ink-700); border-color: var(--c-line); }
 .btn.soft { background: var(--c-surface); color: var(--c-ink-900); box-shadow: var(--sh-1); }
 .btn.danger { background: var(--c-danger); color: #fff; }
+.btn.accent { background: var(--c-accent-500); color: #1C2459; font-weight: 800; border: 1px solid rgba(28, 36, 89, 0.12); }
+.btn.accent:hover { background: var(--c-accent-600); }
 .btn.sm { min-block-size: 36px; padding-inline: var(--s-3); font-size: var(--fs-14); }
 .btn .ico { inline-size: 18px; block-size: 18px; }
 

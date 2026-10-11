@@ -57,7 +57,9 @@
 .dash-nav a.active {
   background: var(--c-primary-600);
   color: #fff;
+  border-inline-start: 4px solid var(--c-accent-500);
 }
+.dash-nav a.active svg { color: var(--c-accent-500); width: 18px; height: 18px; flex-shrink: 0; }
 .dash-nav a svg { width: 18px; height: 18px; flex-shrink: 0; }
 
 .dash-user-badge {

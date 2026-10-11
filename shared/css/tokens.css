@@ -1,26 +1,31 @@
 /* Carzen design tokens — rebrand by editing this file only. */
 :root {
-  --c-primary-50: #eef4ff;
-  --c-primary-100: #dce8ff;
-  --c-primary-600: #1463ff;
-  --c-primary-700: #0e4fd6;
-  --c-accent-100: #d5f7f3;
-  --c-accent-500: #12c8b6;
-  --c-ink-900: #0b1b33;
-  --c-ink-700: #2b3a55;
-  --c-ink-500: #64748b;
-  --c-ink-300: #cbd5e1;
-  --c-bg: #f5f8fc;
+  /* Brand Core: Midnight Navy #1C2459 & Electric Volt Yellow #F5FF67 */
+  --c-primary-50: #eff1f9;
+  --c-primary-100: #dce0f3;
+  --c-primary-600: #1C2459;
+  --c-primary-700: #12183e;
+  --c-accent-100: #fbfed5;
+  --c-accent-500: #F5FF67;
+  --c-accent-600: #e3ee4e;
+  --c-volt: #F5FF67;
+  --c-navy: #1C2459;
+
+  --c-ink-900: #0e122b;
+  --c-ink-700: #232a52;
+  --c-ink-500: #5f678a;
+  --c-ink-300: #c5cbe0;
+  --c-bg: #f5f6fb;
   --c-surface: #ffffff;
-  --c-line: #e6ecf4;
+  --c-line: #e2e5f1;
   --c-success: #16a34a;
   --c-warning: #f59e0b;
   --c-danger: #e5484d;
-  --c-info: #0ea5e9;
+  --c-info: #2563eb;
   --st-pending: #f59e0b;
-  --st-confirmed: #1463ff;
-  --st-waiting: #7c5cfc;
-  --st-in_service: #12c8b6;
+  --st-confirmed: #1C2459;
+  --st-waiting: #5e48e8;
+  --st-in_service: #059669;
   --st-completed: #16a34a;
   --st-cancelled: #e5484d;
   --st-no_show: #64748b;
@@ -40,9 +45,9 @@
   --s-7: 32px;
   --s-8: 40px;
   --s-9: 56px;
-  --sh-1: 0 1px 2px rgba(20, 99, 255, 0.06), 0 4px 12px rgba(20, 99, 255, 0.05);
-  --sh-2: 0 8px 24px rgba(20, 99, 255, 0.08);
-  --sh-3: 0 18px 50px rgba(20, 99, 255, 0.14);
+  --sh-1: 0 1px 2px rgba(28, 36, 89, 0.05), 0 4px 12px rgba(28, 36, 89, 0.05);
+  --sh-2: 0 8px 24px rgba(28, 36, 89, 0.08);
+  --sh-3: 0 18px 50px rgba(28, 36, 89, 0.14);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --dur: 200ms;
   --font-ar: "IBM Plex Sans Arabic", "Plus Jakarta Sans", sans-serif;
@@ -61,22 +66,23 @@
 }
 
 [data-theme="dark"] {
-  --c-primary-50: #12203a;
-  --c-primary-100: #1a2e55;
-  --c-primary-600: #4c86ff;
-  --c-primary-700: #1463ff;
-  --c-accent-100: #0e2e2c;
-  --c-accent-500: #12c8b6;
-  --c-ink-900: #f8fafc;
-  --c-ink-700: #d6deea;
-  --c-ink-500: #93a0b8;
-  --c-ink-300: #3d4c66;
-  --c-bg: #0b1220;
-  --c-surface: #121a2b;
-  --c-line: #243044;
-  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --sh-2: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --sh-3: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --c-primary-50: #171e4a;
+  --c-primary-100: #222b64;
+  --c-primary-600: #6b7ee8;
+  --c-primary-700: #1C2459;
+  --c-accent-100: #2a2e10;
+  --c-accent-500: #F5FF67;
+  --c-accent-600: #e3ee4e;
+  --c-ink-900: #f8f9fd;
+  --c-ink-700: #d3d8ed;
+  --c-ink-500: #8b94bd;
+  --c-ink-300: #3e4776;
+  --c-bg: #0b0e24;
+  --c-surface: #13183d;
+  --c-line: #242c5c;
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --sh-2: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --sh-3: 0 18px 50px rgba(0, 0, 0, 0.55);
   color-scheme: dark;
 }
 

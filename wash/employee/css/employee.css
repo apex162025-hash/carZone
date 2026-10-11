@@ -6,20 +6,20 @@
   place-items: center;
   padding: 24px 16px 72px;
   background:
-    radial-gradient(560px 340px at 15% 0%, rgba(20, 99, 255, 0.18), transparent 60%),
-    radial-gradient(460px 300px at 85% 100%, rgba(18, 200, 182, 0.18), transparent 55%),
-    #e2eaf5;
+    radial-gradient(560px 340px at 15% 0%, rgba(28, 36, 89, 0.16), transparent 60%),
+    radial-gradient(460px 300px at 85% 100%, rgba(245, 255, 103, 0.22), transparent 55%),
+    #e8ecf6;
 }
-[data-theme="dark"] .emp-stage { background: #070d18; }
+[data-theme="dark"] .emp-stage { background: #080a1c; }
 
 .emp-device {
   width: 390px;
   height: 844px;
   max-height: calc(100dvh - 36px);
-  background: #0b1b33;
+  background: #1C2459;
   border-radius: 40px;
   padding: 10px;
-  box-shadow: 0 24px 60px rgba(11, 27, 51, 0.35);
+  box-shadow: 0 24px 60px rgba(28, 36, 89, 0.35);
 }
 @media (max-width: 480px) {
   .emp-stage { padding: 0; background: transparent; }
@@ -90,10 +90,10 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--c-primary-600), #12c8b6);
-  color: #fff;
+  background: linear-gradient(135deg, var(--c-primary-600), #2e3a80);
+  color: var(--c-accent-500);
   border: 3px solid var(--c-surface);
-  box-shadow: 0 4px 16px rgba(20, 99, 255, 0.4);
+  box-shadow: 0 4px 16px rgba(28, 36, 89, 0.4);
   display: grid;
   place-items: center;
   transform: translateY(-12px);

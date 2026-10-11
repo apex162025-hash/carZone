@@ -62,14 +62,14 @@ html[lang="en"] body {
   inline-size: 38px;
   block-size: 38px;
   border-radius: var(--r-md);
-  background: linear-gradient(135deg, var(--c-primary-600), var(--c-accent-500));
+  background: linear-gradient(135deg, var(--c-primary-600), #283478);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--c-accent-500);
   font-weight: 800;
   font-size: var(--fs-18);
-  box-shadow: 0 4px 12px rgba(20, 99, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(28, 36, 89, 0.25);
 }
 
 .logo-text {
@@ -124,6 +124,7 @@ html[lang="en"] body {
   background: var(--c-primary-50);
   color: var(--c-primary-600);
   font-weight: 700;
+  border-inline-start: 3px solid var(--c-accent-500);
 }
 
 .nav-item .icon {
