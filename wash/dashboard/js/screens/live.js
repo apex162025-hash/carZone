@@ -9,7 +9,7 @@ import {
   collectPayment,
   checkInOrder,
 } from "../../../../shared/js/services/wash.js";
-import { currentStaff, selectedBranchId, currentBranch } from "../state.js";
+import { currentStaff, selectedBranchId } from "../state.js";
 
 export function liveOperationsScreen(root) {
   const db = get();
