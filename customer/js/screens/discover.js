@@ -7,6 +7,7 @@ import { loadDiscovery, applyFilters, searchAll, categoryPrice, decorateBranch }
 import { sheet, toast } from "../../../shared/js/ui.js";
 import { toggleFavorite } from "../../../shared/js/services/account.js";
 import { tx, screen, topbar, washCard, skeleton, errorBlock, emptyBlock, badge, icon, esc, bus, minsAway } from "../kit.js";
+import { bg, SHOTS } from "../photos.js";
 import { currentUser, getLoc, setLoc, NASR, getFilters, saveFilters, sessionId, rememberReturn, setPending, recentSearches, pushSearch, clearSearches } from "../state.js";
 
 const ICONS = { exterior: "droplets", interior: "sparkles", full: "car", deep: "wind" };
@@ -44,31 +45,38 @@ export async function home(ctx) {
     });
     const offers = data.offers.slice(0, 6);
     const first = user?.name?.split(" ")[0];
-    ctx.root.innerHTML = `<div class="screen"><div class="screen-body" id="body">
+    const bubbles = "<i></i>".repeat(4);
+    ctx.root.innerHTML = `<div class="screen home"><div class="screen-body" id="body">
       ${ctx.offlineBanner()}
-      <div class="pad-x" style="padding-top:8px">
-        <div class="between">
-          <div>
-            <div class="greet">${user ? esc(t("greet.user", { name: first })) : tx("greet.guest")}</div>
-            <button class="area-chip" data-act="area">${icon("map-pin")} ${esc(area ? L(area.name) : "")}</button>
-          </div>
+      <header class="home-head">
+        <div class="hh-deco"><i></i><i></i><i></i><i></i></div>
+        <div class="between hh-top">
+          <button class="area-chip" data-act="area">${icon("map-pin")} ${esc(area ? L(area.name) : "")}<span class="sm-ico">${icon("chevron-down")}</span></button>
           <div class="row">
-            <button class="icon-btn bell" data-go="#/notifications" aria-label="${tx("notif.title")}">${icon("bell")}${unread ? `<em>${unread}</em>` : ""}</button>
-            <button class="avatar" data-go="#/profile">${esc((user?.name || "؟").slice(0, 1))}</button>
+            <button class="icon-btn glass-btn bell" data-go="#/notifications" aria-label="${tx("notif.title")}">${icon("bell")}${unread ? `<em>${unread}</em>` : ""}</button>
+            <button class="avatar hh-avatar" data-go="#/profile">${esc((user?.name || "؟").slice(0, 1))}</button>
           </div>
         </div>
-      </div>
-      <button class="search-btn" data-go="#/search">${icon("search")} ${tx("search.ph")}</button>
-      <button class="hero" data-go="#/results?mode=washnow"><strong>${tx("home.washNow")}</strong><span>${tx("home.washNowSub")}</span></button>
-      ${active ? `<button class="card active-card" data-go="#/booking/${esc(active.id)}"><div class="grow"><div class="small muted">${tx("home.active")}</div><b>${esc(active.number)}</b><div>${badge(active.status)}</div></div>${icon("chevron-right", "dir-icon")}</button>` : ""}
-      ${unreviewed ? `<button class="card prompt-card" data-go="#/booking/${esc(unreviewed.id)}/review"><div class="grow"><b>${tx("home.reviewPrompt")}</b><div class="small muted">${esc(L(db.branches.find((b) => b.id === unreviewed.branchId)?.name))}</div></div><span class="btn sm">${tx("home.reviewCta")}</span></button>` : ""}
+        <div class="hh-hello">${user ? esc(t("greet.user", { name: first })) : tx("greet.guest")}</div>
+        <div class="hh-sub">${tx("app.tagline")}</div>
+      </header>
+      <button class="search-btn" data-go="#/search">${icon("search")}<span class="grow">${tx("search.ph")}</span><span class="tune">${icon("sliders-horizontal")}</span></button>
+      <button class="hero" data-go="#/results?mode=washnow" style="--photo:${bg(SHOTS.hero, 900)}">
+        <span class="bubbles">${bubbles}</span>
+        <span class="kick">${icon("zap")} ${tx("home.fast")}</span>
+        <strong>${tx("home.washNow")}</strong>
+        <span>${tx("home.washNowSub")}</span>
+        <span class="cta">${tx("home.washNowCta")}<span class="arr"><span class="dir-icon">${icon("arrow-right")}</span></span></span>
+      </button>
+      ${active ? `<button class="card active-card" data-go="#/booking/${esc(active.id)}"><span class="lead">${icon("car")}</span><div class="grow"><div class="small muted">${tx("home.active")}</div><b class="num">${esc(active.number)}</b><div>${badge(active.status)}</div></div><span class="dir-icon">${icon("chevron-right")}</span></button>` : ""}
+      ${unreviewed ? `<button class="card prompt-card" data-go="#/booking/${esc(unreviewed.id)}/review"><span class="lead">${icon("star")}</span><div class="grow"><b>${tx("home.reviewPrompt")}</b><div class="small muted">${esc(L(db.branches.find((b) => b.id === unreviewed.branchId)?.name))}</div></div><span class="btn sm">${tx("home.reviewCta")}</span></button>` : ""}
       <div class="section-h"><h2>${tx("home.services")}</h2></div>
-      <div class="cat-grid">${cats.map((c) => `<button class="cat" data-go="#/results?category=${c.id}">${icon(ICONS[c.id] || "sparkles")}<b>${esc(L(c.name))}</b><span class="small muted">${c.from == null ? "" : esc(t("home.from", { price: money(c.from) }))}</span></button>`).join("")}</div>
+      <div class="cat-grid">${cats.map((c) => `<button class="cat" data-go="#/results?category=${c.id}" style="--photo:${bg(SHOTS.category[c.id] || SHOTS.hero, 500, 360)}"><span class="ci">${icon(ICONS[c.id] || "sparkles")}</span><b>${esc(L(c.name))}</b><span class="small muted">${c.from == null ? "" : esc(t("home.from", { price: money(c.from) }))}</span></button>`).join("")}</div>
       <div class="section-h"><h2>${tx("home.nearby")}</h2><button class="linkish" data-go="#/results?mode=nearby">${tx("home.seeAll")}</button></div>
       <div class="hscroll">${rows.map((r) => washCard(r, { name: L(r.branch.name), fav: favs.has(r.branch.id) })).join("")}</div>
       <div class="section-h"><h2>${tx("home.offers")}</h2><button class="linkish" data-go="#/offers">${tx("home.seeAll")}</button></div>
-      <div class="hscroll">${offers.map((o) => offerCard(o, db)).join("")}</div>
-      <button class="map-preview" data-go="#/map"><strong>${tx("home.map")}</strong></button>
+      <div class="hscroll">${offers.map((o, i) => offerCard(o, db, i)).join("")}</div>
+      <button class="map-preview" data-go="#/map"><i class="mp-pin p1"></i><i class="mp-pin p2"></i><i class="mp-pin p3"></i><i class="mp-me"></i><span class="mp-copy"><strong>${tx("home.map")}</strong><span class="go"><span class="dir-icon">${icon("arrow-right")}</span></span></span></button>
     </div></div>`;
     ctx.icons();
     const body = ctx.root.querySelector("#body");
@@ -96,16 +104,17 @@ export async function home(ctx) {
   }
 }
 
-function offerCard(o, db) {
+function offerCard(o, db, i = 0) {
   const branch = db.branches.find((b) => o.branchIds?.includes(b.id));
   const days = Math.max(0, Math.ceil((new Date(o.endAt) - now()) / 86400000));
   const off = o.discountType === "percent" ? `${o.discountValue}%` : money(o.discountValue);
-  return `<button class="card offer-card" data-go="#/wash/${esc(branch?.id || o.branchIds[0])}?offer=${esc(o.id)}">
-    <span class="chip">${esc(t("offers.off", { v: off }))}</span>
+  const photo = i % 3 === 1 ? "" : ` style="--photo:${bg(SHOTS.offers[i % SHOTS.offers.length], 700)}"`;
+  return `<button class="card offer-card v${i % 3}${photo ? " has-photo" : ""}"${photo} data-go="#/wash/${esc(branch?.id || o.branchIds[0])}?offer=${esc(o.id)}">
+    <span class="off num">${esc(t("offers.off", { v: off }))}</span>
     <b>${esc(L(o.title))}</b>
     <span class="small muted">${esc(L(o.description))}</span>
     <span class="small">${esc(branch ? L(branch.name) : "")}</span>
-    <span class="small muted">${esc(days <= 0 ? t("offers.ends1") : t("offers.ends", { n: days }))}</span>
+    <span class="ends">${icon("clock")} ${esc(days <= 0 ? t("offers.ends1") : t("offers.ends", { n: days }))}</span>
   </button>`;
 }
 
@@ -295,7 +304,7 @@ export async function mapScreen(ctx) {
     setTimeout(() => map.invalidateSize(), 60);
     const recenter = document.createElement("button");
     recenter.className = "btn sm";
-    recenter.style.cssText = "position:absolute;inset-inline-end:12px;inset-block-start:64px;z-index:500";
+    recenter.style.cssText = "position:absolute;inset-inline-end:12px;inset-block-start:88px;z-index:500";
     recenter.textContent = t("map.recenter");
     ctx.root.querySelector(".map-screen").appendChild(recenter);
     recenter.onclick = () => map.setView([loc.lat, loc.lng], 13);
@@ -311,7 +320,7 @@ export async function offers(ctx) {
     if (!ctx.alive()) return;
     const db = get();
     ctx.root.innerHTML = screen(topbar({ title: tx("offers.title"), back: "#/home" }),
-      data.offers.length ? `<div class="pad stack">${data.offers.map((o) => offerCard(o, db)).join("")}</div>` : emptyBlock("empty.search"));
+      data.offers.length ? `<div class="pad stack">${data.offers.map((o, i) => offerCard(o, db, i)).join("")}</div>` : emptyBlock("empty.search"));
     ctx.icons();
   } catch {
     ctx.root.innerHTML = screen(topbar({ title: tx("offers.title"), back: "#/home" }), errorBlock());

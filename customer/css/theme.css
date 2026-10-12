@@ -1,0 +1,78 @@
+/* Customer app brand — wash blue #0B6BA8 (water & shine) + sand #F8E7C9 secondary. Loaded after shared tokens. */
+:root {
+  --brand: #0b6ba8;
+  --brand-foam: #e6f5fc;
+  --brand-sand: #f8e7c9;
+  --c-primary-50: #e6f5fc;
+  --c-primary-100: #c4e7f8;
+  --c-primary-200: #8ed0f0;
+  --c-primary-500: #1689c9;
+  --c-primary-600: #0b6ba8;
+  --c-primary-700: #08548a;
+  --c-primary-900: #062a45;
+  --c-accent-100: #e6f5fc;
+  --c-accent-500: #2cc6f2;
+  --c-glow: #7fe3ff;
+  --c-secondary: #f8e7c9;
+  --c-secondary-50: #fdf6ea;
+  --c-secondary-600: #d9a55a;
+  --c-secondary-ink: #7a5320;
+  --c-ink-900: #0b1f2e;
+  --c-ink-700: #2c4456;
+  --c-ink-500: #5f7686;
+  --c-ink-300: #c3d3de;
+  --c-bg: #f5f8fb;
+  --c-surface: #ffffff;
+  --c-line: #e1ebf2;
+  --st-confirmed: #1689c9;
+  --st-in_service: #0fb5a6;
+
+  --g-primary: linear-gradient(135deg, #1fa2e0 0%, #0b6ba8 55%, #063e66 100%);
+  --g-head: linear-gradient(90deg, #063e66 0%, #0b6ba8 45%, #1484c4 100%);
+  --g-hero: radial-gradient(120% 140% at 100% 0%, #2cb4ee 0%, rgba(44, 180, 238, 0) 55%), linear-gradient(150deg, #0f7bbd 0%, #0b6ba8 50%, #062a45 100%);
+  --g-sand: linear-gradient(140deg, #fdf6ea 0%, #f8e7c9 60%, #f1d5a6 100%);
+  --g-mint: linear-gradient(160deg, #ffffff 0%, #e6f5fc 100%);
+  --g-glass: linear-gradient(160deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08));
+
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 26px;
+  --sh-1: 0 1px 2px rgba(11, 107, 168, 0.06), 0 6px 16px rgba(11, 107, 168, 0.06);
+  --sh-2: 0 10px 28px rgba(11, 107, 168, 0.12);
+  --sh-3: 0 22px 54px rgba(11, 107, 168, 0.2);
+  --sh-btn: 0 10px 22px -8px rgba(11, 107, 168, 0.7);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --tab-h: 88px;
+  --status-h: 47px;
+  --font-ar: "Readex Pro", "IBM Plex Sans Arabic", sans-serif;
+  --font-en: "Readex Pro", "Plus Jakarta Sans", sans-serif;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --c-primary-50: #0c2638;
+  --c-primary-100: #11334a;
+  --c-primary-200: #1d4e6c;
+  --c-primary-500: #2aa8e0;
+  --c-primary-600: #4cc3f5;
+  --c-primary-700: #7fe3ff;
+  --c-primary-900: #e6f5fc;
+  --c-accent-100: #0c2638;
+  --c-accent-500: #2cc6f2;
+  --c-secondary: #f8e7c9;
+  --c-secondary-50: #2a2216;
+  --c-secondary-600: #e8c48a;
+  --c-ink-900: #eef6fb;
+  --c-ink-700: #c9dce8;
+  --c-ink-500: #8ea6b6;
+  --c-ink-300: #2f4757;
+  --c-bg: #03111c;
+  --c-surface: #0a1e2d;
+  --c-line: #17344a;
+  --st-confirmed: #4cc3f5;
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sh-2: 0 10px 28px rgba(0, 0, 0, 0.45);
+  --sh-3: 0 22px 54px rgba(0, 0, 0, 0.55);
+  --sh-btn: 0 10px 24px -10px rgba(44, 198, 242, 0.55);
+  color-scheme: dark;
+}

@@ -106,16 +106,22 @@ function paintTabs(name) {
   const items = [
     ["home", "nav.home", "house"],
     ["map", "nav.map", "map"],
+    null,
     ["bookings", "nav.bookings", "calendar"],
     ["profile", "nav.profile", "user"],
   ];
-  tabs.innerHTML = items.map(([id, key, ic]) => `<button data-tab="${id}" class="${name === id ? "on" : ""}">${icon(ic)}<span>${tx(key)}</span></button>`).join("");
+  const fab = `<button data-tab="results?mode=washnow" class="fab-tab" aria-label="${tx("home.washNow")}"><span class="fab">${icon("sparkles")}</span></button>`;
+  tabs.innerHTML = items.map((item) => {
+    if (!item) return fab;
+    const [id, key, ic] = item;
+    return `<button data-tab="${id}" class="${name === id ? "on" : ""}"><span class="ti">${icon(ic)}</span><span>${tx(key)}</span></button>`;
+  }).join("");
   paintIcons(tabs);
 }
 
 function paintStatus() {
   const el = document.getElementById("status-time");
-  if (el) el.textContent = formatTime(now());
+  if (el) el.textContent = formatTime(now()).replace(/[^\d:٠-٩]/g, "");
 }
 
 async function render() {

@@ -138,14 +138,14 @@ export async function notifications(ctx) {
 export function profile(ctx) {
   const user = currentUser();
   if (!user) {
-    ctx.root.innerHTML = screen(topbar({ title: tx("profile.title") }), `<div class="pad"><button class="card pad" data-go="#/login" style="text-align:start"><b>${tx("profile.login")}</b><div class="small muted">${tx("profile.guest")}</div></button></div>`);
+    ctx.root.innerHTML = screen(topbar({ title: tx("profile.title") }), `<div class="pad"><button class="profile-card" data-go="#/login"><span class="avatar lg">${icon("user")}</span><span class="grow"><b style="font-size:18px">${tx("profile.login")}</b><div class="small" style="opacity:.85">${tx("profile.guest")}</div></span><span class="edit"><span class="dir-icon">${icon("arrow-right")}</span></span></button></div>`);
     return;
   }
   const row = (href, key, ic) => `<button class="menu-row" data-go="${href}">${icon(ic)} <span class="grow">${tx(key)}</span><span class="dir-icon">${icon("chevron-right")}</span></button>`;
   ctx.root.innerHTML = screen(topbar({ title: tx("profile.title") }), `<div class="pad stack">
-    <button class="card pad row" data-go="#/profile/edit"><span class="avatar lg">${esc(user.name.slice(0, 1))}</span><span class="grow"><b>${esc(user.name)}</b><div class="small num">${esc(user.phone)}</div></span></button>
-    <div class="card">${row("#/cars", "profile.cars", "car")}${row("#/bookings", "profile.bookings", "calendar")}${row("#/favorites", "profile.fav", "heart")}${row("#/notifications", "profile.notif", "bell")}${row("#/settings", "profile.lang", "settings")}${row("#/legal/terms", "profile.legal", "file-text")}${row("#/help", "profile.help", "life-buoy")}</div>
-    <button class="btn ghost" data-act="logout">${tx("profile.logout")}</button>
+    <button class="profile-card" data-go="#/profile/edit"><span class="avatar lg">${esc(user.name.slice(0, 1))}</span><span class="grow"><b style="font-size:18px">${esc(user.name)}</b><div class="small num" style="opacity:.85">${esc(user.phone)}</div></span><span class="edit">${icon("pencil")}</span></button>
+    <div class="card menu-card">${row("#/cars", "profile.cars", "car")}${row("#/bookings", "profile.bookings", "calendar")}${row("#/favorites", "profile.fav", "heart")}${row("#/notifications", "profile.notif", "bell")}${row("#/settings", "profile.lang", "settings")}${row("#/legal/terms", "profile.legal", "file-text")}${row("#/help", "profile.help", "life-buoy")}</div>
+    <button class="btn ghost" data-act="logout">${icon("log-out")} ${tx("profile.logout")}</button>
   </div>`);
   ctx.icons();
   bus.act = async (el) => {

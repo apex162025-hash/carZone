@@ -3,6 +3,7 @@ import { L, t } from "../../../shared/js/i18n.js";
 import { read } from "../../../shared/js/net.js";
 import { money, formatTime, formatDate, distanceLabel, relativeDay } from "../../../shared/js/format.js";
 import { coverUri } from "../../../shared/js/covers.js";
+import { branchBg, branchPhoto } from "../photos.js";
 import { decorateBranch, liveRating } from "../../../shared/js/services/discovery.js";
 import { nextSlots, isOpenAt, slotStarts } from "../../../shared/js/services/availability.js";
 import { minPrimary } from "../../../shared/js/services/pricing.js";
@@ -37,8 +38,8 @@ export async function wash(ctx) {
     const todayH = hours[now().getDay()];
     ctx.root.innerHTML = `<div class="screen">
       <div class="screen-body" id="body">
-        <div class="cover" style="height:180px;background-image:url('${coverUri(id, 1)}')">
-          <div class="between" style="padding:8px">
+        <div class="cover wash-hero" style="background-image:${branchBg(id, 1, 900)}">
+          <div class="between" style="padding:10px 14px">
             <button class="icon-btn" data-go="#/home"><span class="dir-icon">${icon("chevron-left")}</span></button>
             <div class="row">
               <button class="icon-btn" data-act="share">${icon("share-2")}</button>
@@ -56,7 +57,7 @@ export async function wash(ctx) {
           <div id="week" class="hidden stack">${hours.map((h, i) => `<div class="between tiny"><span>${esc(formatDate(new Date(2026, 9, 4 + i)).split(" ")[0])}</span><span>${h.closed ? tx("closed") : `${h.open}–${h.close}`}</span></div>`).join("")}</div>
           <div class="row"><button class="btn ghost grow" data-act="call">${icon("phone")} ${tx("wash.call")}</button><button class="btn ghost grow" data-act="nav">${icon("navigation")} ${tx("wash.nav")}</button></div>
           <h3>${tx("wash.gallery")}</h3>
-          <div class="hscroll" style="padding-inline:0">${branch.photos.map((p, i) => `<button data-act="photo" data-i="${i}" style="border:0;padding:0"><img alt="" src="${coverUri(id, i)}" style="width:160px;height:100px;object-fit:cover;border-radius:16px"/></button>`).join("")}</div>
+          <div class="hscroll" style="padding-inline:0">${branch.photos.map((p, i) => `<button data-act="photo" data-i="${i}" style="border:0;padding:0"><img alt="" src="${branchPhoto(id, i + 2, 400)}" onerror="this.onerror=null;this.src='${coverUri(id, i)}'" loading="lazy" style="width:160px;height:100px;object-fit:cover;border-radius:16px"/></button>`).join("")}</div>
           <h3>${tx("wash.amenities")}</h3>
           <div class="wrap">${(branch.amenities || []).map((a) => `<span class="chip flat">${icon(AMENITY_ICON[a] || "check")} ${tx("amenity." + a)}</span>`).join("")}</div>
           <h3>${tx("wash.next")}</h3>
@@ -135,7 +136,7 @@ function openGallery(ctx, id, index, total) {
   layer.className = "gallery";
   const paint = () => {
     layer.innerHTML = `<div class="between pad-x"><button class="icon-btn" data-g="close">${icon("x")}</button><b class="num">${i + 1} / ${total}</b><span></span></div>
-      <img alt="" src="${coverUri(id, i)}" />
+      <img alt="" src="${branchPhoto(id, i + 2, 1200)}" onerror="this.onerror=null;this.src='${coverUri(id, i)}'" />
       <div class="row" style="justify-content:center;padding:12px"><button class="icon-btn" data-g="prev"><span class="dir-icon">${icon("chevron-left")}</span></button><button class="icon-btn" data-g="next"><span class="dir-icon">${icon("chevron-right")}</span></button></div>`;
     ctx.icons();
   };

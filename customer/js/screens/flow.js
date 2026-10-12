@@ -225,11 +225,18 @@ function row(label, value, href) {
   return `<div class="kv"><span><div class="small muted">${esc(label)}</div><b>${esc(value)}</b></span><a data-go="${esc(href)}">${tx("book.edit")}</a></div>`;
 }
 
+const CONFETTI = ["#0b6ba8", "#2cc6f2", "#7fe3ff", "#f8e7c9", "#13a6c9", "#f5a524"];
+
 export async function success(ctx) {
   const order = get().orders.find((o) => o.id === ctx.params.orderId);
   if (!order) { location.hash = "#/home"; return; }
-  ctx.root.innerHTML = `<div class="screen center pad" style="text-align:center;gap:12px">
-    <div class="avatar lg pop">✓</div>
+  const confetti = Array.from({ length: 18 }, (_, i) => {
+    const a = (i / 18) * Math.PI * 2;
+    return `<i style="--x:${Math.round(Math.cos(a) * (90 + (i % 3) * 40))}px;--y:${Math.round(Math.sin(a) * 120 + 160)}px;--r:${(i * 67) % 360}deg;--d:${(0.25 + (i % 5) * 0.05).toFixed(2)}s;--c:${CONFETTI[i % CONFETTI.length]}"></i>`;
+  }).join("");
+  ctx.root.innerHTML = `<div class="screen center pad success" style="text-align:center;gap:12px">
+    <div class="confetti">${confetti}</div>
+    <div class="ok-badge"><i class="rip"></i><i class="rip r2"></i><span class="core"><svg viewBox="0 0 52 52" fill="none"><path d="M14 27l8 8 16-18" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     <h2>${tx("book.success")}</h2>
     <div class="small muted">${tx("book.number")}</div>
     <div class="num" style="font-size:28px;font-weight:800">${esc(order.number)}</div>

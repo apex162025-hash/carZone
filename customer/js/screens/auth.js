@@ -5,6 +5,8 @@ import { toast } from "../../../shared/js/ui.js";
 import { parseEgPhone, findCustomer, registerCustomer } from "../../../shared/js/services/account.js";
 import { tx, screen, topbar, icon, esc, bus, skeleton, errorBlock } from "../kit.js";
 import { setSession, takeReturn, currentUser } from "../state.js";
+import { logoMark, splashScene, onbArt } from "../art.js";
+import { bg, SHOTS } from "../photos.js";
 
 const OTP_OK = "123456";
 
@@ -15,35 +17,74 @@ function otpState() {
 function saveOtp(v) { sessionStorage.setItem("carzen_otp", JSON.stringify(v)); }
 
 export async function splash(ctx) {
-  ctx.root.innerHTML = `<div class="screen center" style="gap:12px">
-    <img alt="Carzen" src="../../shared/assets/logo.svg" width="72" height="72" class="pop" />
-    <strong style="font-size:28px">${tx("app.name")}</strong>
-    <p class="muted">${tx("splash.caption")}</p>
+  const drops = Array.from({ length: 14 }, (_, i) => `<i style="left:${(i * 37) % 100}%;animation-delay:${(i * 0.17).toFixed(2)}s;animation-duration:${1.2 + (i % 4) * 0.25}s"></i>`).join("");
+  ctx.root.innerHTML = `<div class="splash" role="img" aria-label="${tx("app.name")}">
+    <div class="sp-bg"><i class="sp-photo" style="background-image:${bg(SHOTS.splash, 900)}"></i><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><i class="grid"></i></div>
+    <div class="sp-drops">${drops}</div>
+    <div class="sp-stage">${splashScene()}</div>
+    <div class="sp-brand">
+      <div class="sp-logo">${logoMark("splogo")}<i class="pulse"></i></div>
+      <h1 class="sp-name">${tx("app.name")}</h1>
+      <p class="sp-cap">${tx("splash.caption")}</p>
+      <div class="sp-load"><i></i></div>
+    </div>
   </div>`;
-  await new Promise((r) => setTimeout(r, 900));
+  await new Promise((r) => setTimeout(r, 3300));
   if (!ctx.alive()) return;
   sessionStorage.setItem("carzen_splashed", "1");
   const seen = localStorage.getItem("carzen_onboarded") === "1";
   ctx.go(seen ? "#/home" : "#/onboarding");
 }
 
+const RING = 201;
+
 export function onboarding(ctx) {
   let i = 0;
+  let prev = 0;
   const slides = [1, 2, 3];
   const draw = () => {
     const n = slides[i];
-    ctx.root.innerHTML = `<div class="screen">
-      <div class="between pad-x"><span></span><button class="linkish" data-act="skip">${tx("onb.skip")}</button></div>
-      <div class="screen-body pad" style="display:flex;flex-direction:column;justify-content:center;gap:16px">
-        <img alt="" src="../../shared/assets/illustrations/onb-${n}.svg" />
-        <h2 style="font-size:28px">${tx("onb." + n + ".t")}</h2>
-        <p class="muted">${tx("onb." + n + ".d")}</p>
-        <div class="stepper">${slides.map((_, idx) => `<i class="${idx <= i ? "on" : ""}"></i>`).join("")}</div>
+    const last = i === slides.length - 1;
+    const back = i < prev;
+    const from = RING * (1 - (prev + 1) / slides.length);
+    const to = RING * (1 - (i + 1) / slides.length);
+    ctx.root.innerHTML = `<div class="onb ${back ? "back" : ""}">
+      <section class="onb-stage">
+        <i class="onb-photo" style="background-image:${bg(SHOTS.onboarding[i], 900)}"></i>
+        <i class="blob b1"></i><i class="blob b2"></i>
+        <div class="onb-top">
+          <span class="onb-brand">${logoMark("onblogo")}${tx("app.name")}</span>
+          ${last ? "<span></span>" : `<button class="onb-skip" data-act="skip">${tx("onb.skip")}</button>`}
+        </div>
+        <div class="onb-art-wrap">${onbArt(n)}</div>
+      </section>
+      <div class="onb-copy">
+        <span class="onb-kicker num">0${n} / 0${slides.length}</span>
+        <h2>${tx("onb." + n + ".t")}</h2>
+        <p>${tx("onb." + n + ".d")}</p>
       </div>
-      <footer class="dock"><button class="btn block" data-act="next">${tx(i === 2 ? "onb.start" : "onb.next")}</button></footer>
+      <footer class="onb-foot">
+        <div class="onb-dots">${slides.map((_, idx) => `<i class="${idx === i ? "on" : ""}"></i>`).join("")}</div>
+        <button class="onb-next ${last ? "last" : ""}" data-act="next" aria-label="${tx(last ? "onb.start" : "onb.next")}">
+          ${last ? "" : `<svg class="ring-svg" viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="32"/><circle class="bar" cx="36" cy="36" r="32" style="--from:${from.toFixed(1)};--to:${to.toFixed(1)}"/></svg>`}
+          <span class="core">${last ? `<span>${tx("onb.start")}</span>` : ""}<span class="dir-icon">${icon("arrow-right")}</span></span>
+        </button>
+      </footer>
     </div>`;
     ctx.icons();
+    const root = ctx.root.querySelector(".onb");
+    let x0 = null;
+    root.addEventListener("pointerdown", (e) => { x0 = e.clientX; });
+    root.addEventListener("pointerup", (e) => {
+      if (x0 == null) return;
+      const dx = (e.clientX - x0) * (document.documentElement.dir === "rtl" ? -1 : 1);
+      x0 = null;
+      if (Math.abs(dx) < 50) return;
+      if (dx < 0 && i < slides.length - 1) go(i + 1);
+      if (dx > 0 && i > 0) go(i - 1);
+    });
   };
+  const go = (next) => { prev = i; i = next; draw(); };
   const finish = () => {
     localStorage.setItem("carzen_onboarded", "1");
     ctx.go("#/home");
@@ -51,7 +92,7 @@ export function onboarding(ctx) {
   bus.act = async (el) => {
     if (el.dataset.act === "skip") finish();
     if (el.dataset.act === "next") {
-      if (i < 2) { i += 1; draw(); }
+      if (i < slides.length - 1) go(i + 1);
       else finish();
     }
   };
@@ -66,6 +107,7 @@ export function login(ctx) {
     ctx.root.innerHTML = screen(
       topbar({ title: tx("login.title"), back: "#/home" }),
       `<div class="pad stack">
+        <div class="auth-brand">${logoMark("auth")}<div><b>${tx("app.name")}</b><span class="small muted">${tx("app.tagline")}</span></div></div>
         <p class="muted">${tx("login.body")}</p>
         <label class="field"><span class="label">${tx("login.phone")}</span>
           <div class="phone-row"><div class="cc">+20</div>

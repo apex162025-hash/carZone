@@ -1,7 +1,7 @@
 import { esc, icon, paintIcons } from "../../shared/js/dom.js";
 import { t } from "../../shared/js/i18n.js";
 import { money, formatTime, distanceLabel, minutesLabel } from "../../shared/js/format.js";
-import { coverUri } from "../../shared/js/covers.js";
+import { branchBg } from "./photos.js";
 import { isOffline } from "../../shared/js/net.js";
 
 export const bus = { act: async () => {}, input: () => {} };
@@ -36,7 +36,7 @@ export function errorBlock() {
 
 export function emptyBlock(titleKey, body, cta) {
   return `<div class="empty">
-    <img alt="" src="${coverUri("empty", 2)}" style="inline-size:120px;border-radius:24px" />
+    <div class="empty-art">${icon("sparkles")}</div>
     <h3>${tx(titleKey)}</h3>
     ${body ? `<p>${body}</p>` : ""}
     ${cta || ""}
@@ -58,14 +58,16 @@ export function washCard(row, opts = {}) {
   const when = row.next ? formatTime(row.next.start) : "—";
   const fav = opts.fav ? "on" : "";
   return `<article class="wash-card card" data-go="#/wash/${esc(b.id)}">
-    <div class="cover" style="background-image:url('${coverUri(b.id, 0)}')">
+    <div class="cover" style="background-image:${branchBg(b.id, 0, 600)}">
+      <span class="shade"></span>
       ${b.featured ? `<span class="chip sponsored">${tx("sponsored")}</span>` : ""}
       <button class="heart ${fav}" data-act="fav" data-id="${esc(b.id)}" aria-label="${tx("fav")}">${icon("heart")}</button>
+      <span class="rate-pill num"><span class="star">★</span>${row.rating.toFixed(1)}<span class="cnt">(${row.count})</span></span>
     </div>
     <div class="wash-body">
-      <div class="between"><strong class="clip">${esc(opts.name || "")}</strong><span class="num tiny">★ ${row.rating.toFixed(1)}</span></div>
-      <div class="muted small row">${esc(distanceLabel(row.km))} · ${row.count} · <span class="pill ${row.open ? "open" : "shut"}">${tx(row.open ? "open" : "closed")}</span></div>
-      <div class="between tiny"><span class="muted">${esc(t("nextSlot", { time: when }))}</span><b class="num">${price == null ? "" : esc(money(price))}</b></div>
+      <strong class="clip">${esc(opts.name || "")}</strong>
+      <div class="muted small row meta">${icon("map-pin")}${esc(distanceLabel(row.km))} · <span class="pill ${row.open ? "open" : "shut"}">${tx(row.open ? "open" : "closed")}</span></div>
+      <div class="between foot"><span class="next-chip">${icon("clock")}${esc(when)}</span><b class="num price">${price == null ? "" : esc(money(price))}</b></div>
     </div>
   </article>`;
 }

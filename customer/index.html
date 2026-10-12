@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0B6BA8" />
   <title>Carzen · Customer</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/logo.svg" />
   <script>
     try {
       const l = localStorage.getItem("carzen_lang") || "ar";
@@ -11,30 +13,46 @@
       document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
       if (localStorage.getItem("carzen_theme") === "dark") document.documentElement.dataset.theme = "dark";
     } catch (e) {}
+    // Fit the 428×926 iPhone 13 Pro Max frame (plus bezel) into the window.
+    function czFit() {
+      var z = Math.min(1, (innerHeight - 56) / 946, (innerWidth - 32) / 448);
+      document.documentElement.style.setProperty("--fit", Math.max(0.5, z).toFixed(3));
+    }
+    czFit();
+    addEventListener("resize", czFit);
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap" />
   <link rel="stylesheet" href="../shared/css/tokens.css" />
   <link rel="stylesheet" href="../shared/css/base.css" />
   <link rel="stylesheet" href="../shared/css/components.css" />
+  <link rel="stylesheet" href="./css/theme.css" />
   <link rel="stylesheet" href="./css/app.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body class="stage-body">
   <div class="stage">
     <div class="stage-copy">
-      <img src="../shared/assets/logo.svg" alt="" />
+      <img src="./assets/logo.svg" alt="" />
       <h2>Carzen</h2>
       <p class="muted">تطبيق العميل · معاينة للمستثمرين</p>
     </div>
     <div class="device">
       <div class="device-inner">
+        <div class="notch"><i></i></div>
         <div class="status-bar">
-          <span class="num" id="status-time">3:30</span>
-          <span class="status-icons"><span>5G</span><span class="num">100%</span></span>
+          <span class="num" id="status-time">9:41</span>
+          <span class="status-icons">
+            <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" aria-hidden="true"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.2-1.3A10.2 10.2 0 0 0 8 .4 10.2 10.2 0 0 0 .8 3.3L2 4.6a8.4 8.4 0 0 1 6-2.4zm0 3.6c1.3 0 2.5.5 3.4 1.3l1.2-1.3A6.6 6.6 0 0 0 8 4a6.6 6.6 0 0 0-4.6 1.8l1.2 1.3c.9-.8 2.1-1.3 3.4-1.3zm0 3.6c-.6 0-1.1.2-1.5.6L8 11.6l1.5-1.6c-.4-.4-.9-.6-1.5-.6z"/></svg>
+            <i class="batt"></i>
+          </span>
         </div>
         <div id="app" class="app"></div>
         <nav id="tabbar" class="tabbar"></nav>
+        <div class="home-ind"></div>
       </div>
     </div>
   </div>
