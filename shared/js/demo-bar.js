@@ -25,13 +25,12 @@ export function mountDemoBar({ surface }) {
     root.innerHTML = `<button class="btn demo-toggle" data-d="toggle">${t("demo.title")}</button>` + (open ? `<div class="demo-panel">
       <div class="small muted">${t("demo.surface")}</div>
       <a class="btn sm ghost" href="${base}/customer/index.html#/">${t("launcher.customer")}</a>
-      <a class="btn sm ghost" href="${base}/wash/employee/index.html">${t("launcher.employee")}</a>
       <a class="btn sm ghost" href="${base}/wash/dashboard/index.html">${t("launcher.dash")}</a>
       <a class="btn sm ghost" href="${base}/wash/register/index.html">${t("launcher.register")}</a>
       <a class="btn sm ghost" href="${base}/admin/index.html">${t("launcher.admin")}</a>
       ${surface === "customer" ? `<label class="small">${t("demo.persona")}</label>
         <select data-d="persona"><option value="">${t("demo.guest")}</option>${db.customers.slice(0, 8).map((c) => `<option value="${c.id}" ${localStorage.getItem("carzen_customer_id") === c.id ? "selected" : ""}>${c.name}</option>`).join("")}</select>` : ""}
-      ${["employee", "dashboard", "wash"].includes(surface) ? `<label class="small">${t("demo.persona")}</label>
+      ${["dashboard", "wash"].includes(surface) ? `<label class="small">${t("demo.persona")}</label>
         <select data-d="staff-persona">
           <option value="st_samir" ${(localStorage.getItem("carzen_staff_id") || (surface === "dashboard" ? "st_owner_biz_carzen" : "st_samir")) === "st_samir" ? "selected" : ""}>Ahmed Samir · Employee</option>
           <option value="st_adel" ${localStorage.getItem("carzen_staff_id") === "st_adel" ? "selected" : ""}>Mohamed Adel · Branch Manager</option>
@@ -100,11 +99,7 @@ export function mountDemoBar({ surface }) {
       const id = e.target.value;
       localStorage.setItem("carzen_staff_id", id);
       window.dispatchEvent(new CustomEvent("carzen-staff-session", { detail: { staffId: id } }));
-      if (id === "st_samir" && surface === "dashboard") {
-        location.href = `${prefix()}/wash/employee/index.html#/home`;
-      } else if ((id === "st_owner_biz_carzen" || id === "st_adel") && surface === "employee") {
-        location.href = `${prefix()}/wash/dashboard/index.html#/dashboard`;
-      }
+      if (surface === "dashboard") location.hash = "#/home";
     }
     if (e.target.dataset.d === "admin-persona") {
       const id = e.target.value;

@@ -1,5 +1,5 @@
 import { get, mutate, now } from "../../../../shared/js/db.js";
-import { t, L } from "../../../../shared/js/i18n.js";
+import { t, L, staffStatus } from "../../../../shared/js/i18n.js";
 import { money, formatDateTime, formatTime, minutesLabel } from "../../../../shared/js/format.js";
 import { paintIcons } from "../../../../shared/js/dom.js";
 import { toast, sheet } from "../../../../shared/js/ui.js";
@@ -83,7 +83,7 @@ export function ordersListScreen(root) {
           <div class="card pad" style="margin-block-end:10px;cursor:pointer" data-oid="${o.id}">
             <div class="between">
               <div class="row">
-                <span class="badge" data-status="${o.status}">${o.status}</span>
+                <span class="badge" data-status="${o.status}">${staffStatus(o.status)}</span>
                 <span class="small muted num">${o.number}</span>
               </div>
               <b class="num" style="color:var(--c-primary-600)">${money(o.total)}</b>
@@ -124,7 +124,7 @@ export function ordersListScreen(root) {
 
   root.querySelectorAll("[data-oid]").forEach((card) => {
     card.onclick = () => {
-      location.hash = `#/order/${card.dataset.oid}`;
+      location.hash = `#/queue/${card.dataset.oid}`;
     };
   });
 }
@@ -138,7 +138,7 @@ export function orderDetailsScreen(root, orderId) {
     root.innerHTML = `
       <div class="empty">
         <h3>الطلب غير موجود</h3>
-        <a class="btn" href="#/orders">العودة للطلبات</a>
+        <a class="btn" href="#/queue">العودة للطلبات</a>
       </div>
     `;
     return;
@@ -165,7 +165,7 @@ export function orderDetailsScreen(root, orderId) {
       <div class="card pad" style="margin-block-end:14px">
         <div class="between">
           <div>
-            <span class="badge" data-status="${order.status}">${order.status}</span>
+            <span class="badge" data-status="${order.status}">${staffStatus(order.status)}</span>
             <span class="badge" data-pay="${order.paymentStatus}" style="margin-inline-start:6px">${order.paymentStatus}</span>
           </div>
           <b class="num" style="font-size:var(--fs-22);color:var(--c-primary-600)">${money(order.total)}</b>
@@ -232,7 +232,7 @@ export function orderDetailsScreen(root, orderId) {
         <div class="stack" style="gap:8px">
           ${(order.timeline || []).map((tl) => `
             <div class="between small">
-              <span class="badge" data-status="${tl.status}">${tl.status}</span>
+              <span class="badge" data-status="${tl.status}">${staffStatus(tl.status)}</span>
               <span class="muted num">${formatTime(tl.at)}</span>
             </div>
           `).join("")}

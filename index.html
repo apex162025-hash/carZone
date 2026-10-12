@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Carzen Demo</title>
+  <link rel="icon" type="image/svg+xml" href="./shared/assets/logo.svg" />
+  <meta name="theme-color" content="#0B6BA8" />
   <script>
     try {
       const l = localStorage.getItem("carzen_lang") || "ar";
@@ -12,37 +14,66 @@
       if (localStorage.getItem("carzen_theme") === "dark") document.documentElement.dataset.theme = "dark";
     } catch (e) {}
   </script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap" />
   <link rel="stylesheet" href="./shared/css/tokens.css" />
   <link rel="stylesheet" href="./shared/css/base.css" />
   <link rel="stylesheet" href="./shared/css/components.css" />
-  <link rel="stylesheet" href="./customer/css/app.css" />
+  <link rel="stylesheet" href="./shared/css/skin.css" />
   <style>
-    .launch { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
-    .launch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
-    .launch a.card { padding: 20px; display: flex; flex-direction: column; gap: 8px; min-height: 140px; color: inherit; }
+    body { background: var(--c-bg); }
+    .launch-hero {
+      color: #fff; padding: 56px 20px 96px; position: relative; overflow: hidden;
+      background:
+        linear-gradient(var(--hero-dir, 90deg), rgba(6, 42, 69, 0.95), rgba(11, 107, 168, 0.7)),
+        url("https://images.unsplash.com/photo-1575844611398-2a68400b437c?auto=format&fit=crop&q=70&w=1600") center / cover,
+        var(--g-hero);
+    }
+    [dir="rtl"] .launch-hero { --hero-dir: 270deg; }
+    .launch-hero > div, .launch { max-width: 1040px; margin: 0 auto; }
+    .launch-hero img { border-radius: 18px; box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35); }
+    .launch-hero h1 { font-size: 44px; font-weight: 700; letter-spacing: -0.02em; margin-block: 16px 6px; }
+    .launch-hero p { color: rgba(230, 245, 252, 0.88); font-size: 17px; }
+    .launch { padding: 0 20px 80px; margin-top: -56px; position: relative; }
+    .launch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+    .launch a.card {
+      padding: 22px; display: flex; flex-direction: column; gap: 6px; min-height: 210px; color: inherit;
+      border-radius: var(--r-lg); box-shadow: var(--sh-2); transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    }
+    .launch a.card:hover { transform: translateY(-4px); box-shadow: var(--sh-3); }
+    .launch a.card b { font-size: 18px; }
+    .launch .li { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; color: #fff; background: var(--g-primary); margin-bottom: 8px; }
+    .launch .li.sand { background: var(--g-sand); color: #7a5320; }
+    .launch .li svg { width: 24px; height: 24px; }
+    .launch .roles { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .launch .roles span { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--c-primary-50); color: var(--c-primary-600); }
   </style>
 </head>
 <body>
+  <header class="launch-hero">
+    <div>
+      <img src="./shared/assets/logo.svg" width="64" height="64" alt="" />
+      <h1>Carzen</h1>
+      <p>سوق ومغسلة في نظام واحد — القاهرة</p>
+    </div>
+  </header>
   <main class="launch">
-    <img src="./shared/assets/logo.svg" width="56" height="56" alt="" />
-    <h1 style="font-size:36px;margin-block:12px">Carzen</h1>
-    <p class="muted">سوق ومغسلة في نظام واحد — القاهرة</p>
     <div class="launch-grid">
-      <a class="card" href="./customer/index.html#/"><b>تطبيق العميل</b><span class="small muted">Customer app (Mobile)</span><span class="btn sm" style="margin-top:auto">فتح</span></a>
-      <a class="card" href="./wash/employee/index.html"><b>تطبيق الموظف</b><span class="small muted">Employee app (Mobile)</span><span class="btn sm" style="margin-top:auto">فتح</span></a>
-      <a class="card" href="./wash/dashboard/index.html"><b>لوحة المغسلة</b><span class="small muted">Owner & Manager dashboard (Web)</span><span class="btn sm" style="margin-top:auto">فتح</span></a>
-      <a class="card" href="./wash/register/index.html"><b>طلب انضمام مغسلة</b><span class="small muted">Partner registration wizard</span><span class="btn sm" style="margin-top:auto">فتح</span></a>
-      <a class="card" href="./admin/index.html"><b>إدارة المنصة</b><span class="small muted">Platform admin dashboard (Web)</span><span class="btn sm" style="margin-top:auto">فتح</span></a>
+      <a class="card" href="./customer/index.html#/"><span class="li"><i data-lucide="smartphone"></i></span><b>تطبيق العميل</b><span class="small muted">Customer app · iPhone 13 Pro Max</span><span class="btn sm" style="margin-top:auto">فتح</span></a>
+      <a class="card" href="./wash/dashboard/index.html"><span class="li sand"><i data-lucide="store"></i></span><b>تطبيق ولوحة المغسلة</b><span class="small muted">Wash app & dashboard (Web + Mobile)</span><span class="roles"><span>المالك</span><span>مدير الفرع</span><span>الموظف</span></span><span class="btn sm" style="margin-top:auto">فتح</span></a>
+      <a class="card" href="./wash/register/index.html"><span class="li"><i data-lucide="file-plus"></i></span><b>طلب انضمام مغسلة</b><span class="small muted">Partner registration wizard</span><span class="btn sm" style="margin-top:auto">فتح</span></a>
+      <a class="card" href="./admin/index.html"><span class="li"><i data-lucide="shield-check"></i></span><b>إدارة المنصة</b><span class="small muted">Platform admin dashboard (Web)</span><span class="btn sm" style="margin-top:auto">فتح</span></a>
     </div>
     <button class="btn ghost" id="reset" style="margin-top:24px">إعادة ضبط بيانات العرض</button>
   </main>
+  <script src="https://unpkg.com/lucide@0.511.0/dist/umd/lucide.min.js"></script>
   <script type="module">
     import { resetDb } from "./shared/js/db.js";
     import { mountDemoBar } from "./shared/js/demo-bar.js";
     import { applyLang } from "./shared/js/i18n.js";
     applyLang();
     mountDemoBar({ surface: "launcher" });
+    window.lucide?.createIcons();
     document.getElementById("reset").addEventListener("click", () => resetDb());
   </script>
 </body>

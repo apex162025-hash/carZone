@@ -185,7 +185,7 @@ export function checkinScreen(root, prefillOrderId = null) {
             branchId: branch.id,
           });
           toast("تم تسجيل وصول العميل بنجاح ✓");
-          location.hash = "#/home";
+          location.hash = "#/today";
         } catch (err) {
           toast(err.message || "حدث خطأ");
         }
@@ -198,7 +198,7 @@ export function checkinScreen(root, prefillOrderId = null) {
         try {
           await markNoShow(order.id, staff.id);
           toast("تم تسجيل عدم الحضور ✓");
-          location.hash = "#/home";
+          location.hash = "#/today";
         } catch (err) {
           toast(err.message || "حدث خطأ");
         }

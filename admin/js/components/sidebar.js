@@ -78,7 +78,7 @@ export function renderSidebar(currentRoute) {
   let html = `
     <div class="sidebar-header">
       <a href="#/dashboard" class="logo-badge">
-        <div class="logo-icon">CZ</div>
+        <img class="logo-icon" src="../shared/assets/logo.svg" alt="" />
         <div class="logo-text">
           Carzen Admin
           <small>${t("admin.title")}</small>
@@ -120,7 +120,7 @@ export function renderSidebar(currentRoute) {
     </div>
     <div class="sidebar-footer">
       <div class="role-pill">
-        <i data-lucide="shield" style="inline-size:16px;block-size:16px;color:var(--c-primary-600)"></i>
+        <i data-lucide="shield" style="inline-size:16px;block-size:16px"></i>
         <span>${roleName}</span>
       </div>
     </div>

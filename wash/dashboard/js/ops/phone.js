@@ -147,7 +147,7 @@ export function phoneBookingScreen(root) {
       });
 
       toast(`تم إنشاء الحجز الهاتفي ${order.number} بنجاح ✓`);
-      location.hash = "#/orders";
+      location.hash = "#/queue";
     } catch (err) {
       toast(err.message || "حدث خطأ أثناء حفظ الحجز");
     }

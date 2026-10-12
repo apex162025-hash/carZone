@@ -70,8 +70,7 @@ server.listen(PORT, () => {
   console.log(`Carzen Server started successfully on port ${PORT}`);
   console.log(`- Hub:            http://localhost:${PORT}/`);
   console.log(`- Customer App:   http://localhost:${PORT}/customer/`);
-  console.log(`- Employee App:   http://localhost:${PORT}/wash/employee/`);
-  console.log(`- Wash Dashboard: http://localhost:${PORT}/wash/dashboard/`);
+  console.log(`- Wash App:       http://localhost:${PORT}/wash/dashboard/  (owner / manager / employee)`);
   console.log(`- Registration:   http://localhost:${PORT}/wash/register/`);
   console.log(`- Platform Admin: http://localhost:${PORT}/admin/`);
 });

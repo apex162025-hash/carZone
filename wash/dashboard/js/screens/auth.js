@@ -1,15 +1,34 @@
 import { get } from "../../../../shared/js/db.js";
 import { t } from "../../../../shared/js/i18n.js";
 import { toast } from "../../../../shared/js/ui.js";
+import { homeHash } from "../state.js";
+
+// Demo personas — one sign-in for the whole wash app; the role decides what is shown.
+const PERSONAS = [
+  { id: "st_owner_biz_carzen", icon: "crown", role: "owner", hint: "جميع الفروع · التقارير · المالية · الإعدادات" },
+  { id: "st_adel", icon: "briefcase", role: "manager", hint: "فرع مدينة نصر · التشغيل + الإدارة" },
+  { id: "st_samir", icon: "user-round", role: "employee", hint: "فرع مدينة نصر · الاستقبال والحجوزات والوردية" },
+];
 
 export function dashLoginScreen(root) {
+  const db = get();
   root.innerHTML = `
-    <div style="min-height:80vh;display:grid;place-items:center;padding:24px">
-      <div class="card pad" style="width:100%;max-width:400px;box-shadow:var(--sh-3)">
-        <div style="text-align:center;margin-block-end:20px">
-          <img src="../../shared/assets/logo.svg" width="48" height="48" style="margin-inline:auto;margin-block-end:8px" alt="" />
-          <h2 style="font-size:var(--fs-22)">تسجيل الدخول إلى لوحة المغسلة</h2>
-          <p class="small muted">نظام إدارة العمليات والتقارير المالية للشركاء</p>
+    <div class="wash-login">
+      <section class="wash-login-hero">
+        <img src="../../shared/assets/logo.svg" width="64" height="64" alt="" />
+        <h1>Carzen Wash</h1>
+        <p>تطبيق ولوحة واحدة للمغسلة — المالك يدير، والموظف يستقبل ويحجز.</p>
+        <ul>
+          <li><i data-lucide="layout-dashboard"></i> مؤشرات وتقارير ومالية للمالك</li>
+          <li><i data-lucide="calendar-check"></i> حجوزات وعملاء حضوري وتسجيل وصول للموظف</li>
+          <li><i data-lucide="smartphone"></i> يعمل على الكمبيوتر والموبايل</li>
+        </ul>
+      </section>
+
+      <div class="card pad wash-login-card">
+        <div style="margin-block-end:18px">
+          <h2 style="font-size:var(--fs-22)">تسجيل الدخول</h2>
+          <p class="small muted">الأقسام تظهر حسب صلاحية الحساب</p>
         </div>
 
         <div class="stack" style="gap:12px">
@@ -23,29 +42,37 @@ export function dashLoginScreen(root) {
           </div>
           <button class="btn block" id="btn-dash-login" style="margin-block-start:6px">تسجيل الدخول</button>
 
-          <div style="text-align:center;margin-block:12px">
-            <span class="small muted">تسجيل تجريبي سريع بنقرة واحدة:</span>
-          </div>
-
-          <button class="btn ghost block sm" id="btn-quick-khaled">
-            👑 خالد منصور (المالك — جميع الفروع)
-          </button>
-          <button class="btn ghost block sm" id="btn-quick-adel">
-            👔 محمد عادل (مدير فرع مدينة نصر)
-          </button>
+          <div class="small muted" style="text-align:center;margin-block:10px 2px">دخول تجريبي سريع:</div>
+          ${PERSONAS.map((p) => {
+            const staff = db.staff.find((s) => s.id === p.id);
+            return `<button class="persona" data-id="${p.id}">
+              <span class="persona-ico ${p.role}"><i data-lucide="${p.icon}"></i></span>
+              <span class="grow"><b>${staff?.name || p.id}</b> · ${t("wash.role." + p.role)}<span class="small muted" style="display:block">${p.hint}</span></span>
+              <i data-lucide="chevron-left" class="dir-icon muted"></i>
+            </button>`;
+          }).join("")}
         </div>
       </div>
     </div>
   `;
+  window.lucide?.createIcons({ attrs: { class: "ico" }, nameAttr: "data-lucide", root });
 
   const doLogin = (id) => {
     localStorage.setItem("carzen_staff_id", id);
     window.dispatchEvent(new CustomEvent("carzen-staff-session", { detail: { staffId: id } }));
-    toast("مرحبًا بك في لوحة المغسلة!");
-    location.hash = "#/dashboard";
+    toast("مرحبًا بك في Carzen Wash!");
+    location.hash = homeHash();
   };
 
-  document.getElementById("btn-dash-login").onclick = () => doLogin("st_owner_biz_carzen");
-  document.getElementById("btn-quick-khaled").onclick = () => doLogin("st_owner_biz_carzen");
-  document.getElementById("btn-quick-adel").onclick = () => doLogin("st_adel");
+  document.getElementById("btn-dash-login").onclick = () => {
+    const value = document.getElementById("dash-login-user").value.trim().toLowerCase();
+    const digits = value.replace(/\D/g, "");
+    const member = db.staff.find((s) => (s.email && s.email.toLowerCase() === value) || (digits.length > 6 && s.phone.replace(/\D/g, "").endsWith(digits)));
+    if (member && member.status === "suspended") {
+      toast("الحساب غير نشط. يرجى مراجعة إدارة المغسلة.");
+      return;
+    }
+    doLogin(member?.id || "st_owner_biz_carzen");
+  };
+  root.querySelectorAll(".persona").forEach((b) => { b.onclick = () => doLogin(b.dataset.id); });
 }

@@ -256,10 +256,10 @@ function initCharts(container, funnel) {
         datasets: [{
           data: [funnel.created, funnel.confirmed, funnel.waiting, funnel.in_service, funnel.completed, funnel.cancelled, funnel.no_show],
           backgroundColor: [
-            "#dce8ff",
-            "#1463ff",
+            "#c4e7f8",
+            "#0b6ba8",
             "#7c5cfc",
-            "#12c8b6",
+            "#2cc6f2",
             "#16a34a",
             "#e5484d",
             "#64748b",
@@ -291,15 +291,15 @@ function initCharts(container, funnel) {
           {
             label: "GMV (EGP)",
             data: [3200, 7800, 14500, 24000, 33500, 41200, 46800, 48500],
-            borderColor: "#1463ff",
-            backgroundColor: "rgba(20, 99, 255, 0.08)",
+            borderColor: "#0b6ba8",
+            backgroundColor: "rgba(11, 107, 168, 0.08)",
             fill: true,
             tension: 0.35,
           },
           {
             label: "Commission (7%)",
             data: [224, 546, 1015, 1680, 2345, 2884, 3276, 3395],
-            borderColor: "#12c8b6",
+            borderColor: "#2cc6f2",
             backgroundColor: "transparent",
             borderDash: [5, 5],
             tension: 0.35,

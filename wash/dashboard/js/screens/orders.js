@@ -1,5 +1,5 @@
 import { get, mutate, now } from "../../../../shared/js/db.js";
-import { t, L } from "../../../../shared/js/i18n.js";
+import { t, L, staffStatus } from "../../../../shared/js/i18n.js";
 import { money, formatDateTime, formatTime, minutesLabel } from "../../../../shared/js/format.js";
 import { paintIcons } from "../../../../shared/js/dom.js";
 import { toast, sheet } from "../../../../shared/js/ui.js";
@@ -84,7 +84,7 @@ export function bookingsScreen(root) {
                 <td>${L(o.items[0]?.name)}</td>
                 <td class="num">${formatDateTime(o.scheduledAt)}</td>
                 <td><span class="badge" data-status="${o.source === "app" ? "confirmed" : "waiting"}">${o.source === "app" ? "تطبيق" : "هاتف"}</span></td>
-                <td><span class="badge" data-status="${o.status}">${o.status}</span></td>
+                <td><span class="badge" data-status="${o.status}">${staffStatus(o.status)}</span></td>
                 <td class="num font-bold">${money(o.total)}</td>
                 <td>
                   ${o.status === "pending" ? `
@@ -206,7 +206,7 @@ export function ordersScreen(root) {
                 <td>${L(o.items[0]?.name)}</td>
                 <td>${o.source === "app" ? "تطبيق" : o.source === "phone" ? "هاتف" : "مباشر"}</td>
                 <td>${o.assignedStaffId === "st_samir" ? "أحمد سمير" : o.assignedStaffId === "st_adel" ? "محمد عادل" : "فريق المغسلة"}</td>
-                <td><span class="badge" data-status="${o.status}">${o.status}</span></td>
+                <td><span class="badge" data-status="${o.status}">${staffStatus(o.status)}</span></td>
                 <td><span class="badge" data-pay="${o.paymentStatus}">${o.paymentStatus}</span></td>
                 <td class="num font-bold">${money(o.total)}</td>
               </tr>
@@ -257,7 +257,7 @@ export function openOrderDetailsDrawer(orderId, pageRoot) {
 
         <!-- Badges row -->
         <div class="row" style="margin-block-end:16px">
-          <span class="badge" data-status="${order.status}">${order.status}</span>
+          <span class="badge" data-status="${order.status}">${staffStatus(order.status)}</span>
           <span class="badge" data-pay="${order.paymentStatus}">${order.paymentStatus}</span>
           <span class="chip on" style="letter-spacing:1px">${order.plate}</span>
         </div>
@@ -304,7 +304,7 @@ export function openOrderDetailsDrawer(orderId, pageRoot) {
           <div class="stack" style="gap:8px">
             ${(order.timeline || []).map((tl) => `
               <div class="between small">
-                <span class="badge" data-status="${tl.status}">${tl.status}</span>
+                <span class="badge" data-status="${tl.status}">${staffStatus(tl.status)}</span>
                 <span class="small muted num">${formatDateTime(tl.at)}</span>
               </div>
             `).join("")}

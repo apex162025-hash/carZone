@@ -1,5 +1,5 @@
 import { get, mutate, now } from "../../../../shared/js/db.js";
-import { t, L } from "../../../../shared/js/i18n.js";
+import { t, L, staffStatus } from "../../../../shared/js/i18n.js";
 import { money, formatTime, minutesLabel } from "../../../../shared/js/format.js";
 import { paintIcons } from "../../../../shared/js/dom.js";
 import { toast, sheet } from "../../../../shared/js/ui.js";
@@ -106,7 +106,7 @@ export function todayScreen(root) {
 
       <!-- Quick Action Buttons -->
       <div class="row" style="padding-inline:16px;margin-block:4px 12px;gap:8px">
-        <a class="btn grow sm" href="#/walk-in" style="background:linear-gradient(135deg, var(--c-primary-600), #12c8b6)">
+        <a class="btn grow sm" href="#/walk-in">
           <i data-lucide="plus"></i> ${t("emp.walkin.title")}
         </a>
         <a class="btn ghost grow sm" href="#/check-in">
@@ -222,7 +222,7 @@ export function todayScreen(root) {
     card.onclick = (e) => {
       if (e.target.closest("button") || e.target.closest("a")) return;
       const id = card.dataset.id;
-      location.hash = `#/order/${id}`;
+      location.hash = `#/queue/${id}`;
     };
   });
 }
@@ -256,7 +256,7 @@ function renderOrderCard(o) {
         <div class="row">
           <span class="badge" data-status="${o.status}">
             <span class="dot"></span>
-            ${o.status === "completed" && isPayPending ? "بانتظار الدفع" : o.status}
+            ${o.status === "completed" && isPayPending ? "بانتظار الدفع" : staffStatus(o.status)}
           </span>
           <span class="small muted num">${o.number}</span>
           <i data-lucide="${sourceIcon}" style="width:14px;height:14px;color:var(--c-ink-500)"></i>

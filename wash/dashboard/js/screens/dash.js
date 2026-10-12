@@ -1,5 +1,5 @@
 import { get, mutate, now } from "../../../../shared/js/db.js";
-import { t, L } from "../../../../shared/js/i18n.js";
+import { t, L, staffStatus } from "../../../../shared/js/i18n.js";
 import { money, formatTime, minutesLabel } from "../../../../shared/js/format.js";
 import { paintIcons } from "../../../../shared/js/dom.js";
 import {
@@ -165,7 +165,7 @@ export function dashboardScreen(root) {
                 <td class="num">${c.number}</td>
                 <td>${L(c.items[0]?.name)}</td>
                 <td>${c.assignedStaffId === "st_samir" ? "أحمد سمير" : c.assignedStaffId === "st_youssef" ? "يوسف نبيل" : "فريق المغسلة"}</td>
-                <td><span class="badge" data-status="${c.status}">${c.status}</span></td>
+                <td><span class="badge" data-status="${c.status}">${staffStatus(c.status)}</span></td>
                 <td class="num font-bold">${money(c.total)}</td>
                 <td class="num small muted">${formatTime(c.scheduledAt)}</td>
               </tr>
@@ -230,7 +230,7 @@ function renderCharts(kpis) {
         datasets: [{
           label: "الإيرادات (ج.م)",
           data: [280, 540, 720, 900, 680, 1100, 1450, 1280, 950],
-          backgroundColor: "#1463FF",
+          backgroundColor: "#0b6ba8",
           borderRadius: 6,
         }],
       },
@@ -239,7 +239,7 @@ function renderCharts(kpis) {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          y: { beginAtZero: true, grid: { color: "#E6ECF4" } },
+          y: { beginAtZero: true, grid: { color: "#e1ebf2" } },
           x: { grid: { display: false } },
         },
       },
@@ -256,7 +256,7 @@ function renderCharts(kpis) {
         labels: ["تطبيق كارزن (App)", "حضور مباشر (Walk-in)", "حجز هاتفي (Phone)"],
         datasets: [{
           data: [kpis.appBookings || 55, kpis.walkIns || 35, kpis.phoneBookings || 10],
-          backgroundColor: ["#1463FF", "#12C8B6", "#7C5CFC"],
+          backgroundColor: ["#0b6ba8", "#2cc6f2", "#7C5CFC"],
           borderWidth: 0,
         }],
       },

@@ -23,7 +23,7 @@ export function shiftScreen(root) {
         <i data-lucide="clock" style="width:40px;height:40px;color:var(--c-ink-300)"></i>
         <h3>لا توجد وردية نشطة حاليًا</h3>
         <p class="muted small">سجل بداية الوردية لتتبع العمليات والمبالغ المحصلة.</p>
-        <a class="btn" href="#/shift/start">بدء الوردية الآن</a>
+        <a class="btn" href="#/my-shift/start">بدء الوردية الآن</a>
       </div>
     `;
     paintIcons(root);
@@ -216,7 +216,7 @@ async function openEndShiftModal(shift, expectedCash, root) {
 
       document.querySelector(".overlay")?.remove();
       toast(diff !== 0 ? `تم إغلاق الوردية بفارق ${money(diff)}` : "تم إغلاق الوردية ومطابقة النقدية بنجاح ✓");
-      location.hash = "#/home";
+      location.hash = "#/today";
     } catch (err) {
       toast(err.message || "حدث خطأ أثناء إغلاق الوردية");
     }

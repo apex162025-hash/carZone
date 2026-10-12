@@ -3,24 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Carzen · لوحة تحكم المغسلة</title>
+  <meta name="theme-color" content="#0B6BA8" />
+  <title>Carzen Wash · تطبيق ولوحة المغسلة</title>
+  <link rel="icon" type="image/svg+xml" href="../../shared/assets/logo.svg" />
   <script>
     try {
       const l = localStorage.getItem("carzen_lang") || "ar";
       document.documentElement.lang = l;
       document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
       if (localStorage.getItem("carzen_theme") === "dark") document.documentElement.dataset.theme = "dark";
-      if (!localStorage.getItem("carzen_staff_id")) {
-        localStorage.setItem("carzen_staff_id", "st_owner_biz_carzen");
-      }
     } catch (e) {}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap" />
   <link rel="stylesheet" href="../../shared/css/tokens.css" />
   <link rel="stylesheet" href="../../shared/css/base.css" />
   <link rel="stylesheet" href="../../shared/css/components.css" />
+  <link rel="stylesheet" href="../../shared/css/skin.css" />
   <link rel="stylesheet" href="./css/dashboard.css" />
+  <link rel="stylesheet" href="./css/ops.css" />
 </head>
 <body>
   <div class="dash-layout">
@@ -32,6 +34,8 @@
       <header id="dash-topbar" class="dash-topbar"></header>
       <main id="dash-content" class="dash-content"></main>
     </div>
+    <div id="dash-scrim" class="dash-scrim"></div>
+    <nav id="dash-tabbar" class="dash-tabbar"></nav>
   </div>
 
   <script src="https://unpkg.com/lucide@0.511.0/dist/umd/lucide.min.js"></script>

@@ -3,14 +3,12 @@ import { login, setCurrentAdmin } from "../auth.js";
 
 export function renderLogin() {
   const container = document.createElement("div");
-  container.style.cssText = "display:flex;align-items:center;justify-content:center;min-block-size:100vh;padding:var(--s-4);background:var(--c-bg)";
+  container.className = "admin-login";
 
   container.innerHTML = `
     <div class="card pad" style="inline-size:min(100%,440px);box-shadow:var(--sh-3);border-radius:var(--r-lg);padding:var(--s-7) var(--s-6)">
       <div style="text-align:center;margin-block-end:var(--s-6)">
-        <div style="inline-size:48px;block-size:48px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--c-primary-600),var(--c-accent-500));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;margin-block-end:var(--s-3);box-shadow:0 4px 12px rgba(20,99,255,0.2)">
-          CZ
-        </div>
+        <img src="../shared/assets/logo.svg" width="56" height="56" alt="Carzen" style="margin-inline:auto;margin-block-end:var(--s-3);border-radius:16px;box-shadow:var(--sh-2)" />
         <h2 style="margin:0;font-size:var(--fs-22);font-weight:800;letter-spacing:-0.02em">
           ${getLang() === "ar" ? "تسجيل الدخول إلى لوحة الإدارة" : "Carzen Platform Admin"}
         </h2>

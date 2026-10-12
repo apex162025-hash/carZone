@@ -102,7 +102,7 @@ export function walkinScreen(root) {
           </div>
         </div>
 
-        <button class="emp-action-btn" id="create-order-btn" style="background:linear-gradient(135deg, var(--c-primary-600), #12c8b6);color:#fff">
+        <button class="emp-action-btn" id="create-order-btn" style="background:var(--g-primary);color:#fff">
           🚀 ${t("emp.walkin.create")}
         </button>
       </div>
@@ -284,16 +284,16 @@ async function showSuccessSheet(order, root) {
       await startService(order.id, currentStaff().id);
       document.querySelector(".overlay")?.remove();
       toast("بدأ تنفيذ الخدمة بنجاح 🚿");
-      location.hash = "#/home";
+      location.hash = "#/today";
     } catch (err) {
       toast(err.message || "المسارات مشغولة حاليًا");
       document.querySelector(".overlay")?.remove();
-      location.hash = "#/home";
+      location.hash = "#/today";
     }
   };
 
   sheetEl.querySelector("#btn-success-today").onclick = () => {
     document.querySelector(".overlay")?.remove();
-    location.hash = "#/home";
+    location.hash = "#/today";
   };
 }

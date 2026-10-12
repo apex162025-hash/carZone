@@ -1,7 +1,13 @@
 import { get, mutate, now } from "../../../shared/js/db.js";
+import { getActiveShift } from "../../../shared/js/services/wash.js";
 
 export function currentStaffId() {
-  return localStorage.getItem("carzen_staff_id") || "st_owner_biz_carzen";
+  return localStorage.getItem("carzen_staff_id") || "";
+}
+
+export function isSignedIn() {
+  const id = currentStaffId();
+  return !!id && get().staff.some((s) => s.id === id && s.status !== "suspended");
 }
 
 export function currentStaff() {
@@ -18,14 +24,27 @@ export function isManager() {
   return currentStaff().role === "manager";
 }
 
+export function isEmployee() {
+  return currentStaff().role === "employee";
+}
+
+export function role() {
+  return currentStaff().role;
+}
+
+// Where each role lands after sign-in.
+export function homeHash() {
+  return isEmployee() ? "#/today" : "#/dashboard";
+}
+
 export function selectedBranchId() {
-  // If Manager, branch is locked to Nasr City (br_nasr)
-  if (isManager()) return "br_nasr";
+  // Managers and employees are locked to their own branch
+  if (!isOwner()) return currentStaff().branchId || "br_nasr";
   return localStorage.getItem("carzen_dash_branch") || "all";
 }
 
 export function setSelectedBranchId(id) {
-  if (isManager()) return; // locked for manager
+  if (!isOwner()) return; // locked to own branch
   localStorage.setItem("carzen_dash_branch", id);
   window.dispatchEvent(new CustomEvent("carzen-branch-change", { detail: { branchId: id } }));
 }
@@ -135,4 +154,28 @@ export function getAlertsFeed(branchId = selectedBranchId()) {
   });
 
   return alerts;
+}
+
+export function currentBranch() {
+  const db = get();
+  const id = currentStaff().branchId || "br_nasr";
+  return db.branches.find((b) => b.id === id) || db.branches[0];
+}
+
+export function hasActiveShift() {
+  return !!getActiveShift(get(), currentStaff().id);
+}
+
+export function currentShift() {
+  return getActiveShift(get(), currentStaff().id);
+}
+
+export function todayCounters(branchId = "br_nasr") {
+  const orders = get().orders.filter((o) => o.branchId === branchId);
+  return {
+    waiting: orders.filter((o) => o.status === "waiting").length,
+    inService: orders.filter((o) => o.status === "in_service").length,
+    completed: orders.filter((o) => o.status === "completed").length,
+    payPending: orders.filter((o) => o.status === "completed" && o.paymentStatus === "pending").length,
+  };
 }

@@ -69,7 +69,7 @@ export function meScreen(root) {
           <span class="grow">الإشعارات وتنبيهات الفرع</span>
           <i data-lucide="chevron-left" class="dir-icon muted"></i>
         </a>
-        <a class="menu-row" href="#/shift">
+        <a class="menu-row" href="#/my-shift">
           <i data-lucide="clock"></i>
           <span class="grow">الوردية الحالية والنقدية</span>
           <i data-lucide="chevron-left" class="dir-icon muted"></i>

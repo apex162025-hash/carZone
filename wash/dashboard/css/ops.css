@@ -1,0 +1,230 @@
+/* Wash app — operations screens (formerly the employee app). Shared by employee + manager roles. */
+.dash-content.ops-mode { max-width: 860px; }
+.ops-mode > .topbar, .ops-mode .topbar {
+  display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px;
+  padding: 14px 18px; margin-block-end: 16px; border-radius: var(--r-lg); color: #fff;
+  background: var(--g-head); box-shadow: var(--sh-2);
+}
+.ops-mode .topbar h1 { font-size: var(--fs-18); text-align: center; font-weight: 700; }
+.ops-mode .topbar .icon-btn { background: rgba(255, 255, 255, 0.16); color: #fff; box-shadow: none; }
+.ops-mode .screen-body { padding: 0 !important; }
+.ops-mode .counters-grid, .ops-mode .emp-urgent-banner { margin-inline: 0; padding-inline: 0; }
+
+/* Header & Status Counters */
+.emp-header {
+  padding: 16px 18px;
+  margin-block-end: 14px;
+  border-radius: var(--r-lg);
+  color: #fff;
+  background: var(--g-head);
+  box-shadow: var(--sh-2);
+}
+.emp-header .muted { color: rgba(255, 255, 255, 0.78); }
+.emp-header .icon-btn { background: rgba(255, 255, 255, 0.16); color: #fff; box-shadow: none; }
+.emp-header .emp-shift-tag { background: var(--c-secondary); color: var(--c-secondary-ink); }
+.emp-shift-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-primary-600);
+  background: var(--c-primary-50);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.counters-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.counter-btn {
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+  padding: 8px 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--dur) var(--ease);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 58px;
+}
+.counter-btn.active {
+  border-color: var(--c-primary-600);
+  background: var(--c-primary-50);
+}
+.counter-btn .num { font-size: 20px; font-weight: 800; line-height: 1.1; }
+.counter-btn .lbl { font-size: 10px; font-weight: 700; color: var(--c-ink-500); margin-block-start: 2px; }
+
+.counter-btn[data-c="waiting"] .num { color: var(--st-waiting); }
+.counter-btn[data-c="in_service"] .num { color: var(--st-in_service); }
+.counter-btn[data-c="completed"] .num { color: var(--st-completed); }
+.counter-btn[data-c="pay_pending"] .num { color: var(--pay-pending); }
+
+/* Urgent warning */
+.emp-urgent-banner {
+  margin: 0 16px 8px;
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--c-warning) 16%, var(--c-surface));
+  border: 1px solid var(--c-warning);
+  color: var(--c-ink-900);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: pulse-warn 2s infinite ease-in-out;
+}
+@keyframes pulse-warn {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.88; transform: scale(0.99); }
+}
+
+/* Order card */
+.emp-order-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  margin-block-end: 12px;
+  box-shadow: var(--sh-1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.emp-order-card .action-row {
+  margin-block-start: 6px;
+  padding-block-start: 10px;
+  border-block-start: 1px dashed var(--c-line);
+}
+
+/* Big Action Button */
+.emp-action-btn {
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--r-md);
+  font-weight: 800;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  cursor: pointer;
+}
+.emp-action-btn[data-action="confirm"] { background: var(--st-confirmed); color: #fff; }
+.emp-action-btn[data-action="checkin"] { background: var(--st-waiting); color: #fff; }
+.emp-action-btn[data-action="start"] { background: var(--st-in_service); color: #fff; }
+.emp-action-btn[data-action="complete"] { background: var(--g-primary); color: #fff; }
+.emp-action-btn[data-action="pay"] { background: var(--c-success); color: #fff; }
+
+/* Customer Recognition card */
+.emp-recognize-box {
+  background: var(--g-sand);
+  border: 1.5px solid var(--c-secondary-600);
+  border-radius: var(--r-md);
+  padding: 14px;
+  margin-block-end: 16px;
+}
+
+/* Scanner viewfinder */
+.scanner-viewfinder {
+  position: relative;
+  height: 200px;
+  background: #000;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  margin-block-end: 16px;
+}
+.scanner-corners {
+  width: 140px;
+  height: 140px;
+  border: 2px dashed rgba(255,255,255,0.7);
+  border-radius: 16px;
+}
+.scan-laser {
+  position: absolute;
+  width: 80%;
+  height: 2px;
+  background: var(--c-accent-500);
+  box-shadow: 0 0 8px var(--c-accent-500);
+  animation: laser-move 1.8s infinite alternate ease-in-out;
+}
+@keyframes laser-move {
+  0% { top: 30px; }
+  100% { top: 170px; }
+}
+
+/* 5-char code entry */
+.code-inputs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  direction: ltr;
+}
+.code-box {
+  width: 52px;
+  height: 60px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 800;
+  border: 2px solid var(--c-line);
+  border-radius: var(--r-sm);
+  background: var(--c-surface);
+  text-transform: uppercase;
+}
+.code-box:focus { border-color: var(--c-primary-600); }
+
+/* Start shift gate */
+.shift-gate {
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
+.shift-gate-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--c-primary-100);
+  color: var(--c-primary-700);
+  display: grid;
+  place-items: center;
+  margin-block-end: 20px;
+  font-size: 36px;
+}
+
+/* Quick amounts */
+.quick-amounts {
+  display: flex;
+  gap: 8px;
+  margin-block: 8px;
+  overflow-x: auto;
+}
+.quick-chip {
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-line);
+  background: var(--c-surface);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.quick-chip.on {
+  background: var(--g-primary);
+  color: #fff;
+  border-color: var(--c-primary-600);
+}

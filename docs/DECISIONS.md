@@ -40,3 +40,5 @@
 - Built interactive Roles × Modules permission matrix editor allowing Super Admin to dynamically customize module permissions with immediate effect.
 - Provided global command palette (`Ctrl/⌘ K`) searching across customers, vehicles/plates, washes, branches, and orders with keyboard navigation and role scoping.
 - Added 15-minute simulated idle session timeout modal triggerable from demo bar and automatic activity watcher.
+- The separate Employee app (`/wash/employee`) is removed. Its screens (today, queue, walk-in, check-in, phone booking, shift, profile) now live in the wash app at `/wash/dashboard` under `js/ops/`. One sign-in, and the sidebar, routes and phone bottom bar depend on the staff role: Owner = management, finance and all branches; Branch manager = operations + management, locked to their branch; Employee = front desk operations and bookings only. Routes outside a role redirect to that role's home.
+- Brand is shared across every surface: wash blue `#0B6BA8` primary, sand `#F8E7C9` secondary, Readex Pro, new water-drop logo. Palette lives in `shared/css/tokens.css`; gradient buttons, chips, inputs and sheets in `shared/css/skin.css`.

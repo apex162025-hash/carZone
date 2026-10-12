@@ -1,0 +1,118 @@
+/* Carzen component skin — gradient buttons, chips, inputs, sheets. Shared by every surface (load after components.css). */
+
+.btn {
+  border: 0; position: relative; overflow: hidden; isolation: isolate;
+  background: var(--g-primary, var(--c-primary-600)); color: #fff;
+  box-shadow: var(--sh-btn, none);
+  min-block-size: 48px; padding-inline: 20px; font-weight: 800;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), filter var(--dur) var(--ease);
+}
+.btn::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
+  transform: translateX(-130%); transition: transform 700ms var(--ease);
+}
+.btn:hover::after { transform: translateX(130%); }
+.btn:active { transform: scale(0.97); filter: brightness(1.05); }
+.btn:disabled { background: var(--c-ink-300); color: var(--c-surface); box-shadow: none; opacity: 0.8; }
+.btn.secondary { background: var(--g-sand, #f8e7c9); color: var(--c-secondary-ink, #7a5320); box-shadow: none; }
+.btn.ghost { background: var(--c-surface); color: var(--c-ink-900); box-shadow: inset 0 0 0 1.5px var(--c-line); border: 0; }
+.btn.ghost svg { color: var(--c-primary-600); }
+.btn.soft { background: var(--c-surface); color: var(--c-ink-900); box-shadow: var(--sh-1); }
+.btn.danger { background: linear-gradient(135deg, #ff6b6b, #e5484d); box-shadow: 0 10px 22px -10px rgba(229, 72, 77, 0.7); }
+.btn.sm { min-block-size: 38px; padding-inline: 14px; font-size: var(--fs-14); }
+.btn.block { min-block-size: 54px; font-size: 16px; }
+
+.card { border-radius: var(--r-md); border: 1px solid var(--c-line); box-shadow: var(--sh-1); }
+button.card { transition: transform var(--dur) var(--ease); }
+button.card:active { transform: scale(0.985); }
+
+.chip, .badge { min-block-size: 30px; padding-inline: 12px; font-weight: 700; }
+.chip { background: var(--c-primary-50); color: var(--c-primary-600); border: 0; }
+.chip.flat { background: var(--c-surface); color: var(--c-ink-700); box-shadow: inset 0 0 0 1.5px var(--c-line); }
+.chip.on { background: var(--g-primary, var(--c-primary-600)); color: #fff; box-shadow: var(--sh-btn, none); }
+button.chip { transition: transform var(--dur) var(--ease); }
+button.chip:active { transform: scale(0.95); }
+label.chip input { display: none; }
+
+.tabs { background: var(--c-primary-50); padding: 5px; }
+.tabs button { min-block-size: 42px; color: var(--c-ink-500); transition: color var(--dur) var(--ease); }
+.tabs button.on { background: var(--g-primary, var(--c-primary-600)); color: #fff; box-shadow: var(--sh-btn, none); animation: grow-pill 360ms var(--ease-spring); }
+
+.stepper { gap: 6px; }
+.stepper i { block-size: 6px; background: var(--c-primary-50); }
+.stepper i.on { background: var(--g-primary, var(--c-primary-600)); }
+
+.avatar { background: var(--c-primary-50); color: var(--c-primary-600); border-radius: 14px; border: 0; }
+.avatar.lg { border-radius: 24px; }
+
+.control, .textarea, .select {
+  border: 1.5px solid var(--c-line); border-radius: 16px; min-block-size: 52px; background: var(--c-surface);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.control:focus, .textarea:focus, .select:focus { border-color: var(--c-primary-600); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-primary-600) 14%, transparent); }
+.field span.label { font-weight: 700; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--c-primary-600); width: 20px; height: 20px; }
+
+.overlay { background: rgba(4, 24, 40, 0.5); backdrop-filter: blur(4px); animation: fade-in 200ms var(--ease); }
+.sheet { border-start-start-radius: 30px; border-start-end-radius: 30px; padding-top: 10px; animation: sheet-up 340ms var(--ease) both; }
+.sheet h3 { font-size: 18px; font-weight: 800; margin-block-end: 8px; }
+.modal { border-radius: 28px; animation: pop-in 320ms var(--ease-spring) both; }
+.handle { inline-size: 44px; block-size: 5px; background: var(--c-line); }
+@keyframes sheet-up { from { transform: translateY(100%); } }
+
+.toast { background: linear-gradient(135deg, #0b2236, #0b6ba8); border-radius: 18px; padding: 14px 16px; animation: toast-in 360ms var(--ease-spring) both; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(20px) scale(0.96); } }
+.banner { border-radius: 16px; }
+
+.sk { background: linear-gradient(90deg, var(--c-primary-50), color-mix(in srgb, var(--c-surface) 70%, var(--c-primary-50)), var(--c-primary-50)); background-size: 200% 100%; }
+.sk-card { block-size: 110px; border-radius: 20px; }
+:focus-visible { outline-color: var(--c-primary-600); }
+a { color: var(--c-primary-600); }
+
+@keyframes grow-pill { from { transform: scale(0.6); opacity: 0.4; } }
+@keyframes pop-in { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes fade-in { from { opacity: 0; } }
+
+/* Overlays and toasts opened on the page body (dashboards) stay pinned to the viewport. */
+body > .overlay, body > .toast-wrap { position: fixed; }
+body > .overlay .sheet { max-inline-size: 560px; margin-inline: auto; }
+body > .toast-wrap { inset-block-end: 24px; inset-inline: auto; inset-inline-start: 50%; transform: translateX(-50%); inline-size: min(420px, calc(100vw - 32px)); }
+[dir="rtl"] body > .toast-wrap { transform: translateX(50%); }
+
+.icon-btn {
+  inline-size: 40px; block-size: 40px; border-radius: 13px; border: 0; flex: none;
+  display: inline-grid; place-items: center; cursor: pointer;
+  background: var(--c-surface); color: var(--c-ink-900); box-shadow: var(--sh-1);
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.icon-btn:hover { background: var(--c-primary-50); color: var(--c-primary-600); }
+.icon-btn:active { transform: scale(0.94); }
+.icon-btn svg { inline-size: 18px; block-size: 18px; }
+
+table.data th { background: var(--c-primary-50); color: var(--c-primary-700); font-weight: 700; }
+table.data tbody tr { transition: background var(--dur) var(--ease); }
+table.data tbody tr:hover { background: color-mix(in srgb, var(--c-primary-50) 55%, transparent); }
+.table-wrap { border-radius: var(--r-md); background: var(--c-surface); box-shadow: var(--sh-1); }
+.badge { font-weight: 700; }
+::selection { background: var(--c-primary-100); color: var(--c-primary-900); }
+
+/* Demo bar (all surfaces) */
+.demo-bar {
+  position: fixed; inset-inline-start: 16px; inset-block-end: 16px; z-index: 90;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+}
+.demo-toggle { box-shadow: var(--sh-3); }
+.demo-panel {
+  width: min(320px, calc(100vw - 32px));
+  background: var(--c-surface); color: var(--c-ink-900);
+  border-radius: var(--r-lg); box-shadow: var(--sh-3); padding: 12px;
+  display: flex; flex-direction: column; gap: 8px; max-height: 70dvh; overflow: auto;
+}
+.demo-panel select, .demo-panel button.mini {
+  min-height: 40px; border-radius: var(--r-sm); border: 1px solid var(--c-line); background: var(--c-bg); padding-inline: 8px;
+}
+
+@media (max-width: 720px) { body:has(.dash-tabbar) .demo-bar { inset-block-end: 92px; } }
+/* On dashboards keep the demo bar off the sidebar */
+body:has(.dash-sidebar) .demo-bar, body:has(.admin-sidebar) .demo-bar { inset-inline-start: auto; inset-inline-end: 16px; align-items: flex-end; }
