@@ -5,6 +5,7 @@ import { createDataTable } from "../components/table.js";
 import { promptReasonModal, confirmModal } from "../components/modal.js";
 import { getCurrentAdmin, checkPermission } from "../auth.js";
 import { CDN } from "../../../shared/js/cdn.js";
+import { loadGoogleMaps, createPinIcon, MAP_STYLES } from "../../../shared/js/maps.js";
 
 let leafletLoaded = false;
 async function ensureLeaflet() {
@@ -282,18 +283,52 @@ async function renderApplicationReviewView(id) {
 
   if (window.lucide?.createIcons) window.lucide.createIcons({ root: container });
 
-  // Init Leaflet Map Pin (AD-15)
+  // Init Map Pin (Google Maps with Leaflet fallback)
   setTimeout(async () => {
-    await ensureLeaflet();
     const mapDiv = container.querySelector("#app-map-container");
-    if (mapDiv && window.L) {
-      const lat = app.lat || 30.06;
-      const lng = app.lng || 31.33;
-      const map = window.L.map(mapDiv).setView([lat, lng], 14);
-      window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap",
-      }).addTo(map);
-      window.L.marker([lat, lng]).addTo(map).bindPopup(app.businessName).openPopup();
+    if (!mapDiv) return;
+
+    const lat = app.lat || 30.06;
+    const lng = app.lng || 31.33;
+
+    let isGoogleReady = false;
+    try {
+      await loadGoogleMaps();
+      isGoogleReady = !!(window.google && window.google.maps);
+    } catch {
+      isGoogleReady = false;
+    }
+
+    if (isGoogleReady) {
+      const isDark = document.documentElement.dataset.theme === "dark";
+      const gmap = new window.google.maps.Map(mapDiv, {
+        center: { lat, lng },
+        zoom: 14,
+        mapTypeControl: false,
+        streetViewControl: false,
+        styles: isDark ? MAP_STYLES.dark : MAP_STYLES.light,
+      });
+
+      const marker = new window.google.maps.Marker({
+        position: { lat, lng },
+        map: gmap,
+        icon: createPinIcon({ color: "#1C2459", dotColor: "#F5FF67", size: 40 }),
+        title: app.businessName,
+      });
+
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: `<div style="font-weight:bold;padding:4px;color:#1C2459">${app.businessName}</div>`,
+      });
+      infoWindow.open(gmap, marker);
+    } else {
+      await ensureLeaflet();
+      if (mapDiv && window.L) {
+        const map = window.L.map(mapDiv).setView([lat, lng], 14);
+        window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "© OpenStreetMap",
+        }).addTo(map);
+        window.L.marker([lat, lng]).addTo(map).bindPopup(app.businessName).openPopup();
+      }
     }
   }, 100);
 

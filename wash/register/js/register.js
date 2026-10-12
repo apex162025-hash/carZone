@@ -3,6 +3,7 @@ import { t, L, getLang, setLang, applyLang } from "../../../shared/js/i18n.js";
 import { paintIcons } from "../../../shared/js/dom.js";
 import { toast } from "../../../shared/js/ui.js";
 import { submitWashApplication, updateWashApplication } from "../../../shared/js/services/wash.js";
+import { loadGoogleMaps, createPinIcon, MAP_STYLES } from "../../../shared/js/maps.js";
 
 let currentStep = 1;
 let mapInstance = null;
@@ -191,22 +192,66 @@ function renderStep2(root) {
     renderStep(3);
   };
 
-  // Initialize Leaflet Map
-  setTimeout(() => {
-    if (window.L && document.getElementById("reg-map")) {
+  // Initialize Map (Google Maps with Leaflet fallback)
+  setTimeout(async () => {
+    const mapEl = document.getElementById("reg-map");
+    if (!mapEl) return;
+
+    let isGoogleReady = false;
+    try {
+      await loadGoogleMaps();
+      isGoogleReady = !!(window.google && window.google.maps);
+    } catch {
+      isGoogleReady = false;
+    }
+
+    const updateCoords = (lat, lng) => {
+      formData.lat = lat;
+      formData.lng = lng;
+      const span = document.getElementById("coords-text");
+      if (span) span.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    };
+
+    if (isGoogleReady) {
+      const isDark = document.documentElement.dataset.theme === "dark";
+      const gmap = new window.google.maps.Map(mapEl, {
+        center: { lat: formData.lat, lng: formData.lng },
+        zoom: 14,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        styles: isDark ? MAP_STYLES.dark : MAP_STYLES.light,
+      });
+      mapInstance = gmap;
+
+      const marker = new window.google.maps.Marker({
+        position: { lat: formData.lat, lng: formData.lng },
+        map: gmap,
+        draggable: true,
+        icon: createPinIcon({ color: "#1C2459", dotColor: "#F5FF67", size: 40 }),
+        title: "موقع الفرع",
+      });
+      mapMarker = marker;
+
+      marker.addListener("dragend", (e) => {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        updateCoords(lat, lng);
+      });
+
+      gmap.addListener("click", (e) => {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        marker.setPosition({ lat, lng });
+        updateCoords(lat, lng);
+      });
+    } else if (window.L) {
       mapInstance = window.L.map("reg-map").setView([formData.lat, formData.lng], 14);
       window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap",
       }).addTo(mapInstance);
 
       mapMarker = window.L.marker([formData.lat, formData.lng], { draggable: true }).addTo(mapInstance);
-
-      const updateCoords = (lat, lng) => {
-        formData.lat = lat;
-        formData.lng = lng;
-        const span = document.getElementById("coords-text");
-        if (span) span.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      };
 
       mapMarker.on("dragend", (e) => {
         const pos = e.target.getLatLng();

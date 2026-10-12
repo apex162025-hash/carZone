@@ -1,0 +1,1161 @@
+/* ==========================================================================
+   CARZEN MAP DESIGN TOKENS (Flutter ThemeData Equivalent)
+   ========================================================================== */
+:root {
+  /* Colors */
+  --cz-navy: #0B1F4B;
+  --cz-navy-deep: #061129;
+  --cz-primary: #1565C0;
+  --cz-primary-dark: #0D47A1;
+  --cz-primary-grad: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+  --cz-primary-light: #EBF5FF;
+  --cz-primary-tint: rgba(21, 101, 192, 0.08);
+  --cz-accent: #FFD54F;
+  --cz-accent-glow: rgba(255, 213, 79, 0.45);
+  --cz-accent-dark: #F59E0B;
+  --cz-bg: #F5F8FC;
+  --cz-surface: #FFFFFF;
+  --cz-surface-glass: rgba(255, 255, 255, 0.96);
+  --cz-text: #0F172A;
+  --cz-text-secondary: #475569;
+  --cz-muted: #64748B;
+  --cz-border: #E2E8F0;
+  --cz-border-subtle: #F1F5F9;
+  --cz-success: #16A34A;
+  --cz-success-bg: #DCFCE7;
+  --cz-danger: #DC2626;
+  --cz-danger-bg: #FEE2E2;
+
+  /* Typography */
+  --cz-font: "IBM Plex Sans Arabic", "Cairo", "Readex Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --cz-fs-xs: 11px;
+  --cz-fs-sm: 13px;
+  --cz-fs-base: 14px;
+  --cz-fs-md: 16px;
+  --cz-fs-lg: 18px;
+  --cz-fs-xl: 20px;
+
+  /* Spacing */
+  --cz-sp-1: 4px;
+  --cz-sp-2: 8px;
+  --cz-sp-3: 12px;
+  --cz-sp-4: 16px;
+  --cz-sp-5: 20px;
+  --cz-sp-6: 24px;
+
+  /* Radii */
+  --cz-r-sm: 8px;
+  --cz-r-md: 12px;
+  --cz-r-lg: 16px;
+  --cz-r-xl: 20px;
+  --cz-r-2xl: 28px;
+  --cz-r-full: 9999px;
+
+  /* Shadows */
+  --cz-sh-floating: 0 4px 16px rgba(11, 31, 75, 0.12);
+  --cz-sh-card: 0 4px 16px rgba(10, 30, 80, 0.08);
+  --cz-sh-card-active: 0 6px 24px rgba(21, 101, 192, 0.22);
+  --cz-sh-sheet: 0 -8px 32px rgba(10, 30, 80, 0.14);
+
+  /* Animations */
+  --cz-ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --cz-dur: 300ms;
+}
+
+/* ==========================================================================
+   1. OVERALL LAYOUT & FULL-SCREEN MAP
+   ========================================================================== */
+.map-view-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--cz-bg);
+  font-family: var(--cz-font);
+  color: var(--cz-text);
+  direction: rtl;
+  user-select: none;
+}
+
+.map-view-container * {
+  box-sizing: border-box;
+}
+
+/* Full-screen base map */
+.map-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: #E5EFF7;
+}
+
+/* Leaflet & Google Map overrides */
+.map-canvas .leaflet-control-attribution,
+.map-canvas .gmnoprint,
+.map-canvas .gm-bundled-control {
+  display: none !important;
+}
+
+/* Dim backdrop behind sheet when expanded */
+.map-dim-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 31, 75, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--cz-dur) ease;
+  z-index: 25;
+}
+
+.map-view-container[data-sheet-expanded="true"] .map-dim-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   2. FLOATING TOP CONTROLS (SEARCH & FILTER CHIPS)
+   ========================================================================== */
+.map-floating-header {
+  position: absolute;
+  inset-inline: 14px;
+  top: 12px;
+  z-index: 22;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.map-floating-header > * {
+  pointer-events: auto;
+}
+
+/* Search Bar */
+.map-search-bar {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  background: var(--cz-surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--cz-r-full);
+  box-shadow: var(--cz-sh-floating);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  padding-inline: 16px 8px;
+  gap: 10px;
+  transition: box-shadow var(--cz-dur) ease, transform 200ms ease;
+}
+
+.map-search-bar:focus-within {
+  box-shadow: 0 6px 22px rgba(21, 101, 192, 0.18);
+  border-color: rgba(21, 101, 192, 0.35);
+  transform: translateY(-1px);
+}
+
+.search-icon {
+  color: var(--cz-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.search-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.search-input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: var(--cz-fs-base);
+  color: var(--cz-navy);
+  direction: rtl;
+  padding: 0;
+}
+
+.search-input::placeholder {
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+.clear-search-btn {
+  border: none;
+  background: var(--cz-border);
+  color: var(--cz-text-secondary);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--cz-r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 150ms ease;
+}
+
+.clear-search-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.filter-icon-btn {
+  position: relative;
+  border: none;
+  background: var(--cz-primary-light);
+  color: var(--cz-primary);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--cz-r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: none;
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.filter-icon-btn:active {
+  transform: scale(0.92);
+}
+
+.filter-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.filter-badge {
+  position: absolute;
+  top: -2px;
+  inset-inline-end: -2px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: var(--cz-r-full);
+  background: var(--cz-accent-dark);
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 4px;
+  border: 1.5px solid #FFFFFF;
+}
+
+/* Horizontal Filter Chips Rail */
+.filter-chips-rail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-inline: 2px;
+  padding-block: 2px 6px;
+}
+
+.filter-chips-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.chip-item {
+  flex: none;
+  height: 36px;
+  padding-inline: 14px;
+  border-radius: var(--cz-r-full);
+  border: 1px solid var(--cz-border);
+  background: var(--cz-surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--cz-navy);
+  font-family: inherit;
+  font-size: var(--cz-fs-sm);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(11, 31, 75, 0.06);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: all 200ms ease;
+}
+
+.chip-item:active {
+  transform: scale(0.95);
+}
+
+.chip-item.active {
+  background: var(--cz-navy);
+  color: #FFFFFF;
+  border-color: var(--cz-navy);
+  box-shadow: 0 4px 12px rgba(11, 31, 75, 0.25);
+}
+
+/* ==========================================================================
+   3. FLOATING MAP ACTION BUTTONS
+   ========================================================================== */
+.map-controls-floating {
+  position: absolute;
+  inset-inline-end: 14px;
+  top: 124px;
+  z-index: 22;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.map-ctrl-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--cz-r-full);
+  background: var(--cz-surface-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: var(--cz-sh-floating);
+  color: var(--cz-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.map-ctrl-btn:active {
+  transform: scale(0.92);
+}
+
+.map-ctrl-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.map-ctrl-btn.active {
+  background: var(--cz-navy);
+  color: #FFFFFF;
+}
+
+/* Zoom group pill */
+.map-ctrl-group {
+  display: flex;
+  flex-direction: column;
+  background: var(--cz-surface-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--cz-r-full);
+  box-shadow: var(--cz-sh-floating);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+}
+
+.map-ctrl-group .map-ctrl-btn {
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  height: 40px;
+}
+
+.map-ctrl-divider {
+  width: 24px;
+  height: 1px;
+  background: var(--cz-border);
+  align-self: center;
+}
+
+/* ==========================================================================
+   4. HORIZONTAL SNAP-SCROLL CAROUSEL (PEEK/PIN SYNC)
+   ========================================================================== */
+.map-horizontal-carousel {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 106px;
+  z-index: 24;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-inline: 16px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  pointer-events: auto;
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+.map-horizontal-carousel[hidden] {
+  display: none;
+}
+
+.map-horizontal-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-card {
+  flex: 0 0 86%;
+  scroll-snap-align: center;
+  background: var(--cz-surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--cz-r-xl);
+  padding: 12px;
+  box-shadow: 0 6px 20px rgba(10, 30, 80, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.carousel-card:active {
+  transform: scale(0.98);
+}
+
+.carousel-card.selected {
+  border-color: var(--cz-primary);
+  box-shadow: var(--cz-sh-card-active);
+}
+
+.carousel-thumb-wrap {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: var(--cz-r-lg);
+  overflow: hidden;
+  flex: none;
+  background: #E2E8F0;
+}
+
+.carousel-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-info-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.carousel-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.carousel-name {
+  margin: 0;
+  font-size: var(--cz-fs-base);
+  font-weight: 700;
+  color: var(--cz-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.carousel-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--cz-fs-xs);
+  color: var(--cz-muted);
+}
+
+.carousel-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   5. DRAGGABLE BOTTOM SHEET (SNAP STATES: COLLAPSED / HALF / EXPANDED)
+   ========================================================================== */
+.draggable-bottom-sheet {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: calc(100% - 24px);
+  background: var(--cz-surface-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--cz-r-2xl) var(--cz-r-2xl) 0 0;
+  box-shadow: var(--cz-sh-sheet);
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+  transform: translateY(55%);
+  transition: transform var(--cz-dur) var(--cz-ease-spring);
+  will-change: transform;
+}
+
+/* Three snap states */
+.draggable-bottom-sheet[data-state="collapsed"] {
+  transform: translateY(calc(100% - 88px));
+}
+
+.draggable-bottom-sheet[data-state="half"] {
+  transform: translateY(52%);
+}
+
+.draggable-bottom-sheet[data-state="expanded"] {
+  transform: translateY(4%);
+}
+
+/* Drag Handle Zone */
+.sheet-handle-zone {
+  width: 100%;
+  padding-block: 10px 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  touch-action: none;
+  flex: none;
+}
+
+.sheet-handle-zone:active {
+  cursor: grabbing;
+}
+
+.sheet-drag-pill {
+  width: 40px;
+  height: 4px;
+  border-radius: var(--cz-r-full);
+  background: #CBD5E1;
+  transition: background 150ms ease, width 150ms ease;
+}
+
+.sheet-handle-zone:hover .sheet-drag-pill {
+  background: #94A3B8;
+  width: 48px;
+}
+
+/* Sheet Header Row */
+.sheet-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 18px 12px;
+  flex: none;
+  border-bottom: 1px solid var(--cz-border-subtle);
+}
+
+.sheet-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.sheet-title {
+  margin: 0;
+  font-size: var(--cz-fs-md);
+  font-weight: 700;
+  color: var(--cz-navy);
+}
+
+.sheet-count-badge {
+  font-size: var(--cz-fs-sm);
+  color: var(--cz-muted);
+  font-weight: 500;
+}
+
+.sheet-sort-group {
+  display: flex;
+  align-items: center;
+}
+
+.sheet-sort-select {
+  border: 1px solid var(--cz-border);
+  background: var(--cz-surface);
+  color: var(--cz-navy);
+  font-family: inherit;
+  font-size: var(--cz-fs-xs);
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: var(--cz-r-md);
+  outline: none;
+  cursor: pointer;
+  direction: rtl;
+}
+
+/* Sheet Scroll Body */
+.sheet-scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 12px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sheet-scroll-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* When sheet is collapsed or half, prevent inner scroll interfering with drag */
+.draggable-bottom-sheet:not([data-state="expanded"]) .sheet-scroll-body {
+  overflow-y: hidden;
+}
+
+/* ==========================================================================
+   6. CAR WASH CARD (MAIN COMPONENT - VARIANT A)
+   ========================================================================== */
+.carwash-card {
+  background: var(--cz-surface);
+  border-radius: var(--cz-r-xl);
+  padding: 12px;
+  box-shadow: var(--cz-sh-card);
+  border: 1.5px solid var(--cz-border-subtle);
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  position: relative;
+}
+
+.carwash-card:active {
+  transform: scale(0.98);
+}
+
+.carwash-card.selected {
+  border-color: var(--cz-primary);
+  box-shadow: var(--cz-sh-card-active);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FBFE 100%);
+}
+
+/* Right Thumbnail */
+.card-thumb-wrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: var(--cz-r-lg);
+  overflow: hidden;
+  flex: none;
+  background: #E2E8F0;
+  align-self: flex-start;
+}
+
+.card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 300ms ease;
+}
+
+.carwash-card:hover .card-thumb {
+  transform: scale(1.04);
+}
+
+/* Status Badge Over Thumbnail */
+.status-badge {
+  position: absolute;
+  top: 6px;
+  inset-inline-start: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: var(--cz-r-full);
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.status-badge.open {
+  background: rgba(22, 163, 74, 0.9);
+  color: #FFFFFF;
+}
+
+.status-badge.closed {
+  background: rgba(220, 38, 38, 0.9);
+  color: #FFFFFF;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--cz-r-full);
+  background: #FFFFFF;
+  display: inline-block;
+}
+
+/* Left Content Column */
+.card-info-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: space-between;
+}
+
+/* Row 1: Name & Fav */
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-name {
+  margin: 0;
+  font-size: var(--cz-fs-md);
+  font-weight: 700;
+  color: var(--cz-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.card-fav-btn {
+  border: none;
+  background: transparent;
+  color: #94A3B8;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--cz-r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex: none;
+  transition: transform 150ms ease, color 150ms ease;
+}
+
+.card-fav-btn:active {
+  transform: scale(0.85);
+}
+
+.card-fav-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.card-fav-btn.active {
+  color: #EF4444;
+}
+
+.card-fav-btn.active svg {
+  fill: #EF4444;
+}
+
+/* Row 2: Star rating & reviews count */
+.card-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--cz-fs-sm);
+}
+
+.star-icon {
+  color: var(--cz-accent-dark);
+  display: flex;
+  align-items: center;
+}
+
+.star-icon svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--cz-accent-dark);
+}
+
+.rating-val {
+  font-weight: 700;
+  color: var(--cz-navy);
+}
+
+.reviews-count {
+  color: var(--cz-muted);
+  font-size: var(--cz-fs-xs);
+}
+
+/* Row 3: Area & distance pill */
+.card-location-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--cz-fs-xs);
+  color: var(--cz-muted);
+}
+
+.loc-pin {
+  display: flex;
+  align-items: center;
+  color: var(--cz-muted);
+}
+
+.loc-pin svg {
+  width: 13px;
+  height: 13px;
+}
+
+.loc-dot {
+  color: #CBD5E1;
+}
+
+.distance-pill {
+  background: var(--cz-primary-light);
+  color: var(--cz-primary);
+  font-weight: 700;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: var(--cz-r-full);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Row 4: Service chips */
+.card-services-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.svc-tag {
+  background: var(--cz-border-subtle);
+  color: var(--cz-text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--cz-r-full);
+  white-space: nowrap;
+}
+
+.svc-tag.more {
+  background: transparent;
+  color: var(--cz-muted);
+  font-weight: 700;
+  padding-inline: 2px;
+}
+
+/* Bottom Row: Price & Book CTA */
+.card-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--cz-border);
+}
+
+.card-price-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 10px;
+  color: var(--cz-muted);
+  line-height: 1;
+}
+
+.price-val {
+  font-size: var(--cz-fs-md);
+  font-weight: 800;
+  color: var(--cz-navy);
+  line-height: 1.2;
+}
+
+.price-val small {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.card-book-btn {
+  border: none;
+  background: var(--cz-primary-grad);
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: var(--cz-fs-sm);
+  font-weight: 700;
+  height: 36px;
+  padding-inline: 14px;
+  border-radius: var(--cz-r-md);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.28);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.card-book-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(21, 101, 192, 0.2);
+}
+
+.card-book-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.card-book-btn.sm {
+  height: 32px;
+  padding-inline: 10px;
+  font-size: var(--cz-fs-xs);
+}
+
+.rtl-flip {
+  transform: rotate(0deg);
+}
+
+/* ==========================================================================
+   7. STATES: LOADING SKELETON, EMPTY, ERROR
+   ========================================================================== */
+/* Shimmer Animation */
+@keyframes cz-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: cz-shimmer 1.5s infinite;
+  border-radius: var(--cz-r-sm);
+}
+
+.skeleton-card {
+  background: var(--cz-surface);
+  border-radius: var(--cz-r-xl);
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  border: 1px solid var(--cz-border-subtle);
+}
+
+.skeleton-thumb {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--cz-r-lg);
+  flex: none;
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: cz-shimmer 1.5s infinite;
+}
+
+.skeleton-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: cz-shimmer 1.5s infinite;
+}
+
+.skeleton-line.title { width: 70%; height: 18px; }
+.skeleton-line.rating { width: 45%; }
+.skeleton-line.loc { width: 60%; }
+.skeleton-line.cta { width: 90%; height: 24px; margin-top: auto; }
+
+/* Empty State */
+.map-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 16px;
+  gap: 12px;
+}
+
+.empty-icon-bubble {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--cz-r-full);
+  background: var(--cz-primary-light);
+  color: var(--cz-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(21, 101, 192, 0.12);
+}
+
+.empty-icon-bubble svg {
+  width: 30px;
+  height: 30px;
+}
+
+.empty-title {
+  margin: 0;
+  font-size: var(--cz-fs-md);
+  font-weight: 700;
+  color: var(--cz-navy);
+}
+
+.empty-desc {
+  margin: 0;
+  font-size: var(--cz-fs-sm);
+  color: var(--cz-muted);
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+.empty-action-btn {
+  border: none;
+  background: var(--cz-navy);
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: var(--cz-fs-sm);
+  font-weight: 600;
+  height: 40px;
+  padding-inline: 18px;
+  border-radius: var(--cz-r-full);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-top: 6px;
+  box-shadow: 0 4px 14px rgba(11, 31, 75, 0.2);
+  transition: transform 150ms ease;
+}
+
+.empty-action-btn:active {
+  transform: scale(0.95);
+}
+
+.empty-action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   8. CUSTOM MAP MARKERS & USER LOCATION PULSE
+   ========================================================================== */
+/* User Location Marker */
+.cz-user-marker {
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+
+.cz-user-dot {
+  width: 14px;
+  height: 14px;
+  background: #2563EB;
+  border: 2.5px solid #FFFFFF;
+  border-radius: var(--cz-r-full);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 2;
+}
+
+.cz-user-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--cz-r-full);
+  background: rgba(37, 99, 235, 0.4);
+  animation: cz-pulse 2s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+  z-index: 1;
+}
+
+@keyframes cz-pulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+/* Leaflet HTML Marker Pin */
+.cz-leaflet-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transform: translate(-50%, -100%);
+  transition: transform 250ms var(--cz-ease-spring);
+}
+
+.cz-leaflet-pin:hover {
+  transform: translate(-50%, -106%) scale(1.08);
+}
+
+.cz-leaflet-pin.selected {
+  transform: translate(-50%, -110%) scale(1.22);
+  z-index: 9999 !important;
+}
+
+.cz-pin-bubble {
+  background: #FFFFFF;
+  color: var(--cz-navy);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--cz-r-full);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+  margin-bottom: -4px;
+  z-index: 3;
+  border: 1px solid var(--cz-border);
+}
+
+.cz-leaflet-pin.selected .cz-pin-bubble {
+  background: var(--cz-accent);
+  color: var(--cz-navy);
+  border-color: #EAB308;
+}
+
+.cz-pin-body {
+  width: 36px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.cz-pin-body svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 8px rgba(11, 31, 75, 0.28));
+}
+
+.cz-pin-icon-inner {
+  position: absolute;
+  top: 9px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cz-pin-icon-inner svg {
+  width: 15px;
+  height: 15px;
+  fill: #FFFFFF;
+}
+
+.cz-leaflet-pin.selected .cz-pin-icon-inner svg {
+  fill: var(--cz-navy);
+}

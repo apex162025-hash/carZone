@@ -6,6 +6,7 @@ import { openDrawer } from "../components/drawer.js";
 import { promptReasonModal } from "../components/modal.js";
 import { getCurrentAdmin, checkPermission } from "../auth.js";
 import { CDN } from "../../../shared/js/cdn.js";
+import { loadGoogleMaps, createPinIcon, MAP_STYLES } from "../../../shared/js/maps.js";
 
 async function ensureLeaflet() {
   if (window.L) return;
@@ -190,23 +191,68 @@ export async function renderBranches(params = {}) {
         mapContainer.style.display = "block";
         if (!mapInitialized) {
           mapInitialized = true;
-          await ensureLeaflet();
-          if (window.L) {
-            const map = window.L.map(mapContainer).setView([30.0444, 31.2357], 11);
-            window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-              attribution: "© OpenStreetMap",
-            }).addTo(map);
+          let isGoogleReady = false;
+          try {
+            await loadGoogleMaps();
+            isGoogleReady = !!(window.google && window.google.maps);
+          } catch {
+            isGoogleReady = false;
+          }
+
+          if (isGoogleReady) {
+            const isDark = document.documentElement.dataset.theme === "dark";
+            const gmap = new window.google.maps.Map(mapContainer, {
+              center: { lat: 30.0444, lng: 31.2357 },
+              zoom: 11,
+              mapTypeControl: false,
+              streetViewControl: false,
+              styles: isDark ? MAP_STYLES.dark : MAP_STYLES.light,
+            });
+
+            const infoWindow = new window.google.maps.InfoWindow();
 
             for (const b of branches) {
-              const marker = window.L.marker([b.lat, b.lng]).addTo(map);
-              const popup = `
-                <div style="font-family:sans-serif;padding:4px">
-                  <div style="font-weight:bold;font-size:14px">${b.name[getLang()] || b.name.ar}</div>
-                  <div style="font-size:12px;color:#666">${b.area} · Capacity: ${b.capacity}</div>
-                  <div style="font-size:12px;margin-top:4px"><a href="#/branches/${b.id}">View Details</a></div>
-                </div>
-              `;
-              marker.bindPopup(popup);
+              const marker = new window.google.maps.Marker({
+                position: { lat: b.lat, lng: b.lng },
+                map: gmap,
+                icon: createPinIcon({
+                  color: b.active ? "#1C2459" : "#64748b",
+                  dotColor: b.active ? "#F5FF67" : "#cbd5e1",
+                  size: 36,
+                }),
+                title: b.name[getLang()] || b.name.ar,
+              });
+
+              marker.addListener("click", () => {
+                infoWindow.setContent(`
+                  <div style="font-family:inherit;padding:4px;color:#1C2459">
+                    <div style="font-weight:bold;font-size:14px">${b.name[getLang()] || b.name.ar}</div>
+                    <div style="font-size:12px;color:#666">${b.area} · ${getLang() === "ar" ? "الطاقة" : "Capacity"}: ${b.capacity}</div>
+                    <div style="font-size:12px;margin-top:6px"><a href="#/branches/${b.id}" style="color:#1C2459;font-weight:bold">${getLang() === "ar" ? "عرض التفاصيل" : "View Details"}</a></div>
+                  </div>
+                `);
+                infoWindow.open(gmap, marker);
+              });
+            }
+          } else {
+            await ensureLeaflet();
+            if (window.L) {
+              const map = window.L.map(mapContainer).setView([30.0444, 31.2357], 11);
+              window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "© OpenStreetMap",
+              }).addTo(map);
+
+              for (const b of branches) {
+                const marker = window.L.marker([b.lat, b.lng]).addTo(map);
+                const popup = `
+                  <div style="font-family:sans-serif;padding:4px">
+                    <div style="font-weight:bold;font-size:14px">${b.name[getLang()] || b.name.ar}</div>
+                    <div style="font-size:12px;color:#666">${b.area} · Capacity: ${b.capacity}</div>
+                    <div style="font-size:12px;margin-top:4px"><a href="#/branches/${b.id}">View Details</a></div>
+                  </div>
+                `;
+                marker.bindPopup(popup);
+              }
             }
           }
         }
@@ -255,12 +301,45 @@ function renderBranchDetailsView(branch) {
   if (window.lucide?.createIcons) window.lucide.createIcons({ root: container });
 
   setTimeout(async () => {
-    await ensureLeaflet();
     const mapDiv = container.querySelector("#branch-pin-map");
-    if (mapDiv && window.L) {
-      const map = window.L.map(mapDiv).setView([branch.lat, branch.lng], 14);
-      window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap" }).addTo(map);
-      window.L.marker([branch.lat, branch.lng]).addTo(map).bindPopup(branch.name[getLang()] || branch.name.ar).openPopup();
+    if (!mapDiv) return;
+
+    let isGoogleReady = false;
+    try {
+      await loadGoogleMaps();
+      isGoogleReady = !!(window.google && window.google.maps);
+    } catch {
+      isGoogleReady = false;
+    }
+
+    if (isGoogleReady) {
+      const isDark = document.documentElement.dataset.theme === "dark";
+      const gmap = new window.google.maps.Map(mapDiv, {
+        center: { lat: branch.lat, lng: branch.lng },
+        zoom: 14,
+        mapTypeControl: false,
+        streetViewControl: false,
+        styles: isDark ? MAP_STYLES.dark : MAP_STYLES.light,
+      });
+
+      const marker = new window.google.maps.Marker({
+        position: { lat: branch.lat, lng: branch.lng },
+        map: gmap,
+        icon: createPinIcon({ color: "#1C2459", dotColor: "#F5FF67", size: 40 }),
+        title: branch.name[getLang()] || branch.name.ar,
+      });
+
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: `<div style="font-weight:bold;padding:4px;color:#1C2459">${branch.name[getLang()] || branch.name.ar}</div>`,
+      });
+      infoWindow.open(gmap, marker);
+    } else {
+      await ensureLeaflet();
+      if (mapDiv && window.L) {
+        const map = window.L.map(mapDiv).setView([branch.lat, branch.lng], 14);
+        window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap" }).addTo(map);
+        window.L.marker([branch.lat, branch.lng]).addTo(map).bindPopup(branch.name[getLang()] || branch.name.ar).openPopup();
+      }
     }
   }, 100);
 
