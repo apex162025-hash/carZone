@@ -40,3 +40,9 @@
 - Built interactive Roles × Modules permission matrix editor allowing Super Admin to dynamically customize module permissions with immediate effect.
 - Provided global command palette (`Ctrl/⌘ K`) searching across customers, vehicles/plates, washes, branches, and orders with keyboard navigation and role scoping.
 - Added 15-minute simulated idle session timeout modal triggerable from demo bar and automatic activity watcher.
+- Built the Super Admin panel as a separate Next.js 16 app in `/super-admin`, using the same stack and structure as the aroma project (App Router, Tailwind 4, shadcn base-nova, TanStack Query, Zustand, axios, zod). The vanilla `/admin` demo stays untouched.
+- The Super Admin talks to a bundled mock REST API (`/api/v1/*`) with Laravel-style `{status, message, data}` envelopes, so moving to the real Laravel backend only means setting `NEXT_PUBLIC_API_URL`.
+- The mock database is a TypeScript port of `shared/js/seed.js`, keeping the same deterministic records, so numbers line up with the customer and wash demos.
+- Only `super` role accounts can sign in to the Super Admin panel. The other roles are managed from it (Admins, Roles matrix).
+- The Super Admin UI is Arabic-only, following aroma's approach. Data keeps `{ar, en}` for a later i18n pass.
+- Branch coverage is shown as an area summary instead of a Leaflet map, to keep the bundle small. A map view is a follow-up.
