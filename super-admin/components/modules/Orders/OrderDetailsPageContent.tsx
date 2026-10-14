@@ -22,17 +22,17 @@ import {
 } from "lucide-react";
 
 import { ColorSwatch, PlateChip } from "@/components/modules/Customers/VehicleBits";
-import { AuditTrail } from "@/components/shared/audit-trail";
-import { OrderTimeline } from "@/components/shared/order-timeline";
-import { PageHeader } from "@/components/shared/page-header";
-import { RatingStars } from "@/components/shared/rating-stars";
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { SectionCard } from "@/components/shared/section-card";
-import { DetailSkeleton, ErrorState } from "@/components/shared/states";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { AuditTrail } from "@carzen/ui/components/shared/audit-trail";
+import { OrderTimeline } from "@carzen/ui/components/shared/order-timeline";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { RatingStars } from "@carzen/ui/components/shared/rating-stars";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { DetailSkeleton, ErrorState } from "@carzen/ui/components/shared/states";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@carzen/ui/components/ui/tooltip";
 import { useCancelOrder, useFlagOrder, useOrder } from "@/hooks/use-orders";
 import {
   AREAS,
@@ -46,10 +46,10 @@ import {
   PAYMENT_STATUS,
   STAFF_ROLE,
   TRANSACTION_STATUS,
-} from "@/lib/constants/labels";
-import { formatDateTime, formatDuration, formatMoney, formatPercent, formatRelative } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { ActorType } from "@/types/orders";
+} from "@carzen/ui/lib/constants/labels";
+import { formatDateTime, formatDuration, formatMoney, formatPercent, formatRelative } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { ActorType } from "@carzen/contracts/orders";
 
 const ACTOR: Record<ActorType, string> = {
   customer: "العميل",

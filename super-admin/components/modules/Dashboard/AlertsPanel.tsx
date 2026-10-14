@@ -15,10 +15,10 @@ import {
   X,
 } from "lucide-react";
 
-import { EmptyState } from "@/components/shared/states";
-import { Button } from "@/components/ui/button";
-import { TONES } from "@/lib/constants/labels";
-import type { AlertType, DashboardAlert } from "@/types/dashboard";
+import { EmptyState } from "@carzen/ui/components/shared/states";
+import { Button } from "@carzen/ui/components/ui/button";
+import { TONES } from "@carzen/ui/lib/constants/labels";
+import type { AlertType, DashboardAlert } from "@carzen/contracts/dashboard";
 
 const ICON: Record<AlertType, ComponentType<{ className?: string }>> = {
   applications: FilePlus2,

@@ -4,6 +4,7 @@ import axios from "axios";
 
 import { createApiFailureError, isApiFailureEnvelope } from "@/lib/api/api-error-handler";
 import { getApiBaseUrl } from "@/lib/config/api-base-url";
+import { setServerNow } from "@carzen/ui/lib/format";
 import { getAuthAccessToken, getAuthTokenType, useAuthStore } from "@/lib/store/auth-store";
 
 /** Bearer-authenticated admin client. Token is read from the auth store per request. */
@@ -27,6 +28,8 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => {
+    // Calibrate relative times/timers against the server clock.
+    setServerNow(response.headers["x-demo-now"] as string | undefined);
     // Laravel can answer 200 with `{ status: false }` — treat it as a failure.
     if (isApiFailureEnvelope(response.data)) {
       return Promise.reject(createApiFailureError(response.data));

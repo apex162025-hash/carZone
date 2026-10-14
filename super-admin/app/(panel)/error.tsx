@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { TriangleAlert } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@carzen/ui/components/ui/button";
 
 /** Route-level error boundary for the panel: keeps the shell, offers a retry. */
 export default function PanelError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {

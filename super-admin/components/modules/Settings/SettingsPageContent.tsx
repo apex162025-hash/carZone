@@ -8,15 +8,15 @@ import { CatalogsSettingsTab } from "@/components/modules/Settings/CatalogsSetti
 import { GeneralSettingsTab } from "@/components/modules/Settings/GeneralSettingsTab";
 import { LegalSettingsTab } from "@/components/modules/Settings/LegalSettingsTab";
 import { NotificationTemplatesTab } from "@/components/modules/Settings/NotificationTemplatesTab";
-import { PageHeader } from "@/components/shared/page-header";
-import { SectionCard } from "@/components/shared/section-card";
-import { EmptyState, ErrorState } from "@/components/shared/states";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { EmptyState, ErrorState } from "@carzen/ui/components/shared/states";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@carzen/ui/components/ui/tabs";
 import { useSettings } from "@/hooks/use-platform";
-import { useUrlState } from "@/hooks/use-url-state";
-import type { SettingsSection } from "@/types/settings";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import type { SettingsSection } from "@carzen/contracts/settings";
 
 type TabValue = SettingsSection | "notificationTemplates";
 

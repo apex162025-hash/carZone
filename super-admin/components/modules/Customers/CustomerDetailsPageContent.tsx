@@ -5,21 +5,21 @@ import { useState } from "react";
 import { Ban, Banknote, CalendarCheck2, CalendarX2, Car, CheckCircle2, MessageSquareWarning, PauseCircle, PlayCircle, Star } from "lucide-react";
 
 import { ColorSwatch, PlateChip } from "@/components/modules/Customers/VehicleBits";
-import { AuditTrail } from "@/components/shared/audit-trail";
-import { InfoList } from "@/components/shared/info-list";
-import { PageHeader } from "@/components/shared/page-header";
-import { RatingStars } from "@/components/shared/rating-stars";
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { SectionCard } from "@/components/shared/section-card";
-import { StatTile } from "@/components/shared/stat-tile";
-import { DetailSkeleton, EmptyState, ErrorState } from "@/components/shared/states";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AuditTrail } from "@carzen/ui/components/shared/audit-trail";
+import { InfoList } from "@carzen/ui/components/shared/info-list";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { RatingStars } from "@carzen/ui/components/shared/rating-stars";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { StatTile } from "@carzen/ui/components/shared/stat-tile";
+import { DetailSkeleton, EmptyState, ErrorState } from "@carzen/ui/components/shared/states";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@carzen/ui/components/ui/tabs";
 import { useCustomer, useToggleCustomer } from "@/hooks/use-customers";
-import { COMPLAINT_CATEGORY, COMPLAINT_STATUS, CUSTOMER_STATUS, ORDER_SOURCE, ORDER_STATUS } from "@/lib/constants/labels";
-import { formatDate, formatDateTime, formatMoney, formatNumber, formatPercent, formatRelative } from "@/lib/format";
-import { cn } from "@/lib/utils";
+import { COMPLAINT_CATEGORY, COMPLAINT_STATUS, CUSTOMER_STATUS, ORDER_SOURCE, ORDER_STATUS } from "@carzen/ui/lib/constants/labels";
+import { formatDate, formatDateTime, formatMoney, formatNumber, formatPercent, formatRelative } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
 
 export default function CustomerDetailsPageContent({ id }: { id: string }) {
   const { data, isLoading, error, refetch } = useCustomer(id);

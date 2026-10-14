@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ChevronDown, LogOut, RotateCcw, ShieldCheck } from "lucide-react";
 
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { ReasonDialog } from "@/components/shared/reason-dialog";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,10 +14,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@carzen/ui/components/ui/dropdown-menu";
 import { useLogout } from "@/hooks/use-auth";
 import { useResetDemoData } from "@/hooks/use-platform";
-import { ADMIN_ROLE } from "@/lib/constants/labels";
+import { ADMIN_ROLE } from "@carzen/ui/lib/constants/labels";
 import { useAuthStore } from "@/lib/store/auth-store";
 
 export function UserMenu() {

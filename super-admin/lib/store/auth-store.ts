@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import type { AdminUser } from "@/types/auth";
+import type { AdminUser } from "@carzen/contracts/auth";
 
 export const AUTH_STORE_KEY = "carzen-super-admin-auth-v1";
 

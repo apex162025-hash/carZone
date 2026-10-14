@@ -2,8 +2,8 @@
 
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { formatCompact, formatMoney } from "@/lib/format";
-import type { RevenuePoint } from "@/types/dashboard";
+import { formatCompact, formatMoney } from "@carzen/ui/lib/format";
+import type { RevenuePoint } from "@carzen/contracts/dashboard";
 
 type RevenueChartProps = {
   data: RevenuePoint[];

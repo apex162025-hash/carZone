@@ -6,22 +6,22 @@ import { CalendarClock, CircleCheckBig, HandCoins, Wallet } from "lucide-react";
 
 import { FinanceMetricCard } from "@/components/modules/Finance/FinanceMetricCard";
 import { MarkPayoutPaidDialog } from "@/components/modules/Finance/MarkPayoutPaidDialog";
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
-import { ExportCsvButton } from "@/components/shared/export-csv-button";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { SearchInput } from "@/components/shared/search-input";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DataTable, type DataTableColumn } from "@carzen/ui/components/shared/data-table";
+import { ExportCsvButton } from "@carzen/ui/components/shared/export-csv-button";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { usePayouts } from "@/hooks/use-finance";
-import { useUrlState } from "@/hooks/use-url-state";
-import { PAYOUT_STATUS } from "@/lib/constants/labels";
-import { formatDate, formatDateTime, formatMoney, formatNumber } from "@/lib/format";
-import type { CsvColumn } from "@/lib/export-csv";
-import type { PayoutListItem, PayoutStatus } from "@/types/finance";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import { PAYOUT_STATUS } from "@carzen/ui/lib/constants/labels";
+import { formatDate, formatDateTime, formatMoney, formatNumber } from "@carzen/ui/lib/format";
+import type { CsvColumn } from "@carzen/ui/lib/export-csv";
+import type { PayoutListItem, PayoutStatus } from "@carzen/contracts/finance";
 
 const TAB_ORDER: (PayoutStatus | "all")[] = ["all", "due", "paid"];
 

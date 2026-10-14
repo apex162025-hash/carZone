@@ -3,22 +3,22 @@
 import { Users } from "lucide-react";
 
 import { PlateChip } from "@/components/modules/Customers/VehicleBits";
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
-import { ExportCsvButton } from "@/components/shared/export-csv-button";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { SearchInput } from "@/components/shared/search-input";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
+import { DataTable, type DataTableColumn } from "@carzen/ui/components/shared/data-table";
+import { ExportCsvButton } from "@carzen/ui/components/shared/export-csv-button";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
 import { useCustomers } from "@/hooks/use-customers";
-import { useUrlState } from "@/hooks/use-url-state";
-import { CUSTOMER_STATUS, TONES } from "@/lib/constants/labels";
-import { formatDate, formatMoney, formatNumber, formatRelative } from "@/lib/format";
-import type { CsvColumn } from "@/lib/export-csv";
-import type { CustomerFilter, CustomerListItem } from "@/types/customers";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import { CUSTOMER_STATUS, TONES } from "@carzen/ui/lib/constants/labels";
+import { formatDate, formatMoney, formatNumber, formatRelative } from "@carzen/ui/lib/format";
+import type { CsvColumn } from "@carzen/ui/lib/export-csv";
+import type { CustomerFilter, CustomerListItem } from "@carzen/contracts/customers";
 
 const TABS: { value: CustomerFilter; label: string; tone?: string }[] = [
   { value: "all", label: "الكل" },

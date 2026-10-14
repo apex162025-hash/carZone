@@ -46,3 +46,13 @@
 - Only `super` role accounts can sign in to the Super Admin panel. The other roles are managed from it (Admins, Roles matrix).
 - The Super Admin UI is Arabic-only, following aroma's approach. Data keeps `{ar, en}` for a later i18n pass.
 - Branch coverage is shown as an area summary instead of a Leaflet map, to keep the bundle small. A map view is a follow-up.
+- Built the Vendor Portal ("Carzen Partners", wash owners + branch managers, spec 02 Part B D1–D19) as a separate Next.js app in `/vendor-portal` (port 3200) with the exact stack and structure of the Super Admin, so neither app can break the other.
+- Turned the repo into an npm-workspaces monorepo and extracted the shared code into `packages/contracts` (types), `packages/ui` (design system, labels, format) and `packages/platform-api` (mock backend), instead of copying them into the second app.
+- One mock backend serves both apps (`/api/v1/admin/*` and `/api/v1/vendor/*`) and persists to `.carzen/platform-db.json` with atomic writes, so an action in one app (approve, suspend, cancel, collect payment, report review…) is visible in the other.
+- The demo clock is anchored at today 15:30 and advances in real time; the server sends `X-Demo-Now` and clients use `serverNow()`, so overdue timers, no-show grace and relative times stay consistent between apps.
+- Vendor login is by phone + password; only owners and branch managers can sign in (employees use the mobile employee app). Managers are locked to their home branch and this is enforced in the API, not only in the UI.
+- Order pricing is always computed on the server from services + the best active offer; a manual discount (≤ the staff member's `maxDiscountPct`) stacks on top of the offer and is never typed as a final price.
+- Walk-in orders use `CZ-2xxxx`, phone orders `CZ-3xxxx`, app bookings `CZ-1xxxx`; seeded history uses separate ranges so the canonical next numbers (`CZ-20045` for a walk-in) match the spec demo script.
+- Closing the day is blocked while orders are in service or unpaid, and locks that day's paid orders; shift closings follow open → submitted → reviewed / flagged.
+- A suspended wash keeps read access to the portal but gets HTTP 423 on new orders, with a banner explaining the suspension reason.
+- Managers can edit services only when the owner turns on `managerCanEditServices` in settings (default off), matching the spec demo where the manager sees services read-only.

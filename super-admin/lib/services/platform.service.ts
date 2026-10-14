@@ -1,8 +1,8 @@
 import { getData, getPaginated, send } from "@/lib/api/request";
-import type { AuditListMeta, AuditListParams, AuditLogListItem } from "@/types/audit";
-import type { AdminNotification, NotificationListMeta } from "@/types/notifications";
-import type { SearchResponse } from "@/types/search";
-import type { PlatformSettings, UpdateSettingsPayload } from "@/types/settings";
+import type { AuditListMeta, AuditListParams, AuditLogListItem } from "@carzen/contracts/audit";
+import type { AdminNotification, NotificationListMeta } from "@carzen/contracts/notifications";
+import type { SearchResponse } from "@carzen/contracts/search";
+import type { PlatformSettings, UpdateSettingsPayload } from "@carzen/contracts/settings";
 
 export function fetchSettings() {
   return getData<PlatformSettings>("/admin/settings", undefined, "تعذر تحميل الإعدادات");

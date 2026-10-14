@@ -5,7 +5,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { CACHE_TTL_LIVE } from "@/lib/cache/ttl";
 import { queryKeys } from "@/lib/query-keys";
 import { fetchDashboard } from "@/lib/services/dashboard.service";
-import type { DashboardPeriod } from "@/types/dashboard";
+import type { DashboardPeriod } from "@carzen/contracts/dashboard";
 
 export function useDashboard(period: DashboardPeriod) {
   return useQuery({

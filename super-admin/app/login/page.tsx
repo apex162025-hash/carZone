@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { BadgeCheck, ChartNoAxesCombined, History, ShieldCheck } from "lucide-react";
 
 import LoginForm from "@/components/modules/Auth/LoginForm";
-import { BrandLogo } from "@/components/shared/layout/brand-logo";
+import { BrandLogo } from "@carzen/ui/components/shared/brand-logo";
 import { getStaticPageMetadata } from "@/lib/config/pages";
 
 export const metadata = getStaticPageMetadata("/login");
@@ -64,7 +64,7 @@ export default function LoginPage() {
 
       <section className="flex flex-col items-center justify-center px-5 py-10 sm:px-10">
         <div className="w-full max-w-sm space-y-8">
-          <BrandLogo className="lg:hidden" />
+          <BrandLogo subtitle="لوحة السوبر أدمن" className="lg:hidden" />
           <div className="space-y-1.5">
             <h2 className="text-2xl font-bold tracking-tight">مرحبًا بعودتك</h2>
             <p className="text-sm text-muted-foreground">سجّل الدخول بحساب Super Admin للمتابعة.</p>

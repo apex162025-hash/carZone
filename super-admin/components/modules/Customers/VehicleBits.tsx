@@ -1,5 +1,5 @@
-import { VEHICLE_COLOR } from "@/lib/constants/labels";
-import { cn } from "@/lib/utils";
+import { VEHICLE_COLOR } from "@carzen/ui/lib/constants/labels";
+import { cn } from "@carzen/ui/lib/utils";
 
 /** Egyptian-style plate chip: monospaced, framed, always LTR. */
 export function PlateChip({ plate, size = "md", className }: { plate: string; size?: "sm" | "md"; className?: string }) {

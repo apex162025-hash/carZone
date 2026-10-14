@@ -16,17 +16,17 @@ import {
 
 import { ComplaintNotes } from "@/components/modules/Complaints/ComplaintNotes";
 import { ComplaintWorkflowCard } from "@/components/modules/Complaints/ComplaintWorkflowCard";
-import { AuditTrail } from "@/components/shared/audit-trail";
-import { InfoList } from "@/components/shared/info-list";
-import { OrderTimeline } from "@/components/shared/order-timeline";
-import { PageHeader } from "@/components/shared/page-header";
-import { RatingStars } from "@/components/shared/rating-stars";
-import { SectionCard } from "@/components/shared/section-card";
-import { DetailSkeleton, EmptyState, ErrorState } from "@/components/shared/states";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AuditTrail } from "@carzen/ui/components/shared/audit-trail";
+import { InfoList } from "@carzen/ui/components/shared/info-list";
+import { OrderTimeline } from "@carzen/ui/components/shared/order-timeline";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { RatingStars } from "@carzen/ui/components/shared/rating-stars";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { DetailSkeleton, EmptyState, ErrorState } from "@carzen/ui/components/shared/states";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useAdmins } from "@/hooks/use-admins";
 import { useComplaint } from "@/hooks/use-complaints";
 import { useOrder } from "@/hooks/use-orders";
@@ -36,9 +36,9 @@ import {
   CUSTOMER_STATUS,
   ORDER_STATUS,
   PAYMENT_STATUS,
-} from "@/lib/constants/labels";
-import { daysBetween, formatDate, formatDateTime, formatMoney, formatNumber, formatRelative } from "@/lib/format";
-import { cn } from "@/lib/utils";
+} from "@carzen/ui/lib/constants/labels";
+import { daysBetween, formatDate, formatDateTime, formatMoney, formatNumber, formatRelative } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
 
 /** Open complaints on one wash at/above this count raise the "review wash" shortcut (AD-33). */
 const WASH_ALERT_THRESHOLD = 3;

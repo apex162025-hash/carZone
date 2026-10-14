@@ -1,5 +1,5 @@
 import { getPaginated, send } from "@/lib/api/request";
-import type { Review, ReviewListItem, ReviewListMeta, ReviewListParams, ToggleReviewPayload } from "@/types/reviews";
+import type { Review, ReviewListItem, ReviewListMeta, ReviewListParams, ToggleReviewPayload } from "@carzen/contracts/reviews";
 
 export function fetchReviews(params: ReviewListParams) {
   return getPaginated<ReviewListItem, ReviewListMeta>("/admin/reviews", params, "تعذر تحميل التقييمات");

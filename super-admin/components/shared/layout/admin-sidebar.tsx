@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { PanelRightClose, PanelRightOpen } from "lucide-react";
 
-import { BrandLogo } from "@/components/shared/layout/brand-logo";
+import { BrandLogo } from "@carzen/ui/components/shared/brand-logo";
 import { SidebarNav } from "@/components/shared/layout/sidebar-nav";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Sheet, SheetContent, SheetTitle } from "@carzen/ui/components/ui/sheet";
 import { useUIStore } from "@/lib/store/ui-store";
-import { cn } from "@/lib/utils";
+import { cn } from "@carzen/ui/lib/utils";
 
 /** Desktop sidebar (collapsible to icons) + mobile sheet. */
 export function AdminSidebar() {
@@ -27,7 +27,7 @@ export function AdminSidebar() {
       >
         <div className={cn("flex h-16 items-center border-b border-sidebar-border", collapsed ? "justify-center px-2" : "justify-between px-4")}>
           <Link href="/dashboard" aria-label="لوحة المؤشرات" className="rounded-xl focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none">
-            <BrandLogo collapsed={collapsed} />
+            <BrandLogo subtitle="لوحة السوبر أدمن" collapsed={collapsed} />
           </Link>
           {!collapsed ? (
             <Button variant="ghost" size="icon-sm" onClick={toggleSidebar} aria-label="طي القائمة">
@@ -56,7 +56,7 @@ export function AdminSidebar() {
         <SheetContent side="right" className="w-[280px] gap-0 p-0">
           <SheetTitle className="sr-only">القائمة الرئيسية</SheetTitle>
           <div className="flex h-16 items-center border-b px-4">
-            <BrandLogo />
+            <BrandLogo subtitle="لوحة السوبر أدمن" />
           </div>
           <div className="flex-1 overflow-y-auto px-3 py-4">
             <SidebarNav onNavigate={() => setMobileOpen(false)} />

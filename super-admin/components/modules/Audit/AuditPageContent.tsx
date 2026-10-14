@@ -3,23 +3,23 @@
 import Link from "next/link";
 import { Boxes, History, Lock, UserCog, UserRound, Zap } from "lucide-react";
 
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
-import { ExportCsvButton } from "@/components/shared/export-csv-button";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { SearchInput } from "@/components/shared/search-input";
-import { SelectFilter } from "@/components/shared/select-filter";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
+import { DataTable, type DataTableColumn } from "@carzen/ui/components/shared/data-table";
+import { ExportCsvButton } from "@carzen/ui/components/shared/export-csv-button";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { SelectFilter } from "@carzen/ui/components/shared/select-filter";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
 import { useAuditLogs } from "@/hooks/use-platform";
-import { useUrlState } from "@/hooks/use-url-state";
-import { AUDIT_ACTION, AUDIT_ENTITY, TONES, auditEntityHref, type StatusMeta } from "@/lib/constants/labels";
-import { formatDateTime, formatRelative } from "@/lib/format";
-import type { CsvColumn } from "@/lib/export-csv";
-import type { AuditLogListItem } from "@/types/audit";
-import type { ActorType } from "@/types/orders";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import { AUDIT_ACTION, AUDIT_ENTITY, TONES, auditEntityHref, type StatusMeta } from "@carzen/ui/lib/constants/labels";
+import { formatDateTime, formatRelative } from "@carzen/ui/lib/format";
+import type { CsvColumn } from "@carzen/ui/lib/export-csv";
+import type { AuditLogListItem } from "@carzen/contracts/audit";
+import type { ActorType } from "@carzen/contracts/orders";
 
 const ACTOR_TYPE: Record<ActorType, StatusMeta> = {
   admin: { label: "مسؤول", tone: TONES.primary },

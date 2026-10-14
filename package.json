@@ -1,9 +1,24 @@
 {
   "name": "carzen",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
+  "workspaces": [
+    "packages/*",
+    "super-admin",
+    "vendor-portal"
+  ],
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "dev:admin": "npm run dev -w super-admin",
+    "dev:vendor": "npm run dev -w vendor-portal",
+    "dev:platform": "concurrently -k -n admin,vendor -c blue,cyan \"npm:dev:admin\" \"npm:dev:vendor\"",
+    "build": "npm run build -w super-admin && npm run build -w vendor-portal",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

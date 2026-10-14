@@ -29,18 +29,18 @@ import {
   waitingLabel,
   waitingTone,
 } from "@/components/modules/Applications/review-utils";
-import { InfoList } from "@/components/shared/info-list";
-import { PageHeader } from "@/components/shared/page-header";
-import { SectionCard } from "@/components/shared/section-card";
-import { DetailSkeleton, EmptyState, ErrorState } from "@/components/shared/states";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
+import { InfoList } from "@carzen/ui/components/shared/info-list";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { DetailSkeleton, EmptyState, ErrorState } from "@carzen/ui/components/shared/states";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
 import { useApplication } from "@/hooks/use-applications";
-import { APPLICATION_STATUS, AREAS, TONES, WEEK_DAYS } from "@/lib/constants/labels";
-import { daysBetween, formatDate, formatDateTime, formatDuration, formatMoney, formatNumber } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { WashApplication } from "@/types/applications";
+import { APPLICATION_STATUS, AREAS, TONES, WEEK_DAYS } from "@carzen/ui/lib/constants/labels";
+import { daysBetween, formatDate, formatDateTime, formatDuration, formatMoney, formatNumber } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { WashApplication } from "@carzen/contracts/applications";
 
 const BANNER: Record<Exclude<WashApplication["status"], "pending">, { tone: string; icon: ReactNode; title: string; hint: string }> = {
   needs_changes: {

@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { fetchMe, login, logout } from "@/lib/services/auth.service";
 import { useAuthStore } from "@/lib/store/auth-store";
-import type { LoginPayload } from "@/types/auth";
+import type { LoginPayload } from "@carzen/contracts/auth";
 
 /** `isReady` = persisted session read; `isAuthenticated` = token + admin present. */
 export function useAuthReady() {

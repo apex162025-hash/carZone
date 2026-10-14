@@ -4,11 +4,11 @@ import { useState } from "react";
 import { AlertTriangle, UserCog } from "lucide-react";
 
 import { RoleRadioCards } from "@/components/modules/Admins/RoleRadioCards";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@carzen/ui/components/ui/dialog";
 import { useUpdateAdmin } from "@/hooks/use-admins";
-import { ADMIN_ROLE } from "@/lib/constants/labels";
-import type { AdminRole, AdminUser } from "@/types/auth";
+import { ADMIN_ROLE } from "@carzen/ui/lib/constants/labels";
+import type { AdminRole, AdminUser } from "@carzen/contracts/auth";
 
 type ChangeRoleDialogProps = {
   admin: AdminUser;

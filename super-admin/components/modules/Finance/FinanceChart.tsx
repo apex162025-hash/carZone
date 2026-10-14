@@ -2,8 +2,8 @@
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { formatCompact, formatDate, formatMoney } from "@/lib/format";
-import type { FinanceSeriesPoint } from "@/types/finance";
+import { formatCompact, formatDate, formatMoney } from "@carzen/ui/lib/format";
+import type { FinanceSeriesPoint } from "@carzen/contracts/finance";
 
 type FinanceChartMetric = "gmv" | "commission";
 

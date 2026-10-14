@@ -6,8 +6,8 @@ import { useAdminMutation } from "@/hooks/use-admin-mutation";
 import { CACHE_TTL_LIVE } from "@/lib/cache/ttl";
 import { queryKeys } from "@/lib/query-keys";
 import { cancelOrder, fetchOrder, fetchOrders, flagOrderForFinance } from "@/lib/services/orders.service";
-import type { ReasonPayload } from "@/types/common";
-import type { OrderListParams } from "@/types/orders";
+import type { ReasonPayload } from "@carzen/contracts/common";
+import type { OrderListParams } from "@carzen/contracts/orders";
 
 export function useOrders(params: OrderListParams) {
   return useQuery({

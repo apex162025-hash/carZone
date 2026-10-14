@@ -18,8 +18,8 @@ import type {
   WashListItem,
   WashListMeta,
   WashListParams,
-} from "@/types/washes";
-import type { StatusCounts } from "@/types/common";
+} from "@carzen/contracts/washes";
+import type { StatusCounts } from "@carzen/contracts/common";
 
 export function fetchWashes(params: WashListParams) {
   return getPaginated<WashListItem, WashListMeta>("/admin/washes", params, "تعذر تحميل المغاسل");

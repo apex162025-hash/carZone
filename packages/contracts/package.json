@@ -1,0 +1,13 @@
+{
+  "name": "@carzen/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Carzen platform API contracts — domain + request/response types shared by every client and the API.",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

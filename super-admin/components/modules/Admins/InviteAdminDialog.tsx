@@ -7,14 +7,14 @@ import { z } from "zod";
 import { Check, Copy, KeyRound, MailPlus, UserPlus } from "lucide-react";
 
 import { RoleRadioCards } from "@/components/modules/Admins/RoleRadioCards";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@carzen/ui/components/ui/dialog";
+import { Input } from "@carzen/ui/components/ui/input";
 import { useCreateAdmin } from "@/hooks/use-admins";
-import { ADMIN_ROLE } from "@/lib/constants/labels";
-import type { AdminUser } from "@/types/auth";
+import { ADMIN_ROLE } from "@carzen/ui/lib/constants/labels";
+import type { AdminUser } from "@carzen/contracts/auth";
 
 const schema = z.object({
   name: z.string().trim().min(3, "اكتب الاسم الكامل (3 أحرف على الأقل)"),

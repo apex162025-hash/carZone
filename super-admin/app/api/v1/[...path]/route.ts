@@ -1,4 +1,4 @@
-import { handleMockRequest } from "@/lib/mock-api";
+import { handleMockRequest } from "@carzen/platform-api";
 
 /**
  * Mock Carzen admin API (`/api/v1/*`).

@@ -3,9 +3,9 @@
 import type { ReactNode } from "react";
 import { CheckCircle2, RotateCcw, Save } from "lucide-react";
 
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { Button } from "@carzen/ui/components/ui/button";
+import { cn } from "@carzen/ui/lib/utils";
 
 type SettingsSaveBarProps = {
   dirty: boolean;

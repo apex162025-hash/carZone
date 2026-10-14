@@ -3,11 +3,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+// npm workspaces: dependencies are hoisted to the monorepo root and shared packages live in ../packages.
+const monorepoRoot = path.join(projectRoot, "..");
 
 const nextConfig: NextConfig = {
   turbopack: {
-    root: projectRoot,
+    root: monorepoRoot,
   },
+  // Workspace packages ship TypeScript source; Next compiles them.
+  transpilePackages: ["@carzen/ui", "@carzen/contracts", "@carzen/platform-api"],
   experimental: {
     optimizePackageImports: [
       "lucide-react",

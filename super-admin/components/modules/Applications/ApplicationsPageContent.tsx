@@ -5,22 +5,22 @@ import { ClipboardList, Store } from "lucide-react";
 
 import { OnboardingPipeline } from "@/components/modules/Applications/OnboardingPipeline";
 import { arCount, SERVICES_FORMS, SPOTS_FORMS, waitingLabel, waitingTone } from "@/components/modules/Applications/review-utils";
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
-import { ExportCsvButton } from "@/components/shared/export-csv-button";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { SearchInput } from "@/components/shared/search-input";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
+import { DataTable, type DataTableColumn } from "@carzen/ui/components/shared/data-table";
+import { ExportCsvButton } from "@carzen/ui/components/shared/export-csv-button";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
 import { useApplications } from "@/hooks/use-applications";
-import { useUrlState } from "@/hooks/use-url-state";
-import { APPLICATION_STATUS, AREAS } from "@/lib/constants/labels";
-import { daysBetween, formatDate, formatMoney, formatRelative } from "@/lib/format";
-import type { CsvColumn } from "@/lib/export-csv";
-import type { ApplicationStatus, WashApplication } from "@/types/applications";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import { APPLICATION_STATUS, AREAS } from "@carzen/ui/lib/constants/labels";
+import { daysBetween, formatDate, formatMoney, formatRelative } from "@carzen/ui/lib/format";
+import type { CsvColumn } from "@carzen/ui/lib/export-csv";
+import type { ApplicationStatus, WashApplication } from "@carzen/contracts/applications";
 
 const TAB_ORDER: (ApplicationStatus | "all")[] = ["all", "pending", "needs_changes", "approved", "rejected"];
 

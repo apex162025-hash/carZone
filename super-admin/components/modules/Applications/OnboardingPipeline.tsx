@@ -4,12 +4,12 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { BadgeCheck, Hourglass, Inbox, Settings2, Store } from "lucide-react";
 
-import { SectionCard } from "@/components/shared/section-card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { TONES } from "@/lib/constants/labels";
-import { formatNumber } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { ApplicationListMeta, ApplicationStatus } from "@/types/applications";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
+import { TONES } from "@carzen/ui/lib/constants/labels";
+import { formatNumber } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { ApplicationListMeta, ApplicationStatus } from "@carzen/contracts/applications";
 
 type Pipeline = ApplicationListMeta["pipeline"];
 

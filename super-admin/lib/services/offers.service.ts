@@ -1,5 +1,5 @@
 import { getPaginated, send } from "@/lib/api/request";
-import type { Offer, OfferListItem, OfferListMeta, OfferListParams, OfferPayload } from "@/types/offers";
+import type { Offer, OfferListItem, OfferListMeta, OfferListParams, OfferPayload } from "@carzen/contracts/offers";
 
 export function fetchOffers(params: OfferListParams) {
   return getPaginated<OfferListItem, OfferListMeta>("/admin/offers", params, "تعذر تحميل العروض");

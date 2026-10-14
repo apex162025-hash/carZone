@@ -1,7 +1,7 @@
 import { Ban, UserX } from "lucide-react";
 
-import { formatNumber, formatPercent } from "@/lib/format";
-import type { DashboardFunnel } from "@/types/dashboard";
+import { formatNumber, formatPercent } from "@carzen/ui/lib/format";
+import type { DashboardFunnel } from "@carzen/contracts/dashboard";
 
 const STEP_LABEL: Record<DashboardFunnel["steps"][number]["key"], string> = {
   created: "حجوزات منشأة",

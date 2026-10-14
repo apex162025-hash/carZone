@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@carzen/ui/components/ui/tooltip";
 import { useNavBadges } from "@/hooks/use-nav-badges";
 import { ADMIN_NAV, isNavActive } from "@/lib/admin-nav";
-import { cn } from "@/lib/utils";
+import { cn } from "@carzen/ui/lib/utils";
 
 type SidebarNavProps = {
   collapsed?: boolean;

@@ -3,13 +3,13 @@
 import type { CSSProperties } from "react";
 import { CalendarRange, Lock, MapPinned, PencilLine, Star, Ticket } from "lucide-react";
 
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { OFFER_STATUS, SERVICE_CATEGORY, TONES } from "@/lib/constants/labels";
-import { formatDateTime, formatMoney, formatNumber, formatRelative } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { OfferListItem } from "@/types/offers";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Switch } from "@carzen/ui/components/ui/switch";
+import { OFFER_STATUS, SERVICE_CATEGORY, TONES } from "@carzen/ui/lib/constants/labels";
+import { formatDateTime, formatMoney, formatNumber, formatRelative } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { OfferListItem } from "@carzen/contracts/offers";
 
 type OfferCardProps = {
   offer: OfferListItem;

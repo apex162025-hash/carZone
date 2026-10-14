@@ -5,7 +5,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAdminMutation } from "@/hooks/use-admin-mutation";
 import { queryKeys } from "@/lib/query-keys";
 import { fetchCustomer, fetchCustomers, toggleCustomerStatus } from "@/lib/services/customers.service";
-import type { CustomerListParams, ToggleCustomerPayload } from "@/types/customers";
+import type { CustomerListParams, ToggleCustomerPayload } from "@carzen/contracts/customers";
 
 export function useCustomers(params: CustomerListParams) {
   return useQuery({

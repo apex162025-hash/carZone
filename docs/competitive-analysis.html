@@ -1,0 +1,667 @@
+<title>تحليل كارزن التنافسي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
+<style>
+  /* Layout: a single reading column (report), wide blocks (matrix, map) break out to 1080px; Carzen brand tokens from shared/css/tokens.css */
+  :root {
+    --bg: #F5F8FC;
+    --surface: #FFFFFF;
+    --ink: #0B1B33;
+    --muted: #5B6B82;
+    --line: #E1E8F2;
+    --blue: #1463FF;
+    --blue-soft: #E8F0FF;
+    --aqua: #0EA597;
+    --aqua-soft: #E2F7F4;
+    --amber: #B45309;
+    --amber-soft: #FEF3E2;
+    --red: #C2362B;
+    --red-soft: #FDECEA;
+    --grid: #EEF2F8;
+    --font-ar: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+    --font-lat: "Plus Jakarta Sans", "IBM Plex Sans Arabic", system-ui, sans-serif;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #08111F; --surface: #0F1B2E; --ink: #E7EEF8; --muted: #93A3BA; --line: #1F2E45;
+      --blue: #4C86FF; --blue-soft: #14264A; --aqua: #2CC9B8; --aqua-soft: #0E3330;
+      --amber: #F0A64A; --amber-soft: #3A2A12; --red: #F07A70; --red-soft: #3D1A18; --grid: #16243A;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #08111F; --surface: #0F1B2E; --ink: #E7EEF8; --muted: #93A3BA; --line: #1F2E45;
+    --blue: #4C86FF; --blue-soft: #14264A; --aqua: #2CC9B8; --aqua-soft: #0E3330;
+    --amber: #F0A64A; --amber-soft: #3A2A12; --red: #F07A70; --red-soft: #3D1A18; --grid: #16243A;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--font-ar); font-size: 16px; line-height: 1.85;
+    padding: 0 20px; direction: rtl;
+  }
+  .num, .lat { font-family: var(--font-lat); font-variant-numeric: tabular-nums; }
+  .wrap { max-width: 1080px; margin-inline: auto; }
+  .col { max-width: 760px; }
+  h1, h2, h3 { text-wrap: balance; line-height: 1.35; margin: 0; }
+  p { margin: 0; }
+  a { color: var(--blue); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+
+  /* Cover */
+  header.cover { padding-block: 56px 36px; border-bottom: 1px solid var(--line); display: grid; gap: 18px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--muted); font-size: 14px; }
+  .brand i { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, var(--aqua), var(--blue)); display: inline-block; }
+  .cover h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 700; letter-spacing: -0.01em; }
+  .cover .lede { font-size: 18px; color: var(--muted); max-width: 64ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--muted); }
+  .meta b { color: var(--ink); font-weight: 600; }
+
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; padding-block: 18px; border-bottom: 1px solid var(--line); }
+  nav.toc a { font-size: 13px; text-decoration: none; color: var(--ink); border: 1px solid var(--line); background: var(--surface); padding: 4px 12px; border-radius: 999px; }
+  nav.toc a:hover { border-color: var(--blue); color: var(--blue); }
+
+  section { padding-block: 48px 8px; display: grid; gap: 18px; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--blue); }
+  section h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 700; }
+  section h3 { font-size: 18px; font-weight: 700; }
+  .muted { color: var(--muted); }
+  .small { font-size: 13px; line-height: 1.7; }
+
+  /* Executive summary */
+  .verdict { background: var(--ink); color: var(--bg); border-radius: var(--radius); padding: 26px 28px; display: grid; gap: 10px; }
+  .verdict p { font-size: 19px; line-height: 1.75; font-weight: 500; }
+  .verdict .small { color: color-mix(in srgb, var(--bg) 70%, transparent); }
+  ol.findings { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; counter-reset: f; }
+  ol.findings li { counter-increment: f; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+  ol.findings li::before { content: counter(f); font-family: var(--font-lat); font-weight: 700; font-size: 14px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-soft); color: var(--blue); margin-top: 2px; }
+  ol.findings b { font-weight: 700; }
+
+  /* Stat strip */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .stat { background: var(--surface); padding: 18px 18px 16px; display: grid; gap: 4px; align-content: start; }
+  .stat .v { font-family: var(--font-lat); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; }
+  .stat .l { font-size: 14px; font-weight: 600; }
+  .stat .s { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* Calculator */
+  .calc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .calc .inputs { padding: 22px; display: grid; gap: 14px; border-inline-end: 1px solid var(--line); }
+  .calc .out { padding: 22px; display: grid; gap: 14px; align-content: start; background: color-mix(in srgb, var(--blue-soft) 45%, var(--surface)); border-start-end-radius: var(--radius); border-end-end-radius: var(--radius); }
+  .field { display: grid; grid-template-columns: 1fr 110px; gap: 4px 12px; align-items: center; }
+  .field label { font-size: 14px; font-weight: 600; }
+  .field .hint { grid-column: 1 / -1; font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .field input { width: 100%; font: 600 15px var(--font-lat); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; text-align: center; }
+  .out .row { display: grid; gap: 2px; }
+  .out .row .k { font-size: 13px; color: var(--muted); }
+  .out .row .v { font-family: var(--font-lat); font-size: 24px; font-weight: 800; letter-spacing: -0.01em; }
+  .out .row.big .v { font-size: 32px; color: var(--blue); }
+  .flag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--amber); background: var(--amber-soft); padding: 2px 10px; border-radius: 999px; width: fit-content; }
+
+  /* Competitor groups */
+  .groups { display: grid; gap: 14px; }
+  .group { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; display: grid; gap: 12px; }
+  .group-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+  .threat { font-size: 12px; font-weight: 700; padding: 3px 12px; border-radius: 999px; white-space: nowrap; }
+  .t-high { color: var(--red); background: var(--red-soft); }
+  .t-mid { color: var(--amber); background: var(--amber-soft); }
+  .t-low { color: var(--aqua); background: var(--aqua-soft); }
+  .players { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+  .player { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 4px; align-content: start; }
+  .player b { font-size: 15px; }
+  .player span { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .so-what { font-size: 14px; border-top: 1px dashed var(--line); padding-top: 10px; }
+  .so-what b { color: var(--blue); }
+
+  /* Matrix */
+  .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: center; vertical-align: middle; }
+  th { font-size: 12.5px; font-weight: 700; color: var(--muted); background: var(--bg); white-space: nowrap; }
+  td:first-child, th:first-child { text-align: start; }
+  tbody tr:last-child td { border-bottom: 0; }
+  .matrix td:first-child { font-weight: 600; min-width: 220px; }
+  .matrix td:first-child small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  .matrix .us { background: color-mix(in srgb, var(--blue-soft) 60%, transparent); }
+  .matrix th.us { color: var(--blue); }
+  .m { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 700; }
+  .m.full { background: var(--aqua); color: var(--surface); }
+  .m.part { background: linear-gradient(90deg, var(--aqua) 50%, var(--grid) 50%); }
+  .m.none { border: 2px solid var(--line); }
+  .m.unk { color: var(--muted); font-family: var(--font-lat); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); align-items: center; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .rowgroup td { background: var(--bg); font-size: 12px; font-weight: 700; color: var(--muted); text-align: start; }
+
+  /* Map */
+  .map { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
+  .map svg { width: 100%; height: auto; display: block; }
+  .map text { font-family: var(--font-ar); fill: var(--ink); }
+
+  /* SWOT */
+  .swot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .swot div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; display: grid; gap: 8px; align-content: start; }
+  .swot h3 { font-size: 16px; display: flex; align-items: center; gap: 8px; }
+  .swot h3::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+  .swot ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; font-size: 14.5px; line-height: 1.75; }
+
+  /* Roadmap */
+  .lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .lane { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 12px; align-content: start; }
+  .lane h3 { font-size: 16px; }
+  .lane h3 small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
+  .item { border-inline-start: 3px solid var(--blue); padding-inline-start: 12px; display: grid; gap: 2px; }
+  .item b { font-size: 14.5px; }
+  .item span { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .lane.next .item { border-color: var(--aqua); }
+  .lane.later .item { border-color: var(--line); }
+
+  .callout { border: 1px solid var(--line); border-inline-start: 4px solid var(--blue); background: var(--surface); border-radius: 10px; padding: 16px 18px; font-size: 15px; }
+  ul.plain { margin: 0; padding-inline-start: 20px; display: grid; gap: 8px; }
+  ol.sources { margin: 0; padding-inline-start: 22px; display: grid; gap: 6px; font-size: 13.5px; }
+  ol.sources a { word-break: break-word; }
+  footer { padding-block: 40px 56px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); margin-top: 48px; }
+
+  @media (max-width: 760px) {
+    body { font-size: 15.5px; }
+    .calc { grid-template-columns: 1fr; }
+    .calc .inputs { border-inline-end: 0; border-bottom: 1px solid var(--line); }
+    .calc .out { border-radius: 0 0 var(--radius) var(--radius); }
+    .swot, .lanes { grid-template-columns: 1fr; }
+    .verdict { padding: 20px; }
+    .verdict p { font-size: 17px; }
+  }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+  <header class="cover">
+    <div class="brand"><i aria-hidden="true"></i> Carzen · كارزن</div>
+    <h1>تحليل كارزن التنافسي</h1>
+    <p class="lede">أين يقف نظام كارزن (تطبيق العميل، تطبيق الموظف، بوابة الشركاء، ولوحة السوبر أدمن) أمام المنافسين المباشرين وغير المباشرين في مصر والمنطقة، وما الذي يجب بناؤه ليتحول التميز الحالي إلى حصة سوقية.</p>
+    <div class="meta">
+      <span>التاريخ: <b class="num">14 أكتوبر 2026</b></span>
+      <span>النطاق: <b>القاهرة الكبرى أولًا، ثم مصر والخليج</b></span>
+      <span>حالة المنتج: <b>نموذج تشغيلي متكامل على API تجريبي</b></span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="المحتويات">
+    <a href="#summary">الخلاصة</a>
+    <a href="#product">ما الذي نقارنه</a>
+    <a href="#market">السوق</a>
+    <a href="#landscape">خريطة المنافسين</a>
+    <a href="#matrix">مصفوفة القدرات</a>
+    <a href="#positioning">التموضع</a>
+    <a href="#models">نماذج الربح</a>
+    <a href="#swot">SWOT</a>
+    <a href="#roadmap">الفجوات والأولويات</a>
+    <a href="#gtm">دخول السوق</a>
+    <a href="#sources">المصادر</a>
+  </nav>
+
+  <!-- 1. Summary -->
+  <section id="summary">
+    <span class="eyebrow">الخلاصة التنفيذية</span>
+    <h2>لا يوجد في مصر لاعب يجمع السوق ونظام تشغيل المغسلة في منتج واحد. هذه هي فرصة كارزن.</h2>
+    <div class="verdict">
+      <p>المنافسون في مصر إما تطبيقات غسيل متنقل تبيع خدمتها هي، أو منصات خدمات عامة تضيف غسيل السيارات كقسم جانبي. أنظمة تشغيل المغاسل الاحترافية موجودة في أمريكا والسعودية، لكنها غير موطّنة للسوق المصري. كارزن هو الوحيد الذي يربط طلب العميل بما يحدث فعليًا داخل المغسلة: السعة، الموظف، النقدية، والتدقيق.</p>
+      <p class="small">التقييم مبني على المعلومات المنشورة للمنافسين حتى تاريخ التقرير، وعلى مواصفات كارزن والنظام المبني فعليًا في المستودع.</p>
+    </div>
+    <ol class="findings col">
+      <li><div><b>المنافس الحقيقي اليوم هو «واتساب + دفتر + كاش».</b> معظم المغاسل تدير يومها يدويًا، وهذا يعني أن البيع يبدأ بحل ألم تشغيلي (تسريب نقدية، زحمة، غياب حجوزات) قبل وعد جلب العملاء.</div></li>
+      <li><div><b>ميزة كارزن الأقوى هي «الثقة التشغيلية».</b> السعر يُحسب على السيرفر ولا يُكتب يدويًا، والخصم مقيد بصلاحية الموظف، وكل وردية تُقفل بمطابقة نقدية، وكل إجراء في سجل تدقيق. لم نجد هذا المستوى في أي منافس محلي معلن.</div></li>
+      <li><div><b>أكبر خطر على نموذج العمولة هو التسرب.</b> العميل يحجز أول مرة من التطبيق ثم يعود مباشرة. لأن كارزن هو نظام التشغيل نفسه، يمكنه رؤية هذا التسرب وتسعيره بذكاء بدل محاربته.</div></li>
+      <li><div><b>الفجوات الحرجة قبل الإطلاق تجارية لا تقنية:</b> دفع إلكتروني محلي، باقات اشتراك شهرية (وهي ما يبيعه منافسو الغسيل المتنقل)، إشعارات واتساب حقيقية، وربط الـ API التجريبي بالباك إند الفعلي.</div></li>
+      <li><div><b>نافذة الوقت محدودة.</b> لاعبون خليجيون مثل JustClean يعرضون غسيل السيارات في القاهرة فعلًا، ومنصات سيارات ممولة مثل Sylndr تضيف الصيانة والخدمة. البدء بأحياء محددة (مدينة نصر، مصر الجديدة) بكثافة عالية أفضل من الانتشار الواسع.</div></li>
+    </ol>
+  </section>
+
+  <!-- 2. Product -->
+  <section id="product">
+    <span class="eyebrow">ما الذي نقارنه</span>
+    <h2>كارزن ليس تطبيقًا واحدًا، بل منظومة من أربعة أطراف على قاعدة بيانات واحدة</h2>
+    <div class="stats">
+      <div class="stat"><span class="l">تطبيق العميل</span><span class="s">اكتشاف المغاسل، حجز موعد مرتبط بالسعة، أسعار وعروض واضحة، تقييمات، الدفع في المغسلة.</span></div>
+      <div class="stat"><span class="l">تطبيق الموظف</span><span class="s">طلبات walk-in، التعرف على العميل باللوحة أو الموبايل، كود الاستلام، خصم بحد أقصى، بدء وإنهاء الوردية.</span></div>
+      <div class="stat"><span class="l">بوابة الشركاء</span><span class="s"><span class="num">19</span> شاشة للمالك ومدير الفرع: لوحة تشغيل مباشرة، الجدول والسعة، الخدمات والعروض، الموظفون، تقفيل الورديات وإغلاق اليوم، التقارير والمالية.</span></div>
+      <div class="stat"><span class="l">لوحة السوبر أدمن</span><span class="s">اعتماد المغاسل، الإيقاف بسبب، الشكاوى، مراجعة التقييمات، العمولة <span class="num">7%</span>، التحويلات، الأدوار والصلاحيات، سجل التدقيق.</span></div>
+    </div>
+    <p class="col muted small">النقطة الجوهرية للمقارنة: الطلب الذي يأتي من تطبيق العميل يظهر لحظيًا في بوابة الشركاء ولوحة الأدمن، وأي قرار من الأدمن (إيقاف مغسلة، إلغاء طلب، تغيير عمولة) يصل للمغسلة كإشعار. هذا الترابط هو ما يصعب على المنافس الجزئي تقليده.</p>
+  </section>
+
+  <!-- 3. Market -->
+  <section id="market">
+    <span class="eyebrow">السوق</span>
+    <h2>سوق كبير وغير رقمي تقريبًا، بلا رقم رسمي لحجمه</h2>
+    <div class="stats">
+      <div class="stat"><span class="v">11.05M</span><span class="l">مركبة مرخصة في مصر (2025)</span><span class="s">نمو حوالي <span class="num">6%</span> بعد تباطؤ 2024، حسب بيانات الجهاز المركزي للتعبئة والإحصاء.</span></div>
+      <div class="stat"><span class="v">5.7M</span><span class="l">سيارة ملاكي</span><span class="s">مقابل حوالي <span class="num">5.2M</span> في 2023. الشريحة المستهدفة مباشرة.</span></div>
+      <div class="stat"><span class="v">12.5M+</span><span class="l">مستخدم InstaPay (نهاية 2024)</span><span class="s">بعض التقارير تذكر أكثر من <span class="num">16M</span> في منتصف 2025، والرقم غير مؤكد من مصدر رسمي.</span></div>
+      <div class="stat"><span class="v">$20.8M</span><span class="l">تمويل شركات Auto Tech في مصر</span><span class="s">ملكية حتى أغسطس 2025 عبر <span class="num">3</span> جولات فقط (Tracxn). القطاع غير مزدحم بالتمويل.</span></div>
+    </div>
+    <p class="col">لم نجد تقديرًا موثوقًا ومنشورًا لحجم سوق غسيل السيارات في مصر. السوق العالمي لخدمات الغسيل يُقدّر بحوالي <span class="num">36</span> مليار دولار في 2025، وهذا لا يفيد في التخطيط المحلي. لذلك نبني التقدير من أسفل لأعلى، والافتراضات قابلة للتعديل:</p>
+
+    <div class="calc" role="group" aria-label="حاسبة حجم السوق">
+      <div class="inputs">
+        <span class="flag">افتراضات للتخطيط · عدّلها</span>
+        <div class="field"><label for="cars">سيارات ملاكي في مصر</label><input id="cars" type="number" value="5700000" step="100000" min="0"><span class="hint">رقم 2025 من الجهاز المركزي للتعبئة والإحصاء.</span></div>
+        <div class="field"><label for="cairo">نسبة القاهرة الكبرى %</label><input id="cairo" type="number" value="40" min="0" max="100"><span class="hint">افتراض. لا يوجد رقم منشور لتوزيع السيارات الملاكي جغرافيًا.</span></div>
+        <div class="field"><label for="paid">نسبة من يغسل في مغسلة مدفوعة %</label><input id="paid" type="number" value="35" min="0" max="100"><span class="hint">افتراض. الباقي يغسل في البيت أو مع «سايس» الشارع.</span></div>
+        <div class="field"><label for="freq">غسلات شهريًا للسيارة</label><input id="freq" type="number" value="2" step="0.5" min="0"></div>
+        <div class="field"><label for="ticket">متوسط الفاتورة (ج.م)</label><input id="ticket" type="number" value="150" step="10" min="0"><span class="hint">خدمات الغسيل المتنقل المعلنة تبدأ من <span class="num">350</span> ج.م، والمغاسل الثابتة أرخص.</span></div>
+        <div class="field"><label for="share">حصة كارزن المستهدفة %</label><input id="share" type="number" value="5" step="0.5" min="0" max="100"><span class="hint">من الغسلات المدفوعة في القاهرة الكبرى.</span></div>
+        <div class="field"><label for="rate">العمولة %</label><input id="rate" type="number" value="7" step="0.5" min="0" max="30"><span class="hint">العمولة الافتراضية في المواصفات.</span></div>
+      </div>
+      <div class="out" aria-live="polite">
+        <div class="row"><span class="k">سيارات مستهدفة في القاهرة الكبرى</span><span class="v num" id="o-cars">—</span></div>
+        <div class="row"><span class="k">غسلات مدفوعة سنويًا</span><span class="v num" id="o-washes">—</span></div>
+        <div class="row"><span class="k">إنفاق سنوي على الغسيل (ج.م)</span><span class="v num" id="o-spend">—</span></div>
+        <div class="row"><span class="k">قيمة الطلبات عبر كارزن (GMV) سنويًا</span><span class="v num" id="o-gmv">—</span></div>
+        <div class="row big"><span class="k">إيراد العمولة السنوي (ج.م)</span><span class="v num" id="o-rev">—</span></div>
+        <p class="small muted">العمولة وحدها لا تكفي لبناء شركة كبيرة بهذه الافتراضات، وهذا ما يجعل الدفع الإلكتروني والاشتراكات وخطة Pro جزءًا أساسيًا من النموذج (القسم 6).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Landscape -->
+  <section id="landscape">
+    <span class="eyebrow">خريطة المنافسين</span>
+    <h2>ست فئات من المنافسة، ولكل فئة معنى مختلف لكارزن</h2>
+    <div class="groups">
+      <div class="group">
+        <div class="group-head"><h3>البديل اليدوي: واتساب، تليفون، دفتر، كاش</h3><span class="threat t-high">التهديد: مرتفع</span></div>
+        <p class="small muted">الطريقة التي تعمل بها أغلب المغاسل اليوم. مجانية ومألوفة ولا تحتاج تدريبًا. عيوبها: تسريب نقدي، لا بيانات عن العملاء، لا حجوزات حقيقية، ولا رقابة على خصومات الموظفين.</p>
+        <p class="so-what"><b>المعنى لكارزن:</b> المنافس الذي يجب أن نهزمه أولًا. تطبيق الموظف يجب أن يكون أسرع من كتابة سطر في الدفتر، وهذا سبب تصميم تسجيل walk-in بلوحة السيارة فقط.</p>
+      </div>
+
+      <div class="group">
+        <div class="group-head"><h3>تطبيقات الغسيل المتنقل في مصر</h3><span class="threat t-mid">التهديد: متوسط</span></div>
+        <div class="players">
+          <div class="player"><b>Drop</b><span>القاهرة، تأسست 2021. غسيل في أي مكان + حجز صيانة وإصلاح في ورش قريبة. دخل من باقات شهرية وتقسيط ورسوم حجز. تمويل محدود وغير مؤكد.</span></div>
+          <div class="player"><b>Shinefy</b><span>غسيل متنقل «بريميوم». العميل يختار التاريخ والوقت ثم يُؤكد الحجز.</span></div>
+          <div class="player"><b>Washyn</b><span>باقات معلنة <span class="num">350</span> و<span class="num">500</span> ج.م، غسيل صديق للبيئة عند باب العميل.</span></div>
+          <div class="player"><b>Click Car Care</b><span>القاهرة والجيزة من <span class="num">9</span> ص إلى <span class="num">7</span> م. الحجز بطلب ثم تواصل للتأكيد.</span></div>
+        </div>
+        <p class="so-what"><b>المعنى لكارزن:</b> يبيعون خدمتهم هم، لا يخدمون المغاسل. ينافسون على نفس محفظة العميل، لكنهم يعلّمون السوق أن «الحجز من التطبيق» و«الباقة الشهرية» شيء طبيعي. الباقات الشهرية تحديدًا ميزة يجب أن نوفرها للمغاسل الشريكة.</p>
+      </div>
+
+      <div class="group">
+        <div class="group-head"><h3>منصات الخدمات والسيارات العامة</h3><span class="threat t-high">التهديد: مرتفع على المدى المتوسط</span></div>
+        <div class="players">
+          <div class="player"><b>JustClean</b><span>كويتية، تمويل إجمالي <span class="num">$26M</span> حتى 2022. أضافت غسيل السيارات في الخليج، وتعرض غسيل سيارات في القاهرة بحجز فوري.</span></div>
+          <div class="player"><b>Sylndr</b><span>منصة سيارات مستعملة. جولة <span class="num">$15.7M</span> في مايو 2025، وتتوسع في الصيانة والخدمة.</span></div>
+          <div class="player"><b>3atlana</b><span>تطبيق خدمات سيارات (صيانة، مساعدة طريق، ربط بمقدمي خدمة). جولة Seed من غبور أوتو في 2022.</span></div>
+          <div class="player"><b>Hatla2ee</b><span>أكبر موقع إعلانات سيارات، ولديه قسم مراكز صيانة.</span></div>
+        </div>
+        <p class="so-what"><b>المعنى لكارزن:</b> يملكون جمهورًا كبيرًا لكن لا يملكون أدوات تشغيل المغسلة. ممكن يكونوا منافسين على العميل أو شركاء توزيع (كارزن كـ «محرك الحجز والتشغيل» خلف قسم الغسيل عندهم).</p>
+      </div>
+
+      <div class="group">
+        <div class="group-head"><h3>أنظمة تشغيل المغاسل العالمية</h3><span class="threat t-low">التهديد: منخفض في مصر</span></div>
+        <div class="players">
+          <div class="player"><b>DRB (ومعها Washify)</b><span>الأقوى للأنفاق والمغاسل الكبيرة: POS، CRM، مخزون، تحليلات، تكامل أجهزة. تسعير بعرض سعر، تقديرات من <span class="num">$1,200</span> شهريًا للموقع + أجهزة.</span></div>
+          <div class="player"><b>Sonny's</b><span>أنظمة تحكم ونقاط بيع غالبًا مع أجهزة الغسيل نفسها.</span></div>
+          <div class="player"><b>Rinsed</b><span>CRM للعضويات والاحتفاظ بالعملاء. يُذكر <span class="num">$449</span>–<span class="num">$765</span> شهريًا للموقع + رسوم تركيب + نسبة على عمليات الدفع.</span></div>
+        </div>
+        <p class="so-what"><b>المعنى لكارزن:</b> أسعارهم وواجهاتهم الإنجليزية ونموذج الأنفاق الأمريكي لا تناسب المغسلة المصرية اليدوية. لكنهم مرجع للمزايا الناضجة: العضويات الشهرية، الولاء، وتكامل كاميرات اللوحات.</p>
+      </div>
+
+      <div class="group">
+        <div class="group-head"><h3>منافسون إقليميون موطّنون (السعودية والإمارات)</h3><span class="threat t-mid">التهديد: متوسط عند التوسع</span></div>
+        <div class="players">
+          <div class="player"><b>Tablon</b><span>السعودية. نظام شامل للمغاسل ومراكز الخدمة: تسجيل السيارة بكاميرا اللوحة أو رقم الموبايل، حجز برابط، فوترة ZATCA. من <span class="num">149</span> ريال شهريًا للفرع.</span></div>
+          <div class="player"><b>ViaCloud</b><span>السعودية. يربط العملاء بالمغاسل القريبة + حجز فوري + ولاء + لوحة للمغسلة. الأقرب لفكرة كارزن.</span></div>
+          <div class="player"><b>MySyara</b><span>الإمارات. خدمات سيارات عند الطلب، استحوذت على تطبيق غسيل SKKYN بـ <span class="num">$2.8M</span> حسب المنشور.</span></div>
+          <div class="player"><b>Ghaseel · SWEATER · Quick Wash</b><span>تطبيقات غسيل استهلاكية في الكويت والسعودية والبحرين والإمارات.</span></div>
+        </div>
+        <p class="so-what"><b>المعنى لكارزن:</b> نموذج «سوق + نظام تشغيل» مُثبت في الخليج. هذا يدعم الفكرة أمام المستثمرين، ويعني أن أحدهم قد يدخل مصر. السبق المحلي والكثافة في أحياء محددة هما الدفاع.</p>
+      </div>
+
+      <div class="group">
+        <div class="group-head"><h3>مراجع نماذج الأعمال (ليست منافسين مباشرين)</h3><span class="threat t-low">للتعلم</span></div>
+        <div class="players">
+          <div class="player"><b>Foodics</b><span>نظام تشغيل ونقاط بيع للمطاعم في الخليج + خدمات دفع وتمويل. جولة Series C بـ <span class="num">$170M</span> في 2022. دليل على قيمة «نظام تشغيل رأسي + مدفوعات» في المنطقة.</span></div>
+          <div class="player"><b>Fresha</b><span>برنامج حجوزات للصالونات. عمولة <span class="num">20%</span> مرة واحدة على العميل الجديد القادم من السوق + رسوم الدفع، وتحوّل لاشتراكات مدفوعة في 2025 حسب مراجعات منشورة.</span></div>
+        </div>
+        <p class="so-what"><b>المعنى لكارزن:</b> النموذج الأنجح هو برنامج تشغيل منخفض التكلفة يجذب المغاسل، ثم الربح من المدفوعات والعملاء الجدد الذين يجلبهم السوق.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Matrix -->
+  <section id="matrix">
+    <span class="eyebrow">مصفوفة القدرات</span>
+    <h2>أين نتفوق وأين نتأخر</h2>
+    <div class="legend">
+      <span><i class="m full" aria-hidden="true"></i> متوفر</span>
+      <span><i class="m part" aria-hidden="true"></i> جزئي</span>
+      <span><i class="m none" aria-hidden="true"></i> غير متوفر</span>
+      <span><i class="m unk" aria-hidden="true">?</i> غير معلن</span>
+      <span>تقييم المنافسين حسب ما هو منشور لديهم، ولم نختبر منتجاتهم.</span>
+    </div>
+    <div class="scroll">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th scope="col">القدرة</th>
+            <th scope="col" class="us">كارزن</th>
+            <th scope="col">Drop وتطبيقات الغسيل المتنقل</th>
+            <th scope="col">JustClean</th>
+            <th scope="col">DRB · Sonny's · Rinsed</th>
+            <th scope="col">Tablon</th>
+            <th scope="col">ViaCloud</th>
+            <th scope="col">واتساب ودفتر</th>
+          </tr>
+        </thead>
+        <tbody id="matrix-body"></tbody>
+      </table>
+    </div>
+    <p class="col small muted">قراءة المصفوفة: كارزن يتفوق في كل ما يخص «ما يحدث داخل المغسلة وحوكمة السوق»، ويتأخر في كل ما يخص «المال والعلاقة الطويلة مع العميل» (الدفع الإلكتروني، الاشتراكات، الولاء). الفئة الثانية هي بالضبط ما يحقق الإيراد.</p>
+  </section>
+
+  <!-- 6. Positioning -->
+  <section id="positioning">
+    <span class="eyebrow">التموضع</span>
+    <h2>المربع الأعلى يسارًا شبه فارغ في مصر</h2>
+    <div class="map">
+      <svg viewBox="0 0 680 450" role="img" aria-label="خريطة تموضع: المحور الأفقي عمق تشغيل المغسلة والمحور الرأسي جلب العملاء">
+        <rect x="60" y="30" width="540" height="350" fill="var(--surface)"></rect>
+        <rect x="60" y="30" width="270" height="175" fill="var(--blue-soft)" opacity="0.7"></rect>
+        <g stroke="var(--grid)" stroke-width="1">
+          <line x1="330" y1="30" x2="330" y2="380"></line>
+          <line x1="60" y1="205" x2="600" y2="205"></line>
+        </g>
+        <g stroke="var(--muted)" stroke-width="1.5">
+          <line x1="60" y1="380" x2="600" y2="380"></line>
+          <line x1="600" y1="30" x2="600" y2="380"></line>
+        </g>
+        <g font-size="12" fill="var(--muted)" text-anchor="middle" opacity="0.9">
+          <text x="195" y="52" style="fill: var(--blue); font-weight: 700">سوق + نظام تشغيل</text>
+          <text x="465" y="52" style="fill: var(--muted)">أسواق وتطبيقات طلب</text>
+          <text x="195" y="368" style="fill: var(--muted)">أنظمة تشغيل فقط</text>
+          <text x="465" y="368" style="fill: var(--muted)">تشغيل يدوي</text>
+        </g>
+        <text x="330" y="412" font-size="13" text-anchor="middle" style="fill: var(--ink); font-weight: 600">عمق تشغيل المغسلة ←  (طلبات، سعة، ورديات، نقدية، صلاحيات)</text>
+        <text x="632" y="205" font-size="13" text-anchor="middle" transform="rotate(-90 632 205)" style="fill: var(--ink); font-weight: 600">جلب العملاء والطلب →</text>
+        <g id="points"></g>
+      </svg>
+    </div>
+    <p class="col small muted">تقييم نوعي من 0 إلى 10 على كل محور، مبني على المزايا المعلنة. دائرة كارزن تمثل الموقع المستهدف: عمق التشغيل مبني بالفعل، وجانب الطلب يتطلب إطلاق تطبيق العميل وبناء كثافة مغاسل في أحياء محددة.</p>
+  </section>
+
+  <!-- 7. Business models -->
+  <section id="models">
+    <span class="eyebrow">نماذج الربح</span>
+    <h2>كيف يكسب المنافسون، وما المقترح لكارزن</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">اللاعب</th><th scope="col">مصدر الإيراد</th><th scope="col">السعر المنشور</th><th scope="col">ملاحظة</th></tr></thead>
+        <tbody>
+          <tr><td><b>كارزن (المواصفات الحالية)</b></td><td>عمولة على طلبات التطبيق</td><td class="num">7%</td><td class="small">مع تعديل لكل مغسلة، وخطط «Free 10% / Pro 5%» مؤجلة.</td></tr>
+          <tr><td><b>Fresha</b></td><td>عمولة على العميل الجديد + رسوم دفع + اشتراك</td><td class="num">20% (min $6)</td><td class="small">العمولة مرة واحدة فقط على أول حجز من السوق.</td></tr>
+          <tr><td><b>Rinsed</b></td><td>اشتراك لكل موقع + نسبة على الدفع</td><td class="num">$449–$765 / شهر</td><td class="small">+ رسوم تركيب، و<span class="num">4%</span> على عمليات الدفع حسب أحد الأدلة.</td></tr>
+          <tr><td><b>DRB</b></td><td>رخصة برنامج + أجهزة</td><td class="num">$1,200–$2,000+ / شهر</td><td class="small">تقديرات من مواقع مقارنة، والسعر الفعلي بعرض سعر.</td></tr>
+          <tr><td><b>Tablon</b></td><td>اشتراك شهري لكل فرع</td><td class="num">من 149 ريال / شهر</td><td class="small">يشمل فوترة ZATCA.</td></tr>
+          <tr><td><b>Drop وتطبيقات الغسيل المتنقل</b></td><td>بيع الخدمة نفسها + باقات شهرية</td><td class="num">350–500 ج.م</td><td class="small">أسعار Washyn المعلنة. هامش الخدمة وليس عمولة.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout col">
+      <b>المقترح:</b> نموذج هجين من ثلاث طبقات.
+      <ul class="plain small" style="margin-top:8px">
+        <li><b>نظام التشغيل مجاني أو رمزي</b> لطلبات walk-in والتليفون، حتى يمر كل حجم المغسلة عبر كارزن. البيانات أهم من الرسوم في السنة الأولى.</li>
+        <li><b>عمولة أعلى على العميل الجديد القادم من السوق وأقل على الحجز المتكرر</b>، على طريقة Fresha. هذا يحوّل التسرب من مشكلة إلى سياسة تسعير، ويقلل دافع المغسلة لسحب العميل خارج التطبيق.</li>
+        <li><b>إيراد المدفوعات والاشتراكات:</b> نسبة على الدفع الإلكتروني عند إضافته، وخطة Pro للمغاسل متعددة الفروع (باقات العملاء الشهرية، تقارير متقدمة، ظهور مميز في التطبيق).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8. SWOT -->
+  <section id="swot">
+    <span class="eyebrow">SWOT</span>
+    <h2>القوة والضعف والفرص والتهديدات</h2>
+    <div class="swot">
+      <div style="--c: var(--aqua)">
+        <h3>نقاط القوة</h3>
+        <ul>
+          <li>منظومة كاملة على نموذج بيانات واحد: العميل، الموظف، المالك، والمنصة.</li>
+          <li>ثقة تشغيلية: تسعير على السيرفر، حد خصم لكل موظف، تقفيل وردية بمطابقة نقدية، قفل اليوم، وسجل تدقيق لكل إجراء.</li>
+          <li>مصمم لواقع المغسلة المصرية: عربي، بالجنيه، walk-in بلوحة السيارة، الكاش هو الأساس.</li>
+          <li>تعدد الفروع بصلاحيات حقيقية (المدير مقفول على فرعه من السيرفر).</li>
+          <li>حوكمة سوق ناضجة: اعتماد، إيقاف بسبب، شكاوى، مراجعة تقييمات، عمولة وتحويلات.</li>
+        </ul>
+      </div>
+      <div style="--c: var(--red)">
+        <h3>نقاط الضعف</h3>
+        <ul>
+          <li>يعمل على API تجريبي. الباك إند الفعلي (Laravel) لم يُبنَ بعد.</li>
+          <li>لا دفع إلكتروني: «الدفع في المغسلة» فقط حسب نطاق النسخة الأولى.</li>
+          <li>لا اشتراكات ولا ولاء ولا إحالات، وهذه مستبعدة صراحة من النطاق الحالي.</li>
+          <li>لا تكامل مع أجهزة أو كاميرات لوحات، ولا إيصال إلكتروني ضريبي.</li>
+          <li>الواجهة عربية فقط (البيانات ثنائية اللغة)، وتقارير الأدمن والظهور المميز لم تُبنَ.</li>
+          <li>لا علامة تجارية ولا مستخدمين بعد.</li>
+        </ul>
+      </div>
+      <div style="--c: var(--blue)">
+        <h3>الفرص</h3>
+        <ul>
+          <li><span class="num">5.7</span> مليون سيارة ملاكي وأسطول ينمو مرة أخرى في 2025.</li>
+          <li>انتشار InstaPay والمحافظ يمهد للدفع الإلكتروني في خدمة كانت كاش بالكامل.</li>
+          <li>لا يوجد قائد محلي في «نظام تشغيل المغسلة»، والمغاسل مجزأة وصغيرة.</li>
+          <li>شراكات توزيع: شركات السيارات والتأمين وأساطيل الشركات ومنصات مثل Sylndr وHatla2ee.</li>
+          <li>نموذج مثبت في الخليج يسهّل قصة التمويل والتوسع لاحقًا.</li>
+        </ul>
+      </div>
+      <div style="--c: var(--amber)">
+        <h3>التهديدات</h3>
+        <ul>
+          <li>دخول لاعب خليجي ممول (JustClean موجود بالفعل في القاهرة).</li>
+          <li>منصات سيارات ممولة تضيف غسيل السيارات كخدمة جانبية.</li>
+          <li>تسرب العمولة: العميل يحجز مرة من التطبيق ثم يعود مباشرة.</li>
+          <li>ضعف استعداد المغاسل الصغيرة للدفع مقابل برامج، وثقافة الكاش.</li>
+          <li>التضخم يضغط على الأسعار ويجعل أي عمولة محسوسة أكثر للمغسلة.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Roadmap -->
+  <section id="roadmap">
+    <span class="eyebrow">الفجوات والأولويات</span>
+    <h2>ما يجب بناؤه، مرتبًا حسب أثره على المنافسة</h2>
+    <div class="lanes">
+      <div class="lane now">
+        <h3>الآن<small>قبل الإطلاق التجاري · 0–3 أشهر</small></h3>
+        <div class="item"><b>الباك إند الفعلي</b><span>بنفس عقود الـ API الحالية. التحويل = تغيير <span class="lat">NEXT_PUBLIC_API_URL</span> فقط.</span></div>
+        <div class="item"><b>دفع إلكتروني محلي</b><span>بوابة دفع مصرية + InstaPay/المحافظ. يفتح إيراد المدفوعات ويقلل الكاش.</span></div>
+        <div class="item"><b>باقات اشتراك شهرية للمغاسل</b><span>الميزة التي يبيعها منافسو الغسيل المتنقل، وتربط العميل بالمغسلة عبر كارزن.</span></div>
+        <div class="item"><b>إشعارات واتساب حقيقية</b><span>تأكيد الحجز والتذكير. واتساب هو القناة الطبيعية للعميل المصري.</span></div>
+      </div>
+      <div class="lane next">
+        <h3>التالي<small>3–6 أشهر</small></h3>
+        <div class="item"><b>ولاء وإحالات</b><span>نقاط أو غسلة مجانية بعد عدد زيارات، ممولة من المغسلة.</span></div>
+        <div class="item"><b>ظهور مميز وتقارير الأدمن</b><span>مصدر إيراد إعلاني + صحة السوق (المواصفات A14 وA19).</span></div>
+        <div class="item"><b>كاميرا قراءة اللوحات</b><span>منطق التعرف باللوحة موجود بالفعل. الكاميرا تلغي الإدخال اليدوي.</span></div>
+        <div class="item"><b>الإيصال الإلكتروني الضريبي</b><span>شرط لدخول المغاسل الكبيرة والسلاسل.</span></div>
+      </div>
+      <div class="lane later">
+        <h3>لاحقًا<small>6–12 شهرًا</small></h3>
+        <div class="item"><b>حسابات الأساطيل والشركات</b><span>فواتير شهرية لشركات التوصيل والتأجير.</span></div>
+        <div class="item"><b>المخزون والمستهلكات</b><span>تكلفة الغسلة الفعلية وهامش الربح لكل خدمة.</span></div>
+        <div class="item"><b>الرواتب والحوافز</b><span>مبنية على بيانات الأداء الموجودة في لوحة الموظفين.</span></div>
+        <div class="item"><b>واجهة إنجليزية والتوسع للخليج</b><span>البيانات جاهزة بالعربي والإنجليزي.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. GTM -->
+  <section id="gtm">
+    <span class="eyebrow">دخول السوق</span>
+    <h2>ابدأ بالتشغيل، ثم افتح السوق حيًا بحي</h2>
+    <ol class="findings col">
+      <li><div><b>ادخل المغسلة من باب الألم التشغيلي.</b> العرض الأول للمالك: «اعرف كل جنيه دخل الخزنة وكل خصم اتعمل»، مع تقفيل الوردية وإغلاق اليوم. هذا ما لا يقدمه أي تطبيق غسيل في مصر.</div></li>
+      <li><div><b>استهدف المغاسل متعددة الفروع أولًا.</b> المالك الغائب عن فروعه هو أكثر من يحتاج لوحة مباشرة وصلاحيات مدير مقفولة على فرعه.</div></li>
+      <li><div><b>افتح تطبيق العميل في الحي بعد الوصول لكثافة كافية.</b> مثلًا <span class="num">15</span>–<span class="num">20</span> مغسلة في مدينة نصر ومصر الجديدة قبل أي تسويق للعملاء، حتى يجد العميل اختيارًا حقيقيًا ومواعيد متاحة.</div></li>
+      <li><div><b>اجعل الحجز المتكرر أرخص على المغسلة من سحب العميل خارج التطبيق.</b> عمولة منخفضة على العميل العائد + باقات شهرية تُدار من كارزن.</div></li>
+      <li><div><b>ابحث عن شريك توزيع واحد كبير.</b> وكيل سيارات، شركة تأمين، أو منصة سيارات تقدم «غسلة مجانية» لعملائها عبر كارزن.</div></li>
+    </ol>
+    <h3 style="margin-top:12px">مؤشرات المتابعة</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">المؤشر</th><th scope="col">لماذا يهم تنافسيًا</th><th scope="col">مصدره في النظام</th></tr></thead>
+        <tbody>
+          <tr><td><b>نسبة طلبات المغسلة المسجلة في كارزن</b></td><td class="small">هل نحن نظام التشغيل فعلًا أم مجرد قناة حجز إضافية؟</td><td class="small">walk-in + تليفون + تطبيق في تقارير المصادر</td></tr>
+          <tr><td><b>نسبة الطلبات القادمة من التطبيق</b></td><td class="small">قيمة السوق التي نضيفها للمغسلة.</td><td class="small">تقرير المصادر في بوابة الشركاء</td></tr>
+          <tr><td><b>معدل عودة العميل للمغسلة عبر التطبيق</b></td><td class="small">مؤشر مباشر على التسرب.</td><td class="small">شرائح العملاء: جديد / عائد / مفقود</td></tr>
+          <tr><td><b>فروق النقدية لكل وردية</b></td><td class="small">الدليل الذي يقنع المالك بالبقاء.</td><td class="small">تقفيل الورديات وإغلاق اليوم</td></tr>
+          <tr><td><b>نسبة عدم الحضور والإلغاء</b></td><td class="small">جودة الحجوزات مقارنة بالحجز عبر واتساب.</td><td class="small">لوحة التحكم وتقرير الطلبات</td></tr>
+          <tr><td><b>معدل احتفاظ المغاسل الشريكة شهريًا</b></td><td class="small">الحماية الأساسية من دخول لاعب ممول.</td><td class="small">لوحة السوبر أدمن</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 11. Sources -->
+  <section id="sources">
+    <span class="eyebrow">المنهجية والمصادر</span>
+    <h2>من أين جاءت الأرقام</h2>
+    <p class="col small muted">جُمعت البيانات من مصادر منشورة حتى 14 أكتوبر 2026. معظم أرقام المنافسين من مواقعهم أو مواقع مقارنة وأخبار، ولم نختبر منتجاتهم مباشرة. بعض الأرقام متعارضة بين المصادر، وذُكر النطاق أو التحفظ عند ذلك. مزايا كارزن مأخوذة من المواصفات في <span class="lat">docs/</span> ومن النظام المبني فعليًا.</p>
+    <ol class="sources">
+      <li><a href="https://en.amwalalghad.com/?p=157402" target="_blank" rel="noopener">Amwal Al Ghad: المركبات المرخصة في مصر (CAPMAS)</a></li>
+      <li><a href="https://english.ahram.org.eg/NewsContentMulti/566385/Multimedia.aspx" target="_blank" rel="noopener">Ahram Online: إحصاءات المركبات المرخصة</a></li>
+      <li><a href="https://tracxn.com/d/explore/auto-tech-startups-in-egypt/__5it_DHGEc_PyZLYyMOjwqeMQVkaAT3TJ9Ce4guMFG7s" target="_blank" rel="noopener">Tracxn: شركات Auto Tech في مصر</a></li>
+      <li><a href="https://techcabal.com/2025/12/19/how-egypts-startup-ecosystem-fared-in-2025/" target="_blank" rel="noopener">TechCabal: أداء منظومة الشركات الناشئة في مصر 2025</a></li>
+      <li><a href="https://www.zawya.com/en/economy/north-africa/egypt-instapay-turns-profitable-a-year-after-transfer-fee-rollout-rt18pyrt" target="_blank" rel="noopener">Zawya: InstaPay بعد رسوم التحويل</a></li>
+      <li><a href="https://launchbaseafrica.com/2025/03/28/from-free-to-fees-egyptians-outraged-as-non-profit-central-bank-turns-instapay-into-a-profit-machine" target="_blank" rel="noopener">Launch Base Africa: InstaPay ومستخدموه</a></li>
+      <li><a href="https://www.grandviewresearch.com/industry-analysis/car-wash-service-market" target="_blank" rel="noopener">Grand View Research: سوق خدمات غسيل السيارات عالميًا</a></li>
+      <li><a href="https://drop-eg.com/" target="_blank" rel="noopener">Drop</a> · <a href="https://play.google.com/store/apps/details?id=com.dropappegypt.dropapplication" target="_blank" rel="noopener">Drop على Google Play</a> · <a href="https://fundediq.co/drop-drop-eg-com-funding/" target="_blank" rel="noopener">تمويل Drop</a></li>
+      <li><a href="https://shinefy.co/" target="_blank" rel="noopener">Shinefy</a> · <a href="https://www.washyn.app/" target="_blank" rel="noopener">Washyn</a> · <a href="https://clickcarcare.com/?hl=en" target="_blank" rel="noopener">Click Car Care</a></li>
+      <li><a href="https://justclean.com/eg/services/car-wash?area=cairo" target="_blank" rel="noopener">JustClean: غسيل السيارات في القاهرة</a> · <a href="https://www.wamda.com/2022/03/laundry-app-justclean-raises-6-million-investment" target="_blank" rel="noopener">Wamda: تمويل JustClean</a></li>
+      <li><a href="https://techcrunch.com/2025/05/19/sylndr-with-fresh-15-7m-allows-users-to-buy-sell-finance-and-service-used-cars-in-egypt/" target="_blank" rel="noopener">TechCrunch: جولة Sylndr 2025</a></li>
+      <li><a href="https://weetracker.com/2022/09/06/egyptian-car-service-app-3atlana-closes-seed-round/" target="_blank" rel="noopener">WeeTracker: جولة 3atlana</a></li>
+      <li><a href="https://tablony.com/en/" target="_blank" rel="noopener">Tablon</a> · <a href="https://www.viacloud.sa/" target="_blank" rel="noopener">ViaCloud</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/MySyara" target="_blank" rel="noopener">MySyara</a> · <a href="https://apps.apple.com/sa/app/ghaseel-car-wash-%D8%BA%D8%B3%D9%8A%D9%84-%D8%B3%D9%8A%D8%A7%D8%B1%D8%A7%D8%AA/id1052534178" target="_blank" rel="noopener">Ghaseel</a> · <a href="https://sweater.sa/en" target="_blank" rel="noopener">SWEATER</a> · <a href="https://quickwash.ae/" target="_blank" rel="noopener">Quick Wash</a></li>
+      <li><a href="https://www.guideflow.com/blog/car-wash-software" target="_blank" rel="noopener">Guideflow: برامج المغاسل 2026</a> · <a href="https://devaims.com/blog/rinsed-alternatives" target="_blank" rel="noopener">Devaims: بدائل Rinsed</a> · <a href="https://devaims.com/blog/drb-systems-alternatives" target="_blank" rel="noopener">Devaims: بدائل DRB</a> (مواقع مقارنة لها منتجات منافسة)</li>
+      <li><a href="https://www.foodics.com/press/saas-series-c-funding/" target="_blank" rel="noopener">Foodics: جولة Series C</a></li>
+      <li><a href="https://pabau.com/blog/fresha-review/" target="_blank" rel="noopener">Pabau: مراجعة نموذج Fresha</a></li>
+    </ol>
+  </section>
+
+  <footer>
+    أُعد للفريق المؤسس لكارزن · 14 أكتوبر 2026 · الأرقام التقديرية في الحاسبة افتراضات للتخطيط وليست بيانات سوق.
+  </footer>
+</div>
+
+<script>
+  (function () {
+    // ---------- Market calculator ----------
+    var ids = ["cars", "cairo", "paid", "freq", "ticket", "share", "rate"];
+    function val(id) { var n = parseFloat(document.getElementById(id).value); return isFinite(n) && n > 0 ? n : 0; }
+    function fmt(n) {
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
+      if (n >= 1e6) return (n / 1e6).toFixed(1) + "M";
+      if (n >= 1e3) return Math.round(n / 1e3).toLocaleString("en-US") + "K";
+      return Math.round(n).toLocaleString("en-US");
+    }
+    function calc() {
+      var cars = val("cars") * val("cairo") / 100;
+      var washes = cars * val("paid") / 100 * val("freq") * 12;
+      var spend = washes * val("ticket");
+      var gmv = spend * val("share") / 100;
+      var rev = gmv * val("rate") / 100;
+      document.getElementById("o-cars").textContent = fmt(cars);
+      document.getElementById("o-washes").textContent = fmt(washes);
+      document.getElementById("o-spend").textContent = fmt(spend);
+      document.getElementById("o-gmv").textContent = fmt(gmv);
+      document.getElementById("o-rev").textContent = fmt(rev);
+    }
+    ids.forEach(function (id) { document.getElementById(id).addEventListener("input", calc); });
+    calc();
+
+    // ---------- Capability matrix ----------
+    // f = full, p = partial, n = none, u = not published
+    var cols = ["كارزن", "Drop وتطبيقات الغسيل المتنقل", "JustClean", "DRB · Sonny's · Rinsed", "Tablon", "ViaCloud", "واتساب ودفتر"];
+    var groups = [
+      ["جانب العميل", [
+        ["سوق يجمع مغاسل متعددة", "العميل يقارن ويختار", "fnfnnfn"],
+        ["حجز موعد مرتبط بالسعة الفعلية", "عدد البايات، الحجب، المواعيد المتاحة", "fpupffn"],
+        ["أسعار وعروض تُطبق تلقائيًا", "بدون تفاوض أو كتابة يدوية", "fppfuun"],
+        ["تقييمات مع رد المغسلة والإبلاغ", "", "funnuun"],
+        ["دفع إلكتروني داخل التطبيق", "كارزن: الدفع في المغسلة فقط حاليًا", "nuffupp"],
+        ["باقات واشتراكات شهرية", "", "nfufuun"],
+        ["برنامج ولاء ونقاط", "", "nuufufn"]
+      ]],
+      ["داخل المغسلة", [
+        ["تسجيل walk-in وتتبع حالة الطلب", "من الاستلام حتى الدفع", "fnnffpp"],
+        ["التعرف على العميل باللوحة أو الموبايل", "", "fnuffun"],
+        ["لوحة تشغيل مباشرة وتأخيرات", "", "fnnfuun"],
+        ["تقفيل الوردية ومطابقة النقدية", "مع سبب إلزامي للفرق", "fnnfuun"],
+        ["صلاحيات الموظفين وحد الخصم", "", "fnnfuun"],
+        ["تعدد الفروع: مالك ومدير مقفول على فرعه", "", "fnufuun"],
+        ["تكامل أجهزة وكاميرات لوحات", "", "nnnffun"],
+        ["فوترة إلكترونية ضريبية", "Tablon: ZATCA في السعودية", "nuunfun"]
+      ]],
+      ["حوكمة المنصة", [
+        ["اعتماد المغاسل وإيقافها بسبب", "", "fnfnnun"],
+        ["شكاوى، عمولة، تحويلات للمغاسل", "", "fnpnnun"],
+        ["سجل تدقيق لكل إجراء", "قبل وبعد + السبب", "fnufuun"],
+        ["واجهة عربية ومصرية (جنيه، أحياء القاهرة)", "", "ffpnppf"]
+      ]]
+    ];
+    var marks = { f: ["full", "متوفر"], p: ["part", "جزئي"], n: ["none", "غير متوفر"], u: ["unk", "غير معلن"] };
+    var body = document.getElementById("matrix-body");
+    var html = "";
+    groups.forEach(function (g) {
+      html += '<tr class="rowgroup"><td colspan="8">' + g[0] + "</td></tr>";
+      g[1].forEach(function (r) {
+        html += "<tr><td>" + r[0] + (r[1] ? "<small>" + r[1] + "</small>" : "") + "</td>";
+        r[2].split("").forEach(function (c, i) {
+          var m = marks[c];
+          html += '<td class="' + (i === 0 ? "us" : "") + '"><i class="m ' + m[0] + '" role="img" aria-label="' + cols[i] + ": " + m[1] + '">' + (c === "u" ? "?" : "") + "</i></td>";
+        });
+        html += "</tr>";
+      });
+    });
+    body.innerHTML = html;
+
+    // ---------- Positioning map ----------
+    // x = operations depth (0-10, increases to the left for RTL), y = demand generation (0-10)
+    var pts = [
+      { n: "كارزن (المستهدف)", x: 8.5, y: 8.2, us: true, pos: "below" },
+      { n: "DRB · Sonny's", x: 9.5, y: 1.5, pos: "above" },
+      { n: "Rinsed", x: 5.8, y: 2.4, pos: "below" },
+      { n: "Tablon", x: 7.6, y: 3.6, pos: "above" },
+      { n: "ViaCloud", x: 5, y: 6.5, pos: "above" },
+      { n: "JustClean", x: 2.2, y: 7.8, pos: "above" },
+      { n: "Drop وتطبيقات الغسيل المتنقل", x: 2.8, y: 5.2, pos: "below" },
+      { n: "خرائط جوجل وإنستجرام", x: 0.8, y: 6.2, pos: "below" },
+      { n: "واتساب + دفتر + كاش", x: 1.5, y: 1.5, pos: "above" }
+    ];
+    var NS = "http://www.w3.org/2000/svg";
+    var g = document.getElementById("points");
+    pts.forEach(function (p) {
+      var px = 600 - p.x * 54, py = 380 - p.y * 35;
+      if (p.us) {
+        var ring = document.createElementNS(NS, "circle");
+        ring.setAttribute("cx", px); ring.setAttribute("cy", py); ring.setAttribute("r", 18);
+        ring.setAttribute("fill", "none"); ring.setAttribute("stroke", "var(--blue)"); ring.setAttribute("stroke-dasharray", "4 4"); ring.setAttribute("stroke-width", "1.5");
+        g.appendChild(ring);
+      }
+      var c = document.createElementNS(NS, "circle");
+      c.setAttribute("cx", px); c.setAttribute("cy", py); c.setAttribute("r", p.us ? 9 : 6);
+      c.setAttribute("fill", p.us ? "var(--blue)" : "var(--muted)");
+      g.appendChild(c);
+      var t = document.createElementNS(NS, "text");
+      t.setAttribute("x", px); t.setAttribute("y", p.pos === "above" ? py - 13 : py + (p.us ? 34 : 22));
+      t.setAttribute("text-anchor", "middle"); t.setAttribute("font-size", p.us ? "14" : "12.5");
+      t.setAttribute("style", "fill: " + (p.us ? "var(--blue)" : "var(--ink)") + "; font-weight: " + (p.us ? 700 : 500));
+      t.textContent = p.n;
+      g.appendChild(t);
+    });
+  })();
+</script>

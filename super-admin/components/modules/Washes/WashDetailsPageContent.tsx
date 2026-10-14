@@ -18,18 +18,18 @@ import {
 
 import { EditWashDialog } from "@/components/modules/Washes/EditWashDialog";
 import { SuspendWashDialog } from "@/components/modules/Washes/SuspendWashDialog";
-import { AuditTrail } from "@/components/shared/audit-trail";
-import { InfoList } from "@/components/shared/info-list";
-import { PageHeader } from "@/components/shared/page-header";
-import { RatingStars } from "@/components/shared/rating-stars";
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { SectionCard } from "@/components/shared/section-card";
-import { StatTile } from "@/components/shared/stat-tile";
-import { DetailSkeleton, EmptyState, ErrorState } from "@/components/shared/states";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AuditTrail } from "@carzen/ui/components/shared/audit-trail";
+import { InfoList } from "@carzen/ui/components/shared/info-list";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { RatingStars } from "@carzen/ui/components/shared/rating-stars";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { StatTile } from "@carzen/ui/components/shared/stat-tile";
+import { DetailSkeleton, EmptyState, ErrorState } from "@carzen/ui/components/shared/states";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@carzen/ui/components/ui/tabs";
 import { useReactivateWash, useWash } from "@/hooks/use-washes";
 import {
   AMENITY,
@@ -41,9 +41,9 @@ import {
   STAFF_ROLE,
   TRANSACTION_STATUS,
   WEEK_DAYS,
-} from "@/lib/constants/labels";
-import { formatDate, formatDateTime, formatDuration, formatMoney, formatNumber, formatPercent, formatRelative } from "@/lib/format";
-import { cn } from "@/lib/utils";
+} from "@carzen/ui/lib/constants/labels";
+import { formatDate, formatDateTime, formatDuration, formatMoney, formatNumber, formatPercent, formatRelative } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
 
 export default function WashDetailsPageContent({ id }: { id: string }) {
   const { data, isLoading, error, refetch } = useWash(id);

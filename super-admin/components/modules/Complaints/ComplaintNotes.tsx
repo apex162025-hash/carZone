@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { Lock, MessagesSquare, SendHorizontal } from "lucide-react";
 
-import { SectionCard } from "@/components/shared/section-card";
-import { EmptyState } from "@/components/shared/states";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { EmptyState } from "@carzen/ui/components/shared/states";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Textarea } from "@carzen/ui/components/ui/textarea";
 import { useUpdateComplaint } from "@/hooks/use-complaints";
-import { formatDateTime, formatRelative } from "@/lib/format";
-import type { ComplaintNote } from "@/types/complaints";
+import { formatDateTime, formatRelative } from "@carzen/ui/lib/format";
+import type { ComplaintNote } from "@carzen/contracts/complaints";
 
 type ComplaintNotesProps = {
   complaintId: string;

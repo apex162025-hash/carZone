@@ -7,10 +7,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AlertCircle, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@carzen/ui/components/ui/button";
 import { useAuthReady, useLogin } from "@/hooks/use-auth";
 import { resolveUserFacingError } from "@/lib/api/api-error-handler";
-import { cn } from "@/lib/utils";
+import { cn } from "@carzen/ui/lib/utils";
 
 const loginSchema = z.object({
   email: z.string().trim().min(1, "البريد الإلكتروني مطلوب").email("صيغة البريد الإلكتروني غير صحيحة"),

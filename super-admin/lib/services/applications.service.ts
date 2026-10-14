@@ -7,7 +7,7 @@ import type {
   RejectApplicationPayload,
   RequestChangesPayload,
   WashApplication,
-} from "@/types/applications";
+} from "@carzen/contracts/applications";
 
 export function fetchApplications(params: ApplicationListParams) {
   return getPaginated<WashApplication, ApplicationListMeta>("/admin/applications", params, "تعذر تحميل طلبات الانضمام");

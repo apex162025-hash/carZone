@@ -6,12 +6,12 @@ import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { Wallet } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@carzen/ui/components/ui/dialog";
+import { Input } from "@carzen/ui/components/ui/input";
 import { useMarkPayoutPaid } from "@/hooks/use-finance";
-import { formatDate, formatMoney } from "@/lib/format";
-import type { PayoutListItem } from "@/types/finance";
+import { formatDate, formatMoney } from "@carzen/ui/lib/format";
+import type { PayoutListItem } from "@carzen/contracts/finance";
 
 function todayLocal() {
   const d = new Date();

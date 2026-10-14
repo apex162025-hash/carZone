@@ -7,16 +7,16 @@ import { z } from "zod";
 import { Megaphone, Save, Send } from "lucide-react";
 
 import { BranchPicker } from "@/components/modules/Offers/BranchPicker";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Checkbox } from "@carzen/ui/components/ui/checkbox";
+import { Input } from "@carzen/ui/components/ui/input";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@carzen/ui/components/ui/sheet";
+import { Textarea } from "@carzen/ui/components/ui/textarea";
 import { useSaveOffer } from "@/hooks/use-offers";
-import { SERVICE_CATEGORY } from "@/lib/constants/labels";
-import { formatDuration, formatMoney } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { DiscountType, OfferListItem } from "@/types/offers";
+import { SERVICE_CATEGORY } from "@carzen/ui/lib/constants/labels";
+import { formatDuration, formatMoney } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { DiscountType, OfferListItem } from "@carzen/contracts/offers";
 
 const MAX_PERCENT = 50;
 

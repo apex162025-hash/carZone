@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { CalendarClock, EyeOff } from "lucide-react";
 
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
+import { Switch } from "@carzen/ui/components/ui/switch";
 import { useSuspendWash, useSuspensionImpact } from "@/hooks/use-washes";
-import { ORDER_STATUS, SUSPEND_REASON } from "@/lib/constants/labels";
-import { formatDateTime, formatMoney } from "@/lib/format";
-import type { SuspendReason } from "@/types/washes";
+import { ORDER_STATUS, SUSPEND_REASON } from "@carzen/ui/lib/constants/labels";
+import { formatDateTime, formatMoney } from "@carzen/ui/lib/format";
+import type { SuspendReason } from "@carzen/contracts/washes";
 
 type SuspendWashDialogProps = {
   washId: string;

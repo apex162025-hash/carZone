@@ -2,7 +2,7 @@
 
 import { apiClient } from "@/lib/axios";
 import { throwApiError } from "@/lib/api/api-error-handler";
-import type { ApiEnvelope, Paginated } from "@/types/common";
+import type { ApiEnvelope, Paginated } from "@carzen/contracts/common";
 
 /** Result of a mutation: payload + the backend's user-facing message (used for toasts). */
 export type MutationResult<T> = {

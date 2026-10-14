@@ -1,6 +1,6 @@
-import { TONES } from "@/lib/constants/labels";
-import type { ApplicationService } from "@/types/applications";
-import type { WorkingDay } from "@/types/washes";
+import { TONES } from "@carzen/ui/lib/constants/labels";
+import type { ApplicationService } from "@carzen/contracts/applications";
+import type { WorkingDay } from "@carzen/contracts/washes";
 
 /** AD-15 review checklist — the approve endpoint requires all 6 keys. */
 export const REVIEW_CHECKLIST = [

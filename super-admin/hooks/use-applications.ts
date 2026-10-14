@@ -16,7 +16,7 @@ import type {
   ApproveApplicationPayload,
   RejectApplicationPayload,
   RequestChangesPayload,
-} from "@/types/applications";
+} from "@carzen/contracts/applications";
 
 export function useApplications(params: ApplicationListParams) {
   return useQuery({

@@ -13,8 +13,8 @@ import {
   Users,
 } from "lucide-react";
 
-import { formatMoney, formatNumber } from "@/lib/format";
-import type { KpiKey } from "@/types/dashboard";
+import { formatMoney, formatNumber } from "@carzen/ui/lib/format";
+import type { KpiKey } from "@carzen/contracts/dashboard";
 
 export type KpiConfig = {
   label: string;

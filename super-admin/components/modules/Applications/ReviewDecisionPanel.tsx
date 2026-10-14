@@ -6,18 +6,18 @@ import { useId, useState } from "react";
 import { CheckCircle2, FilePen, Gavel, ListChecks, XCircle } from "lucide-react";
 
 import { REVIEW_CHECKLIST, type ChecklistKey } from "@/components/modules/Applications/review-utils";
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { SectionCard } from "@/components/shared/section-card";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Checkbox } from "@carzen/ui/components/ui/checkbox";
+import { Switch } from "@carzen/ui/components/ui/switch";
+import { Textarea } from "@carzen/ui/components/ui/textarea";
 import { useApproveApplication, useRejectApplication, useRequestApplicationChanges } from "@/hooks/use-applications";
-import { APPLICATION_STATUS } from "@/lib/constants/labels";
-import { formatDateTime } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { WashApplication } from "@/types/applications";
+import { APPLICATION_STATUS } from "@carzen/ui/lib/constants/labels";
+import { formatDateTime } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { WashApplication } from "@carzen/contracts/applications";
 
 type ReviewDecisionPanelProps = {
   application: WashApplication;

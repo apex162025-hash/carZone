@@ -5,7 +5,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAdminMutation } from "@/hooks/use-admin-mutation";
 import { queryKeys } from "@/lib/query-keys";
 import { createOffer, fetchOffers, setOfferEnabled, updateOffer } from "@/lib/services/offers.service";
-import type { OfferListParams, OfferPayload } from "@/types/offers";
+import type { OfferListParams, OfferPayload } from "@carzen/contracts/offers";
 
 export function useOffers(params: OfferListParams) {
   return useQuery({

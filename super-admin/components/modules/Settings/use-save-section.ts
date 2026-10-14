@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { useUpdateSettings } from "@/hooks/use-platform";
 import { queryKeys } from "@/lib/query-keys";
-import type { PlatformSettings, SettingsSection, UpdateSettingsPayload } from "@/types/settings";
+import type { PlatformSettings, SettingsSection, UpdateSettingsPayload } from "@carzen/contracts/settings";
 
 /**
  * Per-tab save flow: each settings section owns its reason dialog and pending

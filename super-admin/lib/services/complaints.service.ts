@@ -6,7 +6,7 @@ import type {
   ComplaintListMeta,
   ComplaintListParams,
   UpdateComplaintPayload,
-} from "@/types/complaints";
+} from "@carzen/contracts/complaints";
 
 export function fetchComplaints(params: ComplaintListParams) {
   return getPaginated<ComplaintListItem, ComplaintListMeta>("/admin/complaints", params, "تعذر تحميل الشكاوى");

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Compass } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@carzen/ui/components/ui/button";
 
 export default function NotFound() {
   return (

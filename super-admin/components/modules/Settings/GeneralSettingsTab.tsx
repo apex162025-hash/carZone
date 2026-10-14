@@ -9,9 +9,9 @@ import { Clock, Headset, Lock, Mail, Phone, Settings2, Smartphone } from "lucide
 import { describedBy, FormField } from "@/components/modules/Settings/FormField";
 import { SaveSectionDialog, SettingsSaveBar } from "@/components/modules/Settings/SettingsSaveBar";
 import { useSaveSection } from "@/components/modules/Settings/use-save-section";
-import { SectionCard } from "@/components/shared/section-card";
-import { Input } from "@/components/ui/input";
-import type { PlatformSettings } from "@/types/settings";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { Input } from "@carzen/ui/components/ui/input";
+import type { PlatformSettings } from "@carzen/contracts/settings";
 
 type General = PlatformSettings["general"];
 

@@ -3,14 +3,14 @@
 import { useMemo, useState } from "react";
 import { MapPinned, Search, X } from "lucide-react";
 
-import { ErrorState } from "@/components/shared/states";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorState } from "@carzen/ui/components/shared/states";
+import { Checkbox } from "@carzen/ui/components/ui/checkbox";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useBranches } from "@/hooks/use-washes";
-import { AREAS } from "@/lib/constants/labels";
-import { formatNumber } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { BranchListItem } from "@/types/washes";
+import { AREAS } from "@carzen/ui/lib/constants/labels";
+import { formatNumber } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { BranchListItem } from "@carzen/contracts/washes";
 
 type BranchPickerProps = {
   value: string[];

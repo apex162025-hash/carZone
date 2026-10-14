@@ -3,19 +3,19 @@
 import { useState, type ComponentType } from "react";
 import { Archive, CheckCircle2, Hourglass, RotateCcw, ScanSearch, UserCheck, UserRound, Workflow } from "lucide-react";
 
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { SectionCard } from "@/components/shared/section-card";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@carzen/ui/components/ui/select";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useAdmins } from "@/hooks/use-admins";
 import { useUpdateComplaint } from "@/hooks/use-complaints";
-import { COMPLAINT_STATUS } from "@/lib/constants/labels";
+import { COMPLAINT_STATUS } from "@carzen/ui/lib/constants/labels";
 import { useAuthStore } from "@/lib/store/auth-store";
-import { cn } from "@/lib/utils";
-import type { Complaint, ComplaintStatus } from "@/types/complaints";
+import { cn } from "@carzen/ui/lib/utils";
+import type { Complaint, ComplaintStatus } from "@carzen/contracts/complaints";
 
 /** Mirrors the server-side TRANSITIONS map (the API rejects anything else with 409). */
 const TRANSITIONS: Record<ComplaintStatus, ComplaintStatus[]> = {

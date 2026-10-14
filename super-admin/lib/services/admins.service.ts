@@ -5,8 +5,8 @@ import type {
   ToggleAdminStatusPayload,
   UpdateAdminPayload,
   UpdateRolesPayload,
-} from "@/types/admins";
-import type { AdminUser } from "@/types/auth";
+} from "@carzen/contracts/admins";
+import type { AdminUser } from "@carzen/contracts/auth";
 
 export function fetchAdmins() {
   return getData<AdminUser[]>("/admin/admins", undefined, "تعذر تحميل المسؤولين");

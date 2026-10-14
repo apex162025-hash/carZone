@@ -6,12 +6,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { LockOpen } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@carzen/ui/components/ui/dialog";
+import { Input } from "@carzen/ui/components/ui/input";
+import { Textarea } from "@carzen/ui/components/ui/textarea";
 import { useUpdateWash } from "@/hooks/use-washes";
-import type { Business } from "@/types/washes";
+import type { Business } from "@carzen/contracts/washes";
 
 const schema = z.object({
   nameAr: z.string().trim().min(2, "الاسم بالعربية مطلوب"),

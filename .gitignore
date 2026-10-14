@@ -1,0 +1,18 @@
+# dependencies (npm workspaces hoist everything to the root)
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# shared mock database written by @carzen/platform-api (regenerated from the seed)
+.carzen/
+
+# env files
+.env*
+!.env.example
+
+# misc
+*.tsbuildinfo
+npm-debug.log*
+.DS_Store

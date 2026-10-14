@@ -2,10 +2,10 @@
 
 import { AlertTriangle } from "lucide-react";
 
-import { ReasonDialog } from "@/components/shared/reason-dialog";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
 import { useToggleBranch } from "@/hooks/use-washes";
-import { BUSINESS_STATUS } from "@/lib/constants/labels";
-import type { BranchListItem } from "@/types/washes";
+import { BUSINESS_STATUS } from "@carzen/ui/lib/constants/labels";
+import type { BranchListItem } from "@carzen/contracts/washes";
 
 type ToggleBranchDialogProps = {
   branch: BranchListItem | null;

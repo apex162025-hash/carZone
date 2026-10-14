@@ -12,12 +12,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
+} from "@carzen/ui/components/ui/command";
+import { useDebouncedValue } from "@carzen/ui/hooks/use-debounced-value";
 import { useGlobalSearch } from "@/hooks/use-platform";
 import { ADMIN_NAV_ITEMS } from "@/lib/admin-nav";
 import { useUIStore } from "@/lib/store/ui-store";
-import type { SearchResultGroup } from "@/types/search";
+import type { SearchResultGroup } from "@carzen/contracts/search";
 
 const GROUPS: Record<SearchResultGroup, { label: string; icon: ComponentType<{ className?: string }> }> = {
   customers: { label: "العملاء", icon: User },

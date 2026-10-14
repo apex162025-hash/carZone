@@ -2,8 +2,8 @@
 
 import { Info } from "lucide-react";
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@carzen/ui/components/ui/tooltip";
+import { cn } from "@carzen/ui/lib/utils";
 
 type MetricInfoProps = {
   /** Metric name, used for the accessible label. */

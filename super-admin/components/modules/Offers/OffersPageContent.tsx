@@ -5,21 +5,21 @@ import { Layers, Plus, Tag } from "lucide-react";
 
 import { OfferCard } from "@/components/modules/Offers/OfferCard";
 import { OfferEditorSheet } from "@/components/modules/Offers/OfferEditorSheet";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { SearchInput } from "@/components/shared/search-input";
-import { SelectFilter } from "@/components/shared/select-filter";
-import { EmptyState, ErrorState } from "@/components/shared/states";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { SelectFilter } from "@carzen/ui/components/shared/select-filter";
+import { EmptyState, ErrorState } from "@carzen/ui/components/shared/states";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useOffers, useToggleOffer } from "@/hooks/use-offers";
-import { useUrlState } from "@/hooks/use-url-state";
-import { OFFER_STATUS } from "@/lib/constants/labels";
-import { cn } from "@/lib/utils";
-import type { OfferListItem, OfferScope, OfferStatus } from "@/types/offers";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import { OFFER_STATUS } from "@carzen/ui/lib/constants/labels";
+import { cn } from "@carzen/ui/lib/utils";
+import type { OfferListItem, OfferScope, OfferStatus } from "@carzen/contracts/offers";
 
 const TAB_ORDER: (OfferStatus | "all")[] = ["all", "active", "scheduled", "draft", "disabled", "expired"];
 

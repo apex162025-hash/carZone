@@ -4,21 +4,21 @@ import { useState } from "react";
 import { ArrowDownUp, Star } from "lucide-react";
 
 import { ReviewCard } from "@/components/modules/Reviews/ReviewCard";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { RatingStars } from "@/components/shared/rating-stars";
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { SearchInput } from "@/components/shared/search-input";
-import { SelectFilter } from "@/components/shared/select-filter";
-import { EmptyState, ErrorState } from "@/components/shared/states";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { Skeleton } from "@/components/ui/skeleton";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { RatingStars } from "@carzen/ui/components/shared/rating-stars";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { SelectFilter } from "@carzen/ui/components/shared/select-filter";
+import { EmptyState, ErrorState } from "@carzen/ui/components/shared/states";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useReviews, useToggleReview } from "@/hooks/use-reviews";
-import { useUrlState } from "@/hooks/use-url-state";
-import { HIDE_REVIEW_REASON, TONES } from "@/lib/constants/labels";
-import { cn } from "@/lib/utils";
-import type { ReviewFilter, ReviewListItem } from "@/types/reviews";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import { HIDE_REVIEW_REASON, TONES } from "@carzen/ui/lib/constants/labels";
+import { cn } from "@carzen/ui/lib/utils";
+import type { ReviewFilter, ReviewListItem } from "@carzen/contracts/reviews";
 
 const TABS: { value: ReviewFilter; label: string; tone?: string }[] = [
   { value: "all", label: "الكل" },

@@ -18,7 +18,7 @@ import type {
   ToggleAdminStatusPayload,
   UpdateAdminPayload,
   UpdateRolesPayload,
-} from "@/types/admins";
+} from "@carzen/contracts/admins";
 
 export function useAdmins() {
   return useQuery({

@@ -1,6 +1,6 @@
 import { getData, getPaginated, send } from "@/lib/api/request";
-import type { ReasonPayload } from "@/types/common";
-import type { Order, OrderDetails, OrderListItem, OrderListMeta, OrderListParams } from "@/types/orders";
+import type { ReasonPayload } from "@carzen/contracts/common";
+import type { Order, OrderDetails, OrderListItem, OrderListMeta, OrderListParams } from "@carzen/contracts/orders";
 
 export function fetchOrders(params: OrderListParams) {
   return getPaginated<OrderListItem, OrderListMeta>("/admin/orders", params, "تعذر تحميل الحجوزات");

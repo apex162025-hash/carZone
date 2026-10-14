@@ -9,11 +9,11 @@ import { FileText, ShieldCheck } from "lucide-react";
 import { describedBy, FormField } from "@/components/modules/Settings/FormField";
 import { SaveSectionDialog, SettingsSaveBar } from "@/components/modules/Settings/SettingsSaveBar";
 import { useSaveSection } from "@/components/modules/Settings/use-save-section";
-import { SectionCard } from "@/components/shared/section-card";
-import { Textarea } from "@/components/ui/textarea";
-import { formatNumber } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { PlatformSettings } from "@/types/settings";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { Textarea } from "@carzen/ui/components/ui/textarea";
+import { formatNumber } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { PlatformSettings } from "@carzen/contracts/settings";
 
 type Legal = PlatformSettings["legal"];
 

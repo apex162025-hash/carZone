@@ -15,13 +15,13 @@ import {
   resolveDiscrepancy,
   updateCommission,
 } from "@/lib/services/finance.service";
-import type { ListParams } from "@/types/common";
+import type { ListParams } from "@carzen/contracts/common";
 import type {
   FinancePeriod,
   MarkPayoutPaidPayload,
   TransactionListParams,
   UpdateCommissionPayload,
-} from "@/types/finance";
+} from "@carzen/contracts/finance";
 
 export function useFinanceOverview(period: FinancePeriod) {
   return useQuery({

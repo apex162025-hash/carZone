@@ -8,20 +8,20 @@ import { Activity, AlertOctagon, BellRing, ChevronLeft, Filter, RefreshCw, Trend
 import { AlertsPanel } from "@/components/modules/Dashboard/AlertsPanel";
 import { BookingFunnel } from "@/components/modules/Dashboard/BookingFunnel";
 import { HEADLINE_KPIS, KPI_CONFIG, SECONDARY_KPIS } from "@/components/modules/Dashboard/kpi-config";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { KpiCard } from "@/components/shared/kpi-card";
-import { PageHeader } from "@/components/shared/page-header";
-import { RatingStars } from "@/components/shared/rating-stars";
-import { SectionCard } from "@/components/shared/section-card";
-import { ErrorState } from "@/components/shared/states";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { KpiCard } from "@carzen/ui/components/shared/kpi-card";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { RatingStars } from "@carzen/ui/components/shared/rating-stars";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { ErrorState } from "@carzen/ui/components/shared/states";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useDashboard } from "@/hooks/use-dashboard";
 import { useAuthStore } from "@/lib/store/auth-store";
-import { AREAS } from "@/lib/constants/labels";
-import { formatMoney, formatNumber, formatTime } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { DashboardPeriod } from "@/types/dashboard";
+import { AREAS } from "@carzen/ui/lib/constants/labels";
+import { formatMoney, formatNumber, formatTime } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { DashboardPeriod } from "@carzen/contracts/dashboard";
 
 // Heavy chart lib stays out of the initial bundle (AGENTS.md: charts are lazy).
 const RevenueChart = dynamic(() => import("@/components/modules/Dashboard/RevenueChart"), {

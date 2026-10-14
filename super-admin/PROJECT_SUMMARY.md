@@ -2,8 +2,15 @@
 
 > Full context for any engineer or AI session. Read `../CLAUDE.md` (repo overview + history)
 > and `AGENTS.md` (engineering playbook, copied from aroma) as well.
-> Last updated: 2026-10-13 — all screens below are built and verified (tsc, eslint, next build,
+> Last updated: 2026-10-14 — all screens below are built and verified (tsc, eslint, next build,
 > browser walk, API scenario tests). Not committed yet.
+>
+> **2026-10-14 — monorepo move.** Types, the design system and the mock backend were extracted into
+> npm-workspace packages shared with the new Vendor Portal (`../vendor-portal`):
+> `@carzen/contracts` (was `types/`), `@carzen/ui` (was `components/ui`, `components/shared`,
+> `lib/format.ts`, `lib/export-csv.ts`, `lib/constants/labels.ts`, `lib/utils.ts`, theme CSS) and
+> `@carzen/platform-api` (was `lib/mock-api/`). Older paths mentioned in §6–§9 now live in those
+> packages — see §3 and `../CLAUDE.md` §3.
 
 ---
 
@@ -39,48 +46,53 @@ npm run lint           # eslint
 ```
 app/
   layout.tsx                 # fonts (IBM Plex Sans Arabic + Plus Jakarta Sans), metadata, AppProviders
-  globals.css                # design tokens (light + .dark), utilities (num, tone-*, bg-brand-gradient…)
+  globals.css                # imports @carzen/ui/styles/theme.css (tokens, utilities) + @source for the ui package
   page.tsx                   # redirect → /dashboard
   not-found.tsx
   login/page.tsx             # public; LoginForm
   (panel)/layout.tsx         # AdminAuthGate → sidebar + topbar + main + CommandPalette
   (panel)/error.tsx          # route error boundary
   (panel)/<route>/page.tsx   # thin Server Components (metadata only)
-  api/v1/[...path]/route.ts  # mock API entry (GET/POST/PUT/PATCH/DELETE)
+  api/v1/[...path]/route.ts  # → handleMockRequest from @carzen/platform-api (GET/POST/PUT/PATCH/DELETE)
 components/
-  ui/                        # shadcn base-nova primitives (generated, lightly customized — see §8)
-  shared/                    # cross-module building blocks (§6)
   shared/layout/             # admin-sidebar, sidebar-nav, admin-topbar, notifications-menu,
-                             # user-menu, theme-toggle, command-palette, admin-auth-gate, brand-logo
+                             # user-menu, command-palette, admin-auth-gate
   providers/                 # app-providers, query-provider, auth-bootstrap
   modules/<Feature>/         # feature UI (§5)
 hooks/                       # React Query hooks per domain + utilities
 lib/
-  axios.ts                   # apiClient (Bearer, envelope check, 401 → clearAuth)
+  axios.ts                   # apiClient (Bearer, envelope check, 401 → clearAuth, X-Demo-Now → setServerNow)
   api/request.ts             # getData / getPaginated / send + cleanParams; MutationResult
   api/api-error-handler.ts   # copied from aroma (throwApiError, resolveUserFacingError…)
   config/api-base-url.ts     # NEXT_PUBLIC_API_URL or "/api/v1"
   config/pages.ts            # Arabic page metadata (getStaticPageMetadata)
-  constants/labels.ts        # ALL status labels + tones, areas, categories, audit labels (§7)
   admin-nav.ts               # sidebar groups/items, isNavActive
   query-keys.ts              # centralized query keys (each domain has *Root)
-  format.ts                  # formatMoney/Number/Percent/Date/Time/DateTime/Relative/Duration, daysBetween, initials
-  export-csv.ts              # UTF-8 BOM CSV download
   cache/ttl.ts               # CACHE_TTL_LIVE 15s / DYNAMIC 30s / REFERENCE 5m
   store/auth-store.ts        # admin + token (persisted, skipHydration, hasHydrated flag)
   store/ui-store.ts          # sidebarCollapsed (persisted), mobileNavOpen, commandOpen
   services/*.service.ts      # one per domain
-  mock-api/                  # server-only mock backend (§4)
-types/                       # domain + API types, react-query.d.ts (mutation meta typing)
+types/react-query.d.ts       # mutation meta typing
 public/logo.svg
+
+../packages/contracts/src/      # @carzen/contracts/<domain> — domain + API types (admin + vendor/*)
+../packages/ui/src/             # @carzen/ui/components/ui/*     — shadcn base-nova primitives (see §8)
+                                # @carzen/ui/components/shared/* — building blocks (§6) + brand-logo, theme-toggle
+                                # @carzen/ui/lib/{format,export-csv,utils,constants/labels} · hooks/* · styles/theme.css
+../packages/platform-api/src/   # @carzen/platform-api — server-only mock backend (§4), admin + vendor namespaces
 ```
 
-## 4. Mock API (`lib/mock-api/`)
+## 4. Mock API (`../packages/platform-api/src/`)
 
 - `index.ts` route table + dispatcher: matches `method + /path/:param`, simulates latency, checks
-  Bearer token (`db.sessions[token] → adminId`), converts `MockApiError` to `{status:false}`.
-- `db.ts`: in-memory DB on `globalThis` (survives HMR), `now()` = **today 15:30** (demo clock, same
-  as the vanilla demos), `logAudit()` (stores `actorName` snapshot), `pushAdminNotification()`, `nid()`.
+  Bearer token (`db.sessions[token] → adminId`; `/vendor/*` uses `db.vendorSessions`), converts
+  `MockApiError` to `{status:false}`.
+- `db.ts`: DB cached on `globalThis` **and persisted to `<repo>/.carzen/platform-db.json`** (override
+  with `CARZEN_DB_FILE`) so the Super Admin and the Vendor Portal — two Next processes — share one
+  dataset (mtime-based reload; atomic temp-file + rename write after every successful non-GET).
+  Regenerated when `SCHEMA_VERSION` changes or the seed day ≠ today. `now()` = anchored demo clock
+  (seeded at today 15:30, then advances in real time; sent as the `X-Demo-Now` header), `logAudit()`
+  (stores `actorName` snapshot), `pushAdminNotification()`, `nid()`.
 - `seed.ts`: TS port of `shared/js/seed.js` (mulberry32 seed `20261008`) + extra admin data
   (applications, payouts, notifications, audit samples, settings, roles matrix `DEFAULT_ROLES_MATRIX`).
 - `http.ts`: `ok`, `fail`, `MockApiError`, `requireText` (reason validation), `paginate`, `sortBy`, `matchesSearch`, `countBy`.
@@ -165,7 +177,7 @@ commission 0–30%; offer percent ≤ 50%; hiding a review recomputes ratings.
 - Order status colors `--st-*` are identical across all Carzen apps.
 - Chart palette `--chart-1..5` validated for color-vision deficiency (light + dark variants differ on purpose).
 - Utilities: `num` (Latin font + tabular figures — use for every number/ID/money), `tone-soft/tone-dot/tone-ring` (set `--tone`), `bg-brand-gradient`, `bg-grid-faint`, `animate-pulse-ring`, `scrollbar-none`.
-- `lib/constants/labels.ts` is the single source for: `ORDER_STATUS`, `PAYMENT_STATUS`, `PAYMENT_METHOD`, `ORDER_SOURCE`, `BUSINESS_STATUS`, `APPLICATION_STATUS`, `CUSTOMER_STATUS`, `COMPLAINT_STATUS/CATEGORY`, `TRANSACTION_STATUS`, `PAYOUT_STATUS`, `OFFER_STATUS`, `ADMIN_ROLE`, `STAFF_ROLE`, `SUSPEND_REASON`, `HIDE_REVIEW_REASON`, `NOTIFICATION_TYPE`, `AREAS`, `SERVICE_CATEGORY`, `AMENITY`, `VEHICLE_COLOR`, `WEEK_DAYS`, `PERMISSION_MODULES/LEVEL`, `AUDIT_ACTION/ENTITY`, `auditEntityHref`.
+- `@carzen/ui/lib/constants/labels` is the single source for: `ORDER_STATUS`, `PAYMENT_STATUS`, `PAYMENT_METHOD`, `ORDER_SOURCE`, `BUSINESS_STATUS`, `APPLICATION_STATUS`, `CUSTOMER_STATUS`, `COMPLAINT_STATUS/CATEGORY`, `TRANSACTION_STATUS`, `PAYOUT_STATUS`, `OFFER_STATUS`, `ADMIN_ROLE`, `STAFF_ROLE`, `SUSPEND_REASON`, `HIDE_REVIEW_REASON`, `NOTIFICATION_TYPE`, `AREAS`, `SERVICE_CATEGORY`, `AMENITY`, `VEHICLE_COLOR`, `WEEK_DAYS`, `PERMISSION_MODULES/LEVEL`, `AUDIT_ACTION/ENTITY`, `auditEntityHref`.
 - UX rules: every screen has loading/empty/error/content; sensitive actions require a reason and are
   audited; destructive buttons use `bg-destructive text-white`; logical properties only (ms/me/ps/pe/start/end);
   responsive at 1440/1024/768 (sidebar collapses to icons, mobile sheet below `lg`).
@@ -181,15 +193,15 @@ commission 0–30%; offer percent ≤ 50%; hiding a review recomputes ratings.
 7. **React 19 lint rules** (eslint-config-next 16): no synchronous `setState` in effects (reset dialog state by keeping it in a child that unmounts on close — see `ReasonDialog`, `CommandPalette`; or "adjust state during render" — see `SearchInput`); hook dependency arrays must be simple expressions (see `useUrlState`'s `defaultsKey`).
 8. **Charts:** Recharts only via `next/dynamic` + `ssr:false`; one series per chart (never dual axis); x-axis `reversed` (RTL time flow); custom RTL tooltip.
 9. **Mutations:** never add extra success toasts (handled by `useAdminMutation`); errors are toasted globally (`MutationCache`); use `meta: { skipErrorToast: true }` when showing errors inline.
-10. **Mock DB** resets on dev-server restart; seed edits need a reset. Writing Arabic through curl in Git Bash sends a wrong codepage (shows `????`) — test Arabic input through the browser.
+10. **Mock DB** lives in `.carzen/platform-db.json` (shared by both apps); seed edits need a reset or a `SCHEMA_VERSION` bump. Writing Arabic through curl in Git Bash sends a wrong codepage (shows `????`) — test Arabic input through the browser.
 11. Screenshots in the desktop app's browser pane fail while the window is minimized — verify with `get_page_text` / console logs instead.
 
 ## 9. How to add a new module (recipe)
 
-1. Types in `types/<domain>.ts`.
-2. Mock handler `lib/mock-api/handlers/<domain>.ts` (validate with `requireText`, `logAudit` on mutations) and register it in `lib/mock-api/index.ts`.
+1. Types in `../packages/contracts/src/<domain>.ts`.
+2. Mock handler `../packages/platform-api/src/handlers/<domain>.ts` (validate with `requireText`, `logAudit` on mutations) and register it in the package's `index.ts`.
 3. Service `lib/services/<domain>.service.ts`; keys in `lib/query-keys.ts`; hook `hooks/use-<domain>.ts` (mutations via `useAdminMutation`).
-4. Labels/tones in `lib/constants/labels.ts`; metadata key in `lib/config/pages.ts`; nav item in `lib/admin-nav.ts`.
+4. Labels/tones in `@carzen/ui/lib/constants/labels`; metadata key in `lib/config/pages.ts`; nav item in `lib/admin-nav.ts`.
 5. UI in `components/modules/<Feature>/` copying `Washes/*` patterns; page in `app/(panel)/<route>/page.tsx`.
 6. Verify: `npx tsc --noEmit`, `npx eslint .`, `npx next build`, open the route, check console.
 
@@ -199,5 +211,5 @@ commission 0–30%; offer percent ≤ 50%; hiding a review recomputes ratings.
 - **Featured listings** (spec A14, AD-35).
 - Branch **map view** (Leaflet, lazy-loaded).
 - English locale / i18n.
-- Shared polish: `definition` prop on `KpiCard`; `totalsRow` in `DataTable`; `STAFF_STATUS`, `BRANCH_STATUS`, `ADMIN_STATUS` in labels (modules currently keep local maps); keep API `errors` per field in `throwApiError`; `washId` filter on complaints; paging in `useNotifications`; document URLs + previews on applications.
-- When the Laravel API arrives: point `NEXT_PUBLIC_API_URL` at it, align field names (backend may use snake_case — adapt in services, not components), then delete `lib/mock-api` and `app/api/v1`.
+- Shared polish: `definition` prop on `KpiCard`; `totalsRow` in `DataTable`; modules still keep local status maps — switch them to the shared `STAFF_STATUS` / `BRANCH_STATUS` / `ADMIN_STATUS` now in labels; keep API `errors` per field in `throwApiError`; `washId` filter on complaints; paging in `useNotifications`; document URLs + previews on applications.
+- When the Laravel API arrives: point `NEXT_PUBLIC_API_URL` at it, align field names (backend may use snake_case — adapt in services, not components), then delete `app/api/v1` (and `packages/platform-api` once no app uses it).

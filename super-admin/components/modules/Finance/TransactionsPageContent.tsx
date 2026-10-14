@@ -7,23 +7,23 @@ import { AlertTriangle, ChartPie, Receipt, ScanSearch, Store } from "lucide-reac
 
 import { DiscrepancySheet } from "@/components/modules/Finance/DiscrepancySheet";
 import { MetricInfo } from "@/components/modules/Finance/MetricInfo";
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
-import { ExportCsvButton } from "@/components/shared/export-csv-button";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { SearchInput } from "@/components/shared/search-input";
-import { SelectFilter } from "@/components/shared/select-filter";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { Button } from "@/components/ui/button";
+import { DataTable, type DataTableColumn } from "@carzen/ui/components/shared/data-table";
+import { ExportCsvButton } from "@carzen/ui/components/shared/export-csv-button";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { SelectFilter } from "@carzen/ui/components/shared/select-filter";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { Button } from "@carzen/ui/components/ui/button";
 import { useTransactions } from "@/hooks/use-finance";
-import { useUrlState } from "@/hooks/use-url-state";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
 import { useWashes } from "@/hooks/use-washes";
-import { PAYMENT_METHOD, TONES, TRANSACTION_STATUS } from "@/lib/constants/labels";
-import { formatDate, formatMoney, formatNumber, formatPercent, formatTime } from "@/lib/format";
-import type { CsvColumn } from "@/lib/export-csv";
-import type { TransactionFilter, TransactionListItem, TransactionListMeta } from "@/types/finance";
+import { PAYMENT_METHOD, TONES, TRANSACTION_STATUS } from "@carzen/ui/lib/constants/labels";
+import { formatDate, formatMoney, formatNumber, formatPercent, formatTime } from "@carzen/ui/lib/format";
+import type { CsvColumn } from "@carzen/ui/lib/export-csv";
+import type { TransactionFilter, TransactionListItem, TransactionListMeta } from "@carzen/contracts/finance";
 
 const TAB_ORDER: TransactionFilter[] = ["all", "pending", "paid", "refunded", "settled", "discrepancy"];
 

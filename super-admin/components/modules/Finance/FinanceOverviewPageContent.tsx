@@ -21,17 +21,17 @@ import {
 
 import { FinanceMetricCard } from "@/components/modules/Finance/FinanceMetricCard";
 import { MetricInfo } from "@/components/modules/Finance/MetricInfo";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { PageHeader } from "@/components/shared/page-header";
-import { SectionCard } from "@/components/shared/section-card";
-import { EmptyState, ErrorState } from "@/components/shared/states";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { EmptyState, ErrorState } from "@carzen/ui/components/shared/states";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useFinanceOverview } from "@/hooks/use-finance";
-import { useUrlState } from "@/hooks/use-url-state";
-import { formatMoney, formatNumber, formatPercent } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { FinanceOverview, FinancePeriod } from "@/types/finance";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import { formatMoney, formatNumber, formatPercent } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { FinanceOverview, FinancePeriod } from "@carzen/contracts/finance";
 
 // Recharts stays out of the initial bundle.
 const FinanceChart = dynamic(() => import("@/components/modules/Finance/FinanceChart"), {

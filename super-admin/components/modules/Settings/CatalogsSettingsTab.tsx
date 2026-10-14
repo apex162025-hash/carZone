@@ -5,15 +5,15 @@ import { Info, MapPin, Plus, Sparkles, Trash2, Wrench } from "lucide-react";
 
 import { SaveSectionDialog, SettingsSaveBar } from "@/components/modules/Settings/SettingsSaveBar";
 import { useSaveSection } from "@/components/modules/Settings/use-save-section";
-import { SectionCard } from "@/components/shared/section-card";
-import { EmptyState } from "@/components/shared/states";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { formatNumber } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { PlatformSettings } from "@/types/settings";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { EmptyState } from "@carzen/ui/components/shared/states";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Input } from "@carzen/ui/components/ui/input";
+import { Switch } from "@carzen/ui/components/ui/switch";
+import { formatNumber } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { PlatformSettings } from "@carzen/contracts/settings";
 
 type Catalogs = PlatformSettings["catalogs"];
 type CatalogKey = keyof Catalogs;

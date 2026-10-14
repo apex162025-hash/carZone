@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
-import { BrandLogo } from "@/components/shared/layout/brand-logo";
+import { BrandLogo } from "@carzen/ui/components/shared/brand-logo";
 import { useAuthReady, useMe } from "@/hooks/use-auth";
 
 /**
@@ -28,7 +28,7 @@ export function AdminAuthGate({ children }: { children: ReactNode }) {
   if (!isReady || !isAuthenticated) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-5">
-        <BrandLogo />
+        <BrandLogo subtitle="لوحة السوبر أدمن" />
         <div className="h-1 w-40 overflow-hidden rounded-full bg-muted">
           <div className="bg-brand-gradient h-full w-1/2 animate-[pulse_1.2s_ease-in-out_infinite] rounded-full" />
         </div>

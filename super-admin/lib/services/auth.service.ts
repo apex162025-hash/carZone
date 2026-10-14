@@ -1,5 +1,5 @@
 import { getData, send } from "@/lib/api/request";
-import type { AdminUser, LoginPayload, LoginResponse } from "@/types/auth";
+import type { AdminUser, LoginPayload, LoginResponse } from "@carzen/contracts/auth";
 
 export function login(payload: LoginPayload) {
   return send<LoginResponse>("post", "/admin/auth/login", payload, "تعذر تسجيل الدخول");

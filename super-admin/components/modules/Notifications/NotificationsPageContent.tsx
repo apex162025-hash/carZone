@@ -4,18 +4,18 @@ import { useRouter } from "next/navigation";
 import type { CSSProperties } from "react";
 import { BellOff, Check, CheckCheck, ChevronLeft } from "lucide-react";
 
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { PageHeader } from "@/components/shared/page-header";
-import { EmptyState, ErrorState } from "@/components/shared/states";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { EmptyState, ErrorState } from "@carzen/ui/components/shared/states";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useMarkAllNotificationsRead, useMarkNotificationRead, useNotifications } from "@/hooks/use-platform";
-import { useUrlState } from "@/hooks/use-url-state";
-import { NOTIFICATION_TYPE } from "@/lib/constants/labels";
-import { daysBetween, formatDate, formatDateTime, formatNumber, formatRelative } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { AdminNotification, AdminNotificationType } from "@/types/notifications";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import { NOTIFICATION_TYPE } from "@carzen/ui/lib/constants/labels";
+import { daysBetween, formatDate, formatDateTime, formatNumber, formatRelative } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { AdminNotification, AdminNotificationType } from "@carzen/contracts/notifications";
 
 function dayLabel(iso: string) {
   const d = daysBetween(iso);

@@ -3,24 +3,24 @@
 import Link from "next/link";
 import { MapPin, Plus, Store } from "lucide-react";
 
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
-import { ExportCsvButton } from "@/components/shared/export-csv-button";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { RatingStars } from "@/components/shared/rating-stars";
-import { SearchInput } from "@/components/shared/search-input";
-import { SelectFilter } from "@/components/shared/select-filter";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { useUrlState } from "@/hooks/use-url-state";
+import { DataTable, type DataTableColumn } from "@carzen/ui/components/shared/data-table";
+import { ExportCsvButton } from "@carzen/ui/components/shared/export-csv-button";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { RatingStars } from "@carzen/ui/components/shared/rating-stars";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { SelectFilter } from "@carzen/ui/components/shared/select-filter";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
 import { useWashes } from "@/hooks/use-washes";
-import { AREAS, BUSINESS_STATUS } from "@/lib/constants/labels";
-import { formatMoney, formatNumber, formatRelative } from "@/lib/format";
-import type { CsvColumn } from "@/lib/export-csv";
-import type { BusinessStatus, WashListItem } from "@/types/washes";
+import { AREAS, BUSINESS_STATUS } from "@carzen/ui/lib/constants/labels";
+import { formatMoney, formatNumber, formatRelative } from "@carzen/ui/lib/format";
+import type { CsvColumn } from "@carzen/ui/lib/export-csv";
+import type { BusinessStatus, WashListItem } from "@carzen/contracts/washes";
 
 const TAB_ORDER: (BusinessStatus | "all")[] = ["all", "active", "pending", "approved", "suspended", "rejected"];
 

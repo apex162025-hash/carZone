@@ -4,8 +4,14 @@
     {
       "name": "super-admin",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "super-admin", "run", "dev"],
+      "runtimeArgs": ["run", "dev", "-w", "super-admin"],
       "port": 3100
+    },
+    {
+      "name": "vendor-portal",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "vendor-portal"],
+      "port": 3200
     }
   ]
 }

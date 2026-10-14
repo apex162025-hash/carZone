@@ -6,15 +6,15 @@ import { AlertTriangle, Info, MoreHorizontal, Power, PowerOff, ShieldCheck, User
 import { ChangeRoleDialog } from "@/components/modules/Admins/ChangeRoleDialog";
 import { InviteAdminDialog } from "@/components/modules/Admins/InviteAdminDialog";
 import { ADMIN_ROLES } from "@/components/modules/Admins/RoleRadioCards";
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { SearchInput } from "@/components/shared/search-input";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
+import { DataTable, type DataTableColumn } from "@carzen/ui/components/shared/data-table";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,14 +23,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@carzen/ui/components/ui/dropdown-menu";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useAdmins, useToggleAdminStatus } from "@/hooks/use-admins";
-import { ADMIN_ROLE, TONES, type StatusMeta } from "@/lib/constants/labels";
-import { formatDate, formatDateTime, formatNumber, formatRelative } from "@/lib/format";
+import { ADMIN_ROLE, TONES, type StatusMeta } from "@carzen/ui/lib/constants/labels";
+import { formatDate, formatDateTime, formatNumber, formatRelative } from "@carzen/ui/lib/format";
 import { useAuthStore } from "@/lib/store/auth-store";
-import { cn } from "@/lib/utils";
-import type { AdminRole, AdminStatus, AdminUser } from "@/types/auth";
+import { cn } from "@carzen/ui/lib/utils";
+import type { AdminRole, AdminStatus, AdminUser } from "@carzen/contracts/auth";
 
 const ADMIN_STATUS: Record<AdminStatus, StatusMeta> = {
   active: { label: "نشط", tone: TONES.success },

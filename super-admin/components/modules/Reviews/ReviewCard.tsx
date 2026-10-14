@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { Eye, EyeOff, MessageSquareReply, Store, Tag } from "lucide-react";
 
-import { RatingStars } from "@/components/shared/rating-stars";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { HIDE_REVIEW_REASON } from "@/lib/constants/labels";
-import { formatDateTime, formatRelative } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { HideReviewReason, ReviewListItem } from "@/types/reviews";
+import { RatingStars } from "@carzen/ui/components/shared/rating-stars";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
+import { HIDE_REVIEW_REASON } from "@carzen/ui/lib/constants/labels";
+import { formatDateTime, formatRelative } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { HideReviewReason, ReviewListItem } from "@carzen/contracts/reviews";
 
 type ReviewCardProps = {
   review: ReviewListItem;

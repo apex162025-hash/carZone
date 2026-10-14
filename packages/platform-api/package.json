@@ -1,0 +1,18 @@
+{
+  "name": "@carzen/platform-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mock Carzen platform REST API (admin + vendor namespaces) with a file-backed store shared by every app. Replaced by the Laravel API later.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@carzen/contracts": "*",
+    "server-only": "^0.0.1"
+  }
+}

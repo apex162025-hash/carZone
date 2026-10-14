@@ -4,14 +4,14 @@ import { useMemo } from "react";
 import { MapPinned } from "lucide-react";
 
 import { branchesLabel } from "@/components/modules/Branches/branch-status";
-import { SectionCard } from "@/components/shared/section-card";
-import { ErrorState } from "@/components/shared/states";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AREAS } from "@/lib/constants/labels";
-import { formatNumber } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { BranchListItem } from "@/types/washes";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { ErrorState } from "@carzen/ui/components/shared/states";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
+import { AREAS } from "@carzen/ui/lib/constants/labels";
+import { formatNumber } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
+import type { BranchListItem } from "@carzen/contracts/washes";
 
 type AreaStat = { area: string; branches: number; active: number; capacity: number; activeCapacity: number };
 

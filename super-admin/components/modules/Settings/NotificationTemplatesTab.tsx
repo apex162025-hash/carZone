@@ -1,12 +1,12 @@
 import { Fragment } from "react";
 import { BellRing, Eye } from "lucide-react";
 
-import { SectionCard } from "@/components/shared/section-card";
-import { EmptyState } from "@/components/shared/states";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { TONES } from "@/lib/constants/labels";
-import type { Localized } from "@/types/common";
-import type { PlatformSettings } from "@/types/settings";
+import { SectionCard } from "@carzen/ui/components/shared/section-card";
+import { EmptyState } from "@carzen/ui/components/shared/states";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { TONES } from "@carzen/ui/lib/constants/labels";
+import type { Localized } from "@carzen/contracts/common";
+import type { PlatformSettings } from "@carzen/contracts/settings";
 
 type Template = PlatformSettings["notificationTemplates"][number];
 

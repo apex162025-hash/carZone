@@ -4,22 +4,22 @@ import Link from "next/link";
 import { useState } from "react";
 import { PauseCircle, PlayCircle, UsersRound } from "lucide-react";
 
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
-import { ExportCsvButton } from "@/components/shared/export-csv-button";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { ReasonDialog } from "@/components/shared/reason-dialog";
-import { SearchInput } from "@/components/shared/search-input";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { useUrlState } from "@/hooks/use-url-state";
+import { DataTable, type DataTableColumn } from "@carzen/ui/components/shared/data-table";
+import { ExportCsvButton } from "@carzen/ui/components/shared/export-csv-button";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { ReasonDialog } from "@carzen/ui/components/shared/reason-dialog";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
+import { Button } from "@carzen/ui/components/ui/button";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
 import { useStaff, useToggleStaff } from "@/hooks/use-washes";
-import { BUSINESS_STATUS, STAFF_ROLE, TONES } from "@/lib/constants/labels";
-import type { CsvColumn } from "@/lib/export-csv";
-import type { StaffListItem, StaffRole, StaffStatus } from "@/types/washes";
+import { BUSINESS_STATUS, STAFF_ROLE, TONES } from "@carzen/ui/lib/constants/labels";
+import type { CsvColumn } from "@carzen/ui/lib/export-csv";
+import type { StaffListItem, StaffRole, StaffStatus } from "@carzen/contracts/washes";
 
 const TAB_ORDER: (StaffRole | "all")[] = ["all", "owner", "manager", "employee"];
 

@@ -5,8 +5,8 @@ import { ThemeProvider } from "next-themes";
 
 import { AuthBootstrap } from "@/components/providers/auth-bootstrap";
 import { QueryProvider } from "@/components/providers/query-provider";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@carzen/ui/components/ui/sonner";
+import { TooltipProvider } from "@carzen/ui/components/ui/tooltip";
 
 type AppProvidersProps = {
   children: ReactNode;

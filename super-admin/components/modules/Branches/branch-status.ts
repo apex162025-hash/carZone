@@ -1,4 +1,4 @@
-import { TONES, type StatusMeta } from "@/lib/constants/labels";
+import { TONES, type StatusMeta } from "@carzen/ui/lib/constants/labels";
 
 /** Branch on/off state (no shared meta exists in labels.ts yet). */
 export const BRANCH_STATUS: Record<"active" | "inactive", StatusMeta> = {

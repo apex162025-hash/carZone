@@ -3,9 +3,9 @@
 import type { CSSProperties } from "react";
 import { Check } from "lucide-react";
 
-import { ADMIN_ROLE } from "@/lib/constants/labels";
-import { cn } from "@/lib/utils";
-import type { AdminRole } from "@/types/auth";
+import { ADMIN_ROLE } from "@carzen/ui/lib/constants/labels";
+import { cn } from "@carzen/ui/lib/utils";
+import type { AdminRole } from "@carzen/contracts/auth";
 
 export const ADMIN_ROLES = Object.keys(ADMIN_ROLE) as AdminRole[];
 

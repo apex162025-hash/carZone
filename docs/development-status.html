@@ -1,0 +1,390 @@
+<title>حالة تطوير كارزن</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
+<style>
+  /* Layout: one reading column with a full-width "stage ladder" and a layered system map; Carzen brand tokens */
+  :root {
+    --bg: #F5F8FC;
+    --surface: #FFFFFF;
+    --ink: #0B1B33;
+    --muted: #5B6B82;
+    --line: #E1E8F2;
+    --blue: #1463FF;
+    --blue-soft: #E8F0FF;
+    --aqua: #0B8F83;
+    --aqua-soft: #E2F7F4;
+    --amber: #B45309;
+    --amber-soft: #FEF3E2;
+    --red: #C2362B;
+    --red-soft: #FDECEA;
+    --track: #E9EEF5;
+    --font-ar: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+    --font-lat: "Plus Jakarta Sans", "IBM Plex Sans Arabic", system-ui, sans-serif;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #08111F; --surface: #0F1B2E; --ink: #E7EEF8; --muted: #93A3BA; --line: #1F2E45;
+      --blue: #5B90FF; --blue-soft: #14264A; --aqua: #2CC9B8; --aqua-soft: #0E3330;
+      --amber: #F0A64A; --amber-soft: #3A2A12; --red: #F07A70; --red-soft: #3D1A18; --track: #1A2840;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #08111F; --surface: #0F1B2E; --ink: #E7EEF8; --muted: #93A3BA; --line: #1F2E45;
+    --blue: #5B90FF; --blue-soft: #14264A; --aqua: #2CC9B8; --aqua-soft: #0E3330;
+    --amber: #F0A64A; --amber-soft: #3A2A12; --red: #F07A70; --red-soft: #3D1A18; --track: #1A2840;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-ar); font-size: 16px; line-height: 1.85; padding: 0 20px; direction: rtl; }
+  .num, .lat { font-family: var(--font-lat); font-variant-numeric: tabular-nums; }
+  .wrap { max-width: 1040px; margin-inline: auto; }
+  .col { max-width: 760px; }
+  h1, h2, h3 { text-wrap: balance; line-height: 1.35; margin: 0; }
+  p { margin: 0; }
+  code { font-family: var(--font-lat); font-size: 0.86em; background: var(--track); padding: 1px 6px; border-radius: 5px; direction: ltr; unicode-bidi: isolate; }
+  a { color: var(--blue); }
+  a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  header.cover { padding-block: 52px 32px; display: grid; gap: 16px; border-bottom: 1px solid var(--line); }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--muted); font-size: 14px; }
+  .brand i { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, var(--aqua), var(--blue)); }
+  .cover h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 700; }
+  .lede { font-size: 18px; color: var(--muted); max-width: 62ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13px; color: var(--muted); }
+  .meta b { color: var(--ink); }
+
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; padding-block: 16px; border-bottom: 1px solid var(--line); }
+  nav.toc a { font-size: 13px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); padding: 4px 12px; border-radius: 999px; }
+  nav.toc a:hover { border-color: var(--blue); color: var(--blue); }
+
+  section { padding-block: 44px 6px; display: grid; gap: 18px; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--blue); }
+  section h2 { font-size: clamp(22px, 3vw, 28px); }
+  section h3 { font-size: 17px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 13.5px; line-height: 1.75; }
+
+  .verdict { background: var(--ink); color: var(--bg); border-radius: var(--radius); padding: 26px 28px; display: grid; gap: 18px; }
+  .verdict p.big { font-size: 20px; line-height: 1.75; font-weight: 500; }
+  .tri { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .tri div { border: 1px solid color-mix(in srgb, var(--bg) 22%, transparent); border-radius: 10px; padding: 12px 14px; display: grid; gap: 4px; }
+  .tri b { font-size: 15px; }
+  .tri span { font-size: 13px; line-height: 1.7; color: color-mix(in srgb, var(--bg) 75%, transparent); }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-inline-end: 6px; vertical-align: middle; }
+  .d-ok { background: var(--aqua); } .d-warn { background: var(--amber); } .d-bad { background: var(--red); }
+
+  /* Stage ladder */
+  .ladder { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow-x: auto; }
+  .ladder table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  .ladder th, .ladder td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  .ladder thead th { font-size: 12px; color: var(--muted); font-weight: 700; text-align: center; background: var(--bg); }
+  .ladder thead th:first-child { text-align: start; }
+  .ladder tbody tr:last-child td { border-bottom: 0; }
+  .ladder td.name { min-width: 230px; }
+  .ladder td.name b { display: block; font-size: 15px; }
+  .ladder td.name span { font-size: 12.5px; color: var(--muted); line-height: 1.6; display: block; }
+  .ladder td.stage { text-align: center; width: 13%; position: relative; }
+  .pip { width: 100%; height: 10px; border-radius: 999px; background: var(--track); display: block; }
+  .pip.on { background: var(--blue); }
+  .pip.cur { background: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+  .pip.on.warn, .pip.cur.warn { background: var(--amber); box-shadow: none; }
+  .pip.on.bad, .pip.cur.bad { background: var(--red); box-shadow: none; }
+  .note-cell { font-size: 12.5px; color: var(--muted); min-width: 200px; line-height: 1.6; }
+
+  /* Numbers */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .stat { background: var(--surface); padding: 16px; display: grid; gap: 2px; align-content: start; }
+  .stat .v { font-family: var(--font-lat); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; }
+  .stat .l { font-size: 13.5px; font-weight: 600; }
+  .stat .s { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .stat.alert .v { color: var(--red); }
+  .stat.good .v { color: var(--aqua); }
+
+  /* System map */
+  .layers { display: grid; gap: 10px; }
+  .layer { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; align-items: stretch; }
+  .layer > .lab { font-size: 13px; font-weight: 700; color: var(--muted); padding-top: 12px; }
+  .boxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .box { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; }
+  .box b { font-size: 14.5px; }
+  .box span { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+  .box.future { border-style: dashed; background: transparent; }
+  .chip { font-size: 11.5px; font-weight: 700; padding: 2px 10px; border-radius: 999px; width: fit-content; }
+  .c-ok { color: var(--aqua); background: var(--aqua-soft); }
+  .c-warn { color: var(--amber); background: var(--amber-soft); }
+  .c-bad { color: var(--red); background: var(--red-soft); }
+  .c-plan { color: var(--muted); background: var(--track); }
+  .flow { text-align: center; font-size: 12px; color: var(--muted); }
+
+  /* Two columns lists */
+  .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+  .panel h3 { display: flex; align-items: center; gap: 8px; }
+  .panel ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 7px; font-size: 14.5px; line-height: 1.75; }
+
+  /* Points */
+  .points { display: grid; gap: 12px; }
+  .point { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; align-items: start; }
+  .point b { font-size: 15.5px; }
+  .point p { grid-column: 1 / -1; font-size: 14.5px; color: var(--muted); line-height: 1.8; }
+
+  /* Plan */
+  ol.plan { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: s; }
+  ol.plan li { counter-increment: s; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; position: relative; padding-bottom: 22px; }
+  ol.plan li::before { content: counter(s); font-family: var(--font-lat); font-weight: 800; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--blue); color: var(--surface); z-index: 1; }
+  ol.plan li::after { content: ""; position: absolute; inset-inline-start: 17px; top: 36px; bottom: 0; width: 2px; background: var(--line); }
+  ol.plan li:last-child::after { display: none; }
+  .step { display: grid; gap: 6px; padding-top: 4px; }
+  .step b { font-size: 16px; }
+  .step p { font-size: 14.5px; color: var(--muted); line-height: 1.8; }
+  .step .out { font-size: 13px; }
+  .step .out span { font-weight: 700; color: var(--ink); }
+
+  .ask { background: var(--blue-soft); border: 1px solid color-mix(in srgb, var(--blue) 25%, transparent); border-radius: var(--radius); padding: 20px 22px; display: grid; gap: 10px; }
+  .ask ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; }
+
+  footer { padding-block: 36px 56px; margin-top: 40px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+  @media (max-width: 760px) {
+    .tri, .split { grid-template-columns: 1fr; }
+    .layer { grid-template-columns: 1fr; }
+    .layer > .lab { padding-top: 0; }
+    .verdict { padding: 20px; }
+    .verdict p.big { font-size: 17px; }
+  }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+  <header class="cover">
+    <div class="brand"><i aria-hidden="true"></i> Carzen · كارزن</div>
+    <h1>حالة تطوير كارزن</h1>
+    <p class="lede">نظرة شاملة على الواجهات والباك إند والتطبيقات: أين وصلنا فعلًا، هل الاتجاه صحيح، وما الخطوات التالية بالترتيب.</p>
+    <div class="meta">
+      <span>التاريخ: <b class="num">14 أكتوبر 2026</b></span>
+      <span>الفرع: <b class="lat">ebrahim</b></span>
+      <span>مبني على: <b>فحص فعلي للمستودع اليوم</b></span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="المحتويات">
+    <a href="#verdict">الحكم العام</a>
+    <a href="#stages">مرحلة كل جزء</a>
+    <a href="#numbers">بالأرقام</a>
+    <a href="#map">خريطة النظام</a>
+    <a href="#backend">الباك إند</a>
+    <a href="#right">ما نفعله صح</a>
+    <a href="#fix">ما يحتاج تصحيح</a>
+    <a href="#plan">الخطة</a>
+    <a href="#decisions">قرارات مطلوبة</a>
+  </nav>
+
+  <section id="verdict">
+    <span class="eyebrow">الحكم العام</span>
+    <h2>الاتجاه صحيح معماريًا، لكن التوزيع غير متوازن</h2>
+    <div class="verdict">
+      <p class="big">لوحتا الويب (السوبر أدمن وبوابة الشركاء) متقدمتان جدًا وبجودة عالية. في المقابل، الباك إند الحقيقي لم يبدأ، وتطبيقا العميل والموظف، وهما ما يستخدمه الناس يوميًا، ما زالا نموذجًا تجريبيًا قابلًا للضغط فقط.</p>
+      <div class="tri">
+        <div><b><i class="dot d-ok"></i>الواجهات</b><span>مكتملة ونظيفة. فحص الأنواع والـ lint بدون أخطاء في كل الحزم الخمس.</span></div>
+        <div><b><i class="dot d-bad"></i>الباك إند</b><span>غير موجود. الموجود API تجريبي يمثل مواصفات تنفيذية قوية.</span></div>
+        <div><b><i class="dot d-warn"></i>التطبيقات</b><span>نماذج HTML/JS تحفظ في المتصفح، وغير متصلة بالـ API المشترك.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stages">
+    <span class="eyebrow">مرحلة كل جزء</span>
+    <h2>لا يوجد جزء وصل لمرحلة «جاهز للإنتاج» حتى الآن</h2>
+    <p class="col muted small">بدل نسب مئوية تخمينية، نستخدم خمس مراحل واضحة. الخانة الملونة الأخيرة هي المرحلة الحالية لكل جزء.</p>
+    <div class="ladder">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">الجزء</th>
+            <th scope="col">مواصفات</th>
+            <th scope="col">نموذج تجريبي</th>
+            <th scope="col">واجهة مكتملة<br>على بيانات تجريبية</th>
+            <th scope="col">متصل بباك إند حقيقي</th>
+            <th scope="col">جاهز للإنتاج</th>
+            <th scope="col">ملاحظة</th>
+          </tr>
+        </thead>
+        <tbody id="ladder-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="numbers">
+    <span class="eyebrow">بالأرقام</span>
+    <h2>حجم ما بُني وما لم يُبنَ</h2>
+    <div class="stats">
+      <div class="stat"><span class="v">26</span><span class="l">صفحة في السوبر أدمن</span><span class="s">كل شاشات المواصفات عدا التقارير والظهور المميز.</span></div>
+      <div class="stat"><span class="v">21</span><span class="l">صفحة في بوابة الشركاء</span><span class="s">الشاشات <span class="num">D1–D19</span> كاملة.</span></div>
+      <div class="stat"><span class="v">~41K</span><span class="l">سطر TypeScript</span><span class="s">لوحتان + حزم مشتركة + API تجريبي.</span></div>
+      <div class="stat good"><span class="v">0</span><span class="l">أخطاء أنواع أو lint</span><span class="s">في الحزم الخمس، فحص اليوم.</span></div>
+      <div class="stat alert"><span class="v">0</span><span class="l">سطر باك إند حقيقي</span><span class="s">لا قاعدة بيانات ولا خادم إنتاج.</span></div>
+      <div class="stat alert"><span class="v">0</span><span class="l">اختبار آلي داخل المشروع</span><span class="s">سكربت الـ <span class="num">55</span> فحصًا موجود خارج المستودع.</span></div>
+      <div class="stat alert"><span class="v">204</span><span class="l">ملف غير محفوظ في git</span><span class="s">كل عمل المرحلة الحالية بدون commit.</span></div>
+    </div>
+  </section>
+
+  <section id="map">
+    <span class="eyebrow">خريطة النظام</span>
+    <h2>كيف تتصل الأجزاء ببعض اليوم، وكيف يجب أن تتصل</h2>
+    <div class="layers">
+      <div class="layer">
+        <div class="lab">من يستخدمه</div>
+        <div class="boxes">
+          <div class="box"><span class="chip c-warn">نموذج تجريبي</span><b>تطبيق العميل</b><span>اكتشاف المغاسل والحجز. HTML/JS بيانات في المتصفح.</span></div>
+          <div class="box"><span class="chip c-warn">نموذج تجريبي</span><b>تطبيق الموظف</b><span>walk-in، التعرف باللوحة، الوردية. HTML/JS بيانات في المتصفح.</span></div>
+          <div class="box"><span class="chip c-ok">واجهة مكتملة</span><b>بوابة الشركاء</b><span>المالك ومدير الفرع. Next.js على المنفذ <span class="num">3200</span>.</span></div>
+          <div class="box"><span class="chip c-ok">واجهة مكتملة</span><b>السوبر أدمن</b><span>فريق كارزن. Next.js على المنفذ <span class="num">3100</span>.</span></div>
+        </div>
+      </div>
+      <p class="flow">↓ اللوحتان فقط متصلتان بالطبقة التالية. التطبيقان منفصلان تمامًا ↓</p>
+      <div class="layer">
+        <div class="lab">العقد المشترك</div>
+        <div class="boxes">
+          <div class="box"><span class="chip c-ok">جاهز</span><b>أنواع البيانات</b><span><code>@carzen/contracts</code>: شكل كل طلب ورد.</span></div>
+          <div class="box"><span class="chip c-ok">جاهز</span><b>نظام التصميم</b><span><code>@carzen/ui</code>: المكونات والألوان والتنسيقات.</span></div>
+        </div>
+      </div>
+      <p class="flow">↓ <code>/api/v1/*</code> ↓</p>
+      <div class="layer">
+        <div class="lab">الخادم</div>
+        <div class="boxes">
+          <div class="box"><span class="chip c-warn">يعمل الآن</span><b>API تجريبي</b><span><code>@carzen/platform-api</code>: كل قواعد العمل، داخل Next.js.</span></div>
+          <div class="box future"><span class="chip c-plan">لم يبدأ</span><b>باك إند Laravel</b><span>يحل محل التجريبي بتغيير <code>NEXT_PUBLIC_API_URL</code> فقط.</span></div>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="lab">البيانات</div>
+        <div class="boxes">
+          <div class="box"><span class="chip c-warn">يعمل الآن</span><b>ملف JSON مشترك</b><span><code>.carzen/platform-db.json</code> بين اللوحتين.</span></div>
+          <div class="box future"><span class="chip c-plan">لم يبدأ</span><b>قاعدة بيانات حقيقية</b><span>MySQL أو PostgreSQL مع نسخ احتياطي.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="backend">
+    <span class="eyebrow">الباك إند</span>
+    <h2>الموجود ليس باك إند، لكنه مواصفات تنفيذية قيمة جدًا</h2>
+    <div class="split">
+      <div class="panel">
+        <h3><span class="chip c-ok">موجود ويعمل</span></h3>
+        <ul>
+          <li>كل الـ endpoints بشكل ردود Laravel الموحد <code>{status, message, data}</code>.</li>
+          <li>دورة حياة الطلب كاملة: تأكيد، استلام، بدء، إنهاء، تحصيل، إلغاء، عدم حضور، استرداد.</li>
+          <li>التسعير على السيرفر من الخدمات وأفضل عرض، والخصم في حدود صلاحية الموظف.</li>
+          <li>المواعيد المتاحة حسب السعة وساعات العمل والفترات المحجوبة.</li>
+          <li>صلاحيات المالك ومدير الفرع، مع قفل المدير على فرعه من السيرفر.</li>
+          <li>تقفيل الوردية وإغلاق اليوم وقفل الطلبات المدفوعة.</li>
+          <li>سجل تدقيق لكل إجراء، وإشعارات بين الأدمن والمغسلة.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3><span class="chip c-bad">غير موجود</span></h3>
+        <ul>
+          <li>قاعدة بيانات حقيقية ونسخ احتياطي.</li>
+          <li>تسجيل دخول آمن: كلمات المرور الآن نص عادي في ملف، ولا يوجد OTP.</li>
+          <li>دفع إلكتروني (بوابة دفع مصرية، InstaPay، محافظ).</li>
+          <li>إرسال حقيقي لواتساب أو SMS أو إشعارات الموبايل.</li>
+          <li>رفع ملفات (مستندات المغاسل، صور).</li>
+          <li>مهام خلفية: تذكير الحجوزات، تحويل الحجز إلى «لم يحضر»، التسويات.</li>
+          <li>مراقبة الأخطاء والأمان والتشغيل على خادم.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="col small muted">ما يعنيه ذلك عمليًا: مطوّر Laravel لن يخترع منطق العمل من الصفر. سينقل منطقًا يعمل بالفعل ومجرب في الواجهات، وهذا يختصر وقتًا كبيرًا ويقلل الخلاف بين الفرونت والباك.</p>
+  </section>
+
+  <section id="right">
+    <span class="eyebrow">ما نفعله صح</span>
+    <h2>أربعة قرارات ستوفر علينا شهورًا لاحقًا</h2>
+    <div class="points">
+      <div class="point"><b>العقد أولًا</b><span class="chip c-ok">صحيح</span><p>اللوحتان لا تعرفان إن كان الـ API تجريبيًا أم حقيقيًا. التحويل إلى Laravel إعداد واحد، ولا تتغير شاشة واحدة.</p></div>
+      <div class="point"><b>قواعد العمل مكتوبة ككود</b><span class="chip c-ok">صحيح</span><p>القواعد ليست في مستند فقط، بل تعمل ويمكن تجربتها. أي غموض في المواصفات ظهر واتحل أثناء البناء.</p></div>
+      <div class="point"><b>مستودع واحد بحزم مشتركة</b><span class="chip c-ok">صحيح</span><p>اللوحتان تستخدمان نفس الأنواع ونفس نظام التصميم، فلا يمكن أن تنحرف إحداهما عن الأخرى في الشكل أو البيانات.</p></div>
+      <div class="point"><b>بناء جانب تشغيل المغسلة أولًا</b><span class="chip c-ok">صحيح</span><p>متسق مع التحليل التنافسي: ندخل المغسلة من باب ألمها التشغيلي (النقدية، الزحمة، الخصومات) قبل وعد جلب العملاء.</p></div>
+    </div>
+  </section>
+
+  <section id="fix">
+    <span class="eyebrow">ما يحتاج تصحيح</span>
+    <h2>خمس نقاط، مرتبة حسب الخطورة</h2>
+    <div class="points">
+      <div class="point"><b>ترتيب الأولويات</b><span class="chip c-bad">خطير</span><p>بذلنا أكبر جهد في السوبر أدمن، وهو أقل شيء مطلوب قبل الإطلاق. تطبيق الموظف (تستخدمه المغسلة كل دقيقة) وتطبيق العميل (هو السوق نفسه) ما زالا نموذجًا. بدونهما لا يوجد منتج يمكن بيعه.</p></div>
+      <div class="point"><b>العمل غير محفوظ في git</b><span class="chip c-bad">خطير</span><p>حوالي <span class="num">204</span> ملف معدل بدون commit على فرع <code>ebrahim</code>. خطأ واحد في الجهاز أو الأوامر قد يضيّع كل هذه المرحلة.</p></div>
+      <div class="point"><b>لا توجد اختبارات آلية</b><span class="chip c-warn">مهم</span><p>الاختبار الوحيد سكربت من <span class="num">55</span> فحصًا للـ API موجود في مجلد مؤقت. يجب نقله للمشروع كاختبارات عقد، لأن مطور Laravel سيحتاجه ليتأكد أن الـ API الحقيقي مطابق.</p></div>
+      <div class="point"><b>غياب مزايا الإيراد</b><span class="chip c-warn">مهم</span><p>الدفع الإلكتروني، الباقات الشهرية، وإشعارات واتساب. هذه بالضبط ما يحقق المال، وكلها خارج النطاق الحالي.</p></div>
+      <div class="point"><b>ملاحظات صغيرة في بوابة الشركاء</b><span class="chip c-plan">بسيط</span><p>نافذة الطلب الجديد ضيقة أكثر من اللازم، الصفحة تتحرك أفقيًا على عرض التابلت، عدادات تبويبات الموظفين غير دقيقة، وبناء الإنتاج للبوابة لم يُختبر بعد.</p></div>
+    </div>
+  </section>
+
+  <section id="plan">
+    <span class="eyebrow">الخطة</span>
+    <h2>الخطوات المقترحة بالترتيب</h2>
+    <ol class="plan">
+      <li><div class="step"><b>إقفال بوابة الشركاء</b><p>إصلاح الملاحظات الصغيرة، تشغيل بناء الإنتاج، والمرور على كل الشاشات وسيناريوهات العرض (walk-in، التعرف على اللوحة، المدير المقفول على فرعه).</p><p class="out"><span>الناتج:</span> لوحتان مكتملتان ومجربتان.</p></div></li>
+      <li><div class="step"><b>حفظ العمل وتثبيت العقد</b><p>commit للمرحلة الحالية، توليد ملف OpenAPI من الأنواع، ونقل اختبارات الـ API داخل المشروع.</p><p class="out"><span>الناتج:</span> عقد مكتوب ومختبر يُسلَّم لفريق الباك إند.</p></div></li>
+      <li><div class="step"><b>الباك إند الحقيقي (Laravel)</b><p>نقل المنطق من الـ API التجريبي، بالترتيب: تسجيل الدخول، الطلبات، التسعير، المواعيد المتاحة، سجل التدقيق. الاختبارات من الخطوة 2 تؤكد التطابق.</p><p class="out"><span>الناتج:</span> اللوحتان تعملان على بيانات حقيقية.</p></div></li>
+      <li><div class="step"><b>تطبيق الموظف الحقيقي</b><p>على نفس الـ API، قبل تطبيق العميل، لأن نظام تشغيل المغسلة هو مدخلنا للسوق. Expo/React Native مناسب لأنه يشارك أنواع TypeScript مع المستودع.</p><p class="out"><span>الناتج:</span> مغسلة تستطيع إدارة يومها بالكامل على كارزن.</p></div></li>
+      <li><div class="step"><b>الدفع والإشعارات والباقات</b><p>بوابة دفع مصرية + InstaPay، إشعارات واتساب للتأكيد والتذكير، وباقات غسيل شهرية تديرها المغسلة.</p><p class="out"><span>الناتج:</span> أول مصادر إيراد حقيقية.</p></div></li>
+      <li><div class="step"><b>تجربة حقيقية ثم تطبيق العميل</b><p>تشغيل تجريبي مع <span class="num">3</span>–<span class="num">5</span> مغاسل في مدينة نصر، قياس فروق النقدية ونسبة الطلبات المسجلة، ثم إطلاق تطبيق العميل وفتح السوق في الحي.</p><p class="out"><span>الناتج:</span> منتج مثبت بأرقام من مغاسل حقيقية.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="decisions">
+    <span class="eyebrow">قرارات مطلوبة</span>
+    <h2>ما يحتاج موافقتك للتحرك</h2>
+    <div class="ask col">
+      <ul>
+        <li><b>هل أبدأ الآن بالخطوة 1 وأعمل commit للعمل الحالي؟</b> لن يتم أي commit بدون موافقتك.</li>
+        <li><b>تقنية التطبيقات:</b> Expo/React Native (مشاركة الأنواع مع المستودع) أم Flutter أم تطبيق ويب PWA؟</li>
+        <li><b>الباك إند:</b> هل يوجد مطور Laravel جاهز، أم نبنيه داخل الفريق الحالي؟</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>أُعد للفريق المؤسس لكارزن · 14 أكتوبر 2026 · مبني على فحص المستودع الفعلي (فحص الأنواع والـ lint وعدد الصفحات وحالة git) في نفس اليوم.</footer>
+</div>
+
+<script>
+  (function () {
+    // stage: 1 specs, 2 prototype, 3 UI complete (mock data), 4 real backend, 5 production
+    var rows = [
+      ["السوبر أدمن", "لوحة فريق كارزن", 3, "", "ينقصها التقارير والظهور المميز وخريطة الفروع."],
+      ["بوابة الشركاء", "لوحة المالك ومدير الفرع", 3, "", "متبقٍ المراجعة النهائية وملاحظات صغيرة."],
+      ["الحزم المشتركة", "الأنواع ونظام التصميم", 3, "", "مستخدمة في اللوحتين."],
+      ["API تجريبي وقواعد العمل", "platform-api", 2, "warn", "مكتمل كمواصفات، وليس خادم إنتاج."],
+      ["تطبيق الموظف", "HTML/JS في المتصفح", 2, "warn", "غير متصل بالـ API المشترك."],
+      ["تطبيق العميل", "HTML/JS في المتصفح", 2, "warn", "غير متصل بالـ API المشترك."],
+      ["الباك إند الحقيقي", "Laravel + قاعدة بيانات", 1, "bad", "العقد جاهز، والتنفيذ لم يبدأ."],
+      ["الدفع والإشعارات", "دفع إلكتروني، واتساب، SMS", 1, "bad", "خارج نطاق النسخة الحالية."],
+      ["الاختبارات الآلية", "داخل المستودع", 1, "bad", "سكربت خارج المشروع فقط."]
+    ];
+    var html = "";
+    rows.forEach(function (r) {
+      html += '<tr><td class="name"><b>' + r[0] + "</b><span>" + r[1] + "</span></td>";
+      for (var i = 1; i <= 5; i++) {
+        var cls = "pip";
+        if (i < r[2]) cls += " on";
+        if (i === r[2]) cls += " cur";
+        if (i <= r[2] && r[3]) cls += " " + r[3];
+        html += '<td class="stage"><i class="' + cls + '" aria-hidden="true"></i></td>';
+      }
+      html += '<td class="note-cell">' + r[4] + "</td></tr>";
+    });
+    document.getElementById("ladder-body").innerHTML = html;
+    var rowsEls = document.querySelectorAll("#ladder-body tr");
+    rowsEls.forEach(function (tr, idx) {
+      var names = ["مواصفات", "نموذج تجريبي", "واجهة مكتملة على بيانات تجريبية", "متصل بباك إند حقيقي", "جاهز للإنتاج"];
+      tr.setAttribute("aria-label", rows[idx][0] + ": المرحلة الحالية " + names[rows[idx][2] - 1]);
+    });
+  })();
+</script>

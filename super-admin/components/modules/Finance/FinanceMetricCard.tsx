@@ -3,7 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { ChevronLeft } from "lucide-react";
 
 import { MetricInfo } from "@/components/modules/Finance/MetricInfo";
-import { cn } from "@/lib/utils";
+import { cn } from "@carzen/ui/lib/utils";
 
 type FinanceMetricCardProps = {
   label: string;

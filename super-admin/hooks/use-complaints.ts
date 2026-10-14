@@ -6,7 +6,7 @@ import { useAdminMutation } from "@/hooks/use-admin-mutation";
 import { CACHE_TTL_LIVE } from "@/lib/cache/ttl";
 import { queryKeys } from "@/lib/query-keys";
 import { fetchComplaint, fetchComplaints, updateComplaint } from "@/lib/services/complaints.service";
-import type { ComplaintListParams, UpdateComplaintPayload } from "@/types/complaints";
+import type { ComplaintListParams, UpdateComplaintPayload } from "@carzen/contracts/complaints";
 
 export function useComplaints(params: ComplaintListParams) {
   return useQuery({

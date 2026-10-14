@@ -25,7 +25,7 @@ import type {
   ToggleStaffPayload,
   UpdateWashPayload,
   WashListParams,
-} from "@/types/washes";
+} from "@carzen/contracts/washes";
 
 export function useWashes(params: WashListParams) {
   return useQuery({

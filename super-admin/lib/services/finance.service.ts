@@ -1,5 +1,5 @@
 import { getData, getPaginated, send } from "@/lib/api/request";
-import type { ListParams } from "@/types/common";
+import type { ListParams } from "@carzen/contracts/common";
 import type {
   CommissionSettings,
   DiscrepancyDetails,
@@ -14,7 +14,7 @@ import type {
   TransactionListMeta,
   TransactionListParams,
   UpdateCommissionPayload,
-} from "@/types/finance";
+} from "@carzen/contracts/finance";
 
 export function fetchFinanceOverview(period: FinancePeriod) {
   return getData<FinanceOverview>("/admin/finance/overview", { period }, "تعذر تحميل الملخص المالي");

@@ -15,8 +15,8 @@ import {
   resetDemoData,
   updateSettings,
 } from "@/lib/services/platform.service";
-import type { AuditListParams } from "@/types/audit";
-import type { UpdateSettingsPayload } from "@/types/settings";
+import type { AuditListParams } from "@carzen/contracts/audit";
+import type { UpdateSettingsPayload } from "@carzen/contracts/settings";
 
 export function useSettings() {
   return useQuery({

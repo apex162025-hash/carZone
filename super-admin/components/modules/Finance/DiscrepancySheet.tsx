@@ -7,17 +7,17 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ArrowLeftRight, CheckCircle2, ExternalLink, FileText, ScanSearch, UserRound } from "lucide-react";
 
-import { AuditTrail } from "@/components/shared/audit-trail";
-import { InfoList } from "@/components/shared/info-list";
-import { ErrorState } from "@/components/shared/states";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
+import { AuditTrail } from "@carzen/ui/components/shared/audit-trail";
+import { InfoList } from "@carzen/ui/components/shared/info-list";
+import { ErrorState } from "@carzen/ui/components/shared/states";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@carzen/ui/components/ui/sheet";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
+import { Textarea } from "@carzen/ui/components/ui/textarea";
 import { useResolveDiscrepancy, useTransaction } from "@/hooks/use-finance";
-import { PAYMENT_METHOD, TRANSACTION_STATUS } from "@/lib/constants/labels";
-import { formatDateTime, formatMoney, formatPercent } from "@/lib/format";
+import { PAYMENT_METHOD, TRANSACTION_STATUS } from "@carzen/ui/lib/constants/labels";
+import { formatDateTime, formatMoney, formatPercent } from "@carzen/ui/lib/format";
 
 const schema = z.object({
   note: z.string().trim().min(5, "اكتب ملاحظة المراجعة (5 أحرف على الأقل)"),

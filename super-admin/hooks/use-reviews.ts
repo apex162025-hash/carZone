@@ -5,7 +5,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useAdminMutation } from "@/hooks/use-admin-mutation";
 import { queryKeys } from "@/lib/query-keys";
 import { fetchReviews, toggleReviewVisibility } from "@/lib/services/reviews.service";
-import type { ReviewListParams, ToggleReviewPayload } from "@/types/reviews";
+import type { ReviewListParams, ToggleReviewPayload } from "@carzen/contracts/reviews";
 
 export function useReviews(params: ReviewListParams) {
   return useQuery({

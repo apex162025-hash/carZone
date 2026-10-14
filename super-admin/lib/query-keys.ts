@@ -1,14 +1,14 @@
-import type { ApplicationListParams } from "@/types/applications";
-import type { AuditListParams } from "@/types/audit";
-import type { ComplaintListParams } from "@/types/complaints";
-import type { CustomerListParams } from "@/types/customers";
-import type { DashboardPeriod } from "@/types/dashboard";
-import type { FinancePeriod, TransactionListParams } from "@/types/finance";
-import type { ListParams } from "@/types/common";
-import type { OfferListParams } from "@/types/offers";
-import type { OrderListParams } from "@/types/orders";
-import type { ReviewListParams } from "@/types/reviews";
-import type { BranchListParams, StaffListParams, WashListParams } from "@/types/washes";
+import type { ApplicationListParams } from "@carzen/contracts/applications";
+import type { AuditListParams } from "@carzen/contracts/audit";
+import type { ComplaintListParams } from "@carzen/contracts/complaints";
+import type { CustomerListParams } from "@carzen/contracts/customers";
+import type { DashboardPeriod } from "@carzen/contracts/dashboard";
+import type { FinancePeriod, TransactionListParams } from "@carzen/contracts/finance";
+import type { ListParams } from "@carzen/contracts/common";
+import type { OfferListParams } from "@carzen/contracts/offers";
+import type { OrderListParams } from "@carzen/contracts/orders";
+import type { ReviewListParams } from "@carzen/contracts/reviews";
+import type { BranchListParams, StaffListParams, WashListParams } from "@carzen/contracts/washes";
 
 /**
  * Centralized TanStack Query keys. Every domain has a `*Root` key so mutations

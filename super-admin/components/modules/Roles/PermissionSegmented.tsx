@@ -3,11 +3,11 @@
 import type { CSSProperties } from "react";
 import { Lock } from "lucide-react";
 
-import { StatusBadge } from "@/components/shared/status-badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { PERMISSION_LEVEL } from "@/lib/constants/labels";
-import { cn } from "@/lib/utils";
-import type { PermissionLevel } from "@/types/admins";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@carzen/ui/components/ui/tooltip";
+import { PERMISSION_LEVEL } from "@carzen/ui/lib/constants/labels";
+import { cn } from "@carzen/ui/lib/utils";
+import type { PermissionLevel } from "@carzen/contracts/admins";
 
 export const PERMISSION_LEVELS = Object.keys(PERMISSION_LEVEL) as PermissionLevel[];
 

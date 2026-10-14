@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import type { CSSProperties } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@carzen/ui/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@carzen/ui/components/ui/popover";
+import { Skeleton } from "@carzen/ui/components/ui/skeleton";
 import { useMarkAllNotificationsRead, useMarkNotificationRead, useNotifications } from "@/hooks/use-platform";
-import { NOTIFICATION_TYPE } from "@/lib/constants/labels";
-import { formatRelative } from "@/lib/format";
-import { cn } from "@/lib/utils";
+import { NOTIFICATION_TYPE } from "@carzen/ui/lib/constants/labels";
+import { formatRelative } from "@carzen/ui/lib/format";
+import { cn } from "@carzen/ui/lib/utils";
 
 export function NotificationsMenu() {
   const router = useRouter();

@@ -6,7 +6,7 @@ import type {
   CustomerListMeta,
   CustomerListParams,
   ToggleCustomerPayload,
-} from "@/types/customers";
+} from "@carzen/contracts/customers";
 
 export function fetchCustomers(params: CustomerListParams) {
   return getPaginated<CustomerListItem, CustomerListMeta>("/admin/customers", params, "تعذر تحميل العملاء");

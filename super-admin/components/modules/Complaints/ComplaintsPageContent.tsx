@@ -2,24 +2,24 @@
 
 import { MessageSquareWarning, Tags, UserRound } from "lucide-react";
 
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
-import { ExportCsvButton } from "@/components/shared/export-csv-button";
-import { FilterTabs } from "@/components/shared/filter-tabs";
-import { ListToolbar } from "@/components/shared/list-toolbar";
-import { PageHeader } from "@/components/shared/page-header";
-import { SearchInput } from "@/components/shared/search-input";
-import { SelectFilter } from "@/components/shared/select-filter";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { TablePagination } from "@/components/shared/table-pagination";
-import { UserAvatar } from "@/components/shared/user-avatar";
+import { DataTable, type DataTableColumn } from "@carzen/ui/components/shared/data-table";
+import { ExportCsvButton } from "@carzen/ui/components/shared/export-csv-button";
+import { FilterTabs } from "@carzen/ui/components/shared/filter-tabs";
+import { ListToolbar } from "@carzen/ui/components/shared/list-toolbar";
+import { PageHeader } from "@carzen/ui/components/shared/page-header";
+import { SearchInput } from "@carzen/ui/components/shared/search-input";
+import { SelectFilter } from "@carzen/ui/components/shared/select-filter";
+import { StatusBadge } from "@carzen/ui/components/shared/status-badge";
+import { TablePagination } from "@carzen/ui/components/shared/table-pagination";
+import { UserAvatar } from "@carzen/ui/components/shared/user-avatar";
 import { useAdmins } from "@/hooks/use-admins";
 import { useComplaints } from "@/hooks/use-complaints";
-import { useUrlState } from "@/hooks/use-url-state";
-import { COMPLAINT_CATEGORY, COMPLAINT_STATUS } from "@/lib/constants/labels";
-import { daysBetween, formatDateTime, formatRelative } from "@/lib/format";
-import type { CsvColumn } from "@/lib/export-csv";
-import { cn } from "@/lib/utils";
-import type { ComplaintCategory, ComplaintListItem, ComplaintStatus } from "@/types/complaints";
+import { useUrlState } from "@carzen/ui/hooks/use-url-state";
+import { COMPLAINT_CATEGORY, COMPLAINT_STATUS } from "@carzen/ui/lib/constants/labels";
+import { daysBetween, formatDateTime, formatRelative } from "@carzen/ui/lib/format";
+import type { CsvColumn } from "@carzen/ui/lib/export-csv";
+import { cn } from "@carzen/ui/lib/utils";
+import type { ComplaintCategory, ComplaintListItem, ComplaintStatus } from "@carzen/contracts/complaints";
 
 const TAB_ORDER: (ComplaintStatus | "all")[] = ["all", "open", "in_review", "waiting", "resolved", "closed"];
 
