@@ -18,6 +18,7 @@ The repo holds two generations of front-end, organised as an **npm-workspaces mo
 | Shared types | `packages/contracts` (`@carzen/contracts`) | TS types only (admin domains + `vendor/*`) | |
 | Shared design system | `packages/ui` (`@carzen/ui`) | shadcn base-nova primitives, shared components, format/labels/csv libs, hooks, theme CSS | |
 | Shared mock backend | `packages/platform-api` (`@carzen/platform-api`) | `server-only` mock REST API: `/admin/*` + `/vendor/*` namespaces, seed, file store | |
+| **Supabase (interim backend infra)** | `supabase/` | Postgres schema as migrations, RLS/security, storage, auth config, generated demo seed | Ready & validated, not yet pushed / not yet wired to the API |
 
 Product specs (source of truth for features): `docs/01_cursor_prompt_customer_app.md`,
 `docs/02_cursor_prompt_car_wash_system.md` (Part B = vendor portal, screens D1–D19, stories OW/MG),
@@ -63,6 +64,7 @@ packages/platform-api/src/   # handleMockRequest; handlers/* (admin), vendor/* (
 super-admin/                 # app → see super-admin/PROJECT_SUMMARY.md
 vendor-portal/               # app → see vendor-portal/PROJECT_SUMMARY.md
 .carzen/platform-db.json     # shared mock DB (git-ignored, auto-created; delete or reset to re-seed)
+supabase/                    # migrations/ (40 tables), seed.sql (generated), scripts/, config.toml, README.md
 ```
 
 - Packages ship TypeScript source; apps compile them via `transpilePackages` and
@@ -89,6 +91,7 @@ npm run build                # both apps
   manager Tamer `01005550201` (Heliopolis) — password `demo1234`; persona buttons on the login page.
 - Reset demo data (both apps): Super Admin user menu → "إعادة ضبط بيانات العرض"
   (`POST /api/v1/admin/system/reset`).
+- Supabase: see `supabase/README.md` (push with the owner's own credentials: `npx supabase link` → `npm run db:push:seed` → `npm run db:users:demo`). Regenerate the seed after changing the mock seed: `npm run db:seed:generate`, then `npm run db:guide` (rebuilds `supabase/SETUP_WITH_CLAUDE.md` + `supabase/seed-parts/`, the runbook another Claude session follows to set up a project through the Supabase MCP tools).
 - Desktop-app preview configs: `.claude/launch.json` (`super-admin` :3100, `vendor-portal` :3200).
 
 ## 5. Status
@@ -101,6 +104,8 @@ notifications, ⌘K search, dark mode, 404 + error pages.
 **Vendor Portal — built:** login, dashboard, live board, bookings, orders (+detail), new-order
 sheet, schedule & capacity, services, offers, staff, shifts & day closing, customers (+detail),
 reviews, reports, finance, branches, audit log, notifications, settings, ⌘K search, dark mode.
+
+**Supabase — ready:** schema (40 tables, incl. mobile-app tables; reference: `docs/carzen-database-schema.html`), security (RLS on all, Data API roles revoked), storage buckets, auth config (phone OTP, closed email sign-up), demo seed identical to the mock, demo-users script. Validated on Postgres (PGlite): migrations + seed + role access. **Next:** repository adapters in `platform-api` so the API runs on Supabase instead of memory.
 
 **Not built yet (next candidates):**
 - Super Admin: Reports + Marketplace health (A19 / AD-41/42), Featured listings (A14 / AD-35),

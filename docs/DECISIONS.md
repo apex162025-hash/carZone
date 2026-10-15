@@ -56,3 +56,10 @@
 - Closing the day is blocked while orders are in service or unpaid, and locks that day's paid orders; shift closings follow open → submitted → reviewed / flagged.
 - A suspended wash keeps read access to the portal but gets HTTP 423 on new orders, with a banner explaining the suspension reason.
 - Managers can edit services only when the owner turns on `managerCanEditServices` in settings (default off), matching the spec demo where the manager sees services read-only.
+- Supabase is the interim backend infrastructure (Postgres, Auth, Storage) behind the Carzen API, not a replacement for it: apps keep calling /api/v1, only the server-side API uses the service role, so a Laravel API can later take over the same contract on the same Postgres database.
+- The database schema lives in the repo as Supabase migrations (`supabase/migrations`), kept Laravel-compatible: snake_case, prefixed text ids matching the API (`ord_…`), bilingual jsonb `{ar, en}`, numeric EGP money, E.164 phones.
+- RLS is enabled on every table with no policies and Data API privileges are revoked from anon/authenticated; business rules stay in the API, while the database enforces integrity, atomic order/ticket numbering, rating sync and an append-only audit log.
+- The Supabase seed is generated from the mock API's deterministic seed (`npm run db:seed:generate`) so both hold identical demo data, and it shifts all dates to the day it is applied so the demo always looks current.
+- Order numbers continue per source only (app / walk-in / phone); this also fixed a latent mock bug where seeded walk-in history pushed the first app order to CZ-20000 instead of CZ-10001.
+- Supabase changes are applied by the owner from their own account (CLI with their credentials), never through a shared connector, to keep their Supabase and GitHub private.
+- Added the mobile-app tables before handing the schema to the app developer (favourites, customer inbox, per-staff notices, push devices, branch photos, bcrypt manager PIN, opening cash); the handoff document is generated from the applied schema so it cannot drift from the SQL.

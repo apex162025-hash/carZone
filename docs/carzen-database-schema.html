@@ -1,0 +1,1236 @@
+<title>قاعدة بيانات كارزن</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<style>
+  /* Layout: reference manual — sticky contents rail beside a reading column; schema tables scroll inside their own boxes */
+  :root {
+    --bg: #F5F8FC; --surface: #FFFFFF; --ink: #0B1B33; --muted: #5B6B82; --line: #E1E8F2; --soft: #EEF3FA;
+    --blue: #1463FF; --blue-soft: #E8F0FF; --aqua: #0B8F83; --aqua-soft: #E2F7F4; --amber: #B45309; --amber-soft: #FEF3E2;
+    --violet: #6D4ED8; --violet-soft: #EFEAFD; --red: #C2362B; --red-soft: #FDECEA;
+    --font-ar: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+    --font-lat: "Plus Jakarta Sans", "IBM Plex Sans Arabic", system-ui, sans-serif;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #08111F; --surface: #0F1B2E; --ink: #E7EEF8; --muted: #93A3BA; --line: #1F2E45; --soft: #13223A;
+    --blue: #5B90FF; --blue-soft: #14264A; --aqua: #2CC9B8; --aqua-soft: #0E3330; --amber: #F0A64A; --amber-soft: #3A2A12;
+    --violet: #A48BFF; --violet-soft: #241C45; --red: #F07A70; --red-soft: #3D1A18; color-scheme: dark; } }
+  :root[data-theme="dark"] {
+    --bg: #08111F; --surface: #0F1B2E; --ink: #E7EEF8; --muted: #93A3BA; --line: #1F2E45; --soft: #13223A;
+    --blue: #5B90FF; --blue-soft: #14264A; --aqua: #2CC9B8; --aqua-soft: #0E3330; --amber: #F0A64A; --amber-soft: #3A2A12;
+    --violet: #A48BFF; --violet-soft: #241C45; --red: #F07A70; --red-soft: #3D1A18; color-scheme: dark; }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-ar); font-size: 15.5px; line-height: 1.85; padding: 0 20px; direction: rtl; }
+  .num, .lat { font-family: var(--font-lat); font-variant-numeric: tabular-nums; }
+  code { font-family: var(--font-mono); font-size: 0.86em; direction: ltr; unicode-bidi: isolate; }
+  p code, li code, td code, .chips code { background: var(--soft); padding: 1px 6px; border-radius: 5px; }
+  pre { background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow-x: auto; direction: ltr; text-align: left; font-size: 13px; line-height: 1.7; margin: 0; }
+  pre code { background: none; padding: 0; font-size: 1em; }
+  a { color: var(--blue); text-underline-offset: 3px; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+  h1, h2, h3, h4, h5 { text-wrap: balance; line-height: 1.35; margin: 0; }
+  p { margin: 0; }
+  .muted { color: var(--muted); } .small { font-size: 13px; } .ctr { text-align: center; }
+
+  .shell { max-width: 1240px; margin-inline: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+  aside.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; padding-block: 28px; display: grid; gap: 2px; font-size: 13.5px; }
+  aside.toc b { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 6px; }
+  aside.toc a { text-decoration: none; color: var(--ink); padding: 3px 10px; border-radius: 6px; }
+  aside.toc a:hover { background: var(--soft); color: var(--blue); }
+  aside.toc a.sub { padding-inline-start: 22px; color: var(--muted); font-size: 13px; }
+  main { min-width: 0; padding-bottom: 60px; }
+
+  header.cover { padding-block: 48px 28px; border-bottom: 1px solid var(--line); display: grid; gap: 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--muted); font-size: 14px; }
+  .brand i { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, var(--aqua), var(--blue)); }
+  .cover h1 { font-size: clamp(30px, 4.6vw, 44px); }
+  .lede { font-size: 17px; color: var(--muted); max-width: 66ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 13px; color: var(--muted); }
+  .meta b { color: var(--ink); }
+
+  section.sec { padding-block: 40px 4px; display: grid; gap: 16px; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--blue); }
+  h2 { font-size: clamp(21px, 2.6vw, 26px); }
+  h3 { font-size: 21px; } h4 { font-size: 16px; } h5 { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .col { max-width: 760px; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .stat { background: var(--surface); padding: 14px 14px 12px; display: grid; gap: 0; }
+  .stat .v { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+  .stat .l { font-size: 13px; color: var(--muted); }
+
+  .callout { border: 1px solid var(--line); border-inline-start: 4px solid var(--c, var(--blue)); background: var(--surface); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; }
+  .callout.warn { --c: var(--amber); } .callout.ok { --c: var(--aqua); } .callout.stop { --c: var(--red); }
+  .callout ul, .callout ol { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; }
+
+  .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: start; }
+  th { font-size: 12px; color: var(--muted); font-weight: 700; background: var(--soft); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  table.plain td:first-child { white-space: nowrap; }
+
+  .domain { padding-block: 44px 4px; display: grid; gap: 14px; border-top: 1px solid var(--line); margin-top: 28px; }
+  .lede-s { color: var(--muted); max-width: 70ch; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips a { text-decoration: none; }
+  .tcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; display: grid; gap: 10px; scroll-margin-top: 16px; }
+  .thead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+  .thead h4 code { font-size: 17px; font-weight: 500; background: none; padding: 0; color: var(--blue); }
+  .rows { font-size: 12.5px; color: var(--muted); }
+  .tdesc { max-width: 78ch; }
+  .apps { display: flex; flex-wrap: wrap; gap: 6px; }
+  .app { font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; }
+  .app-A { color: var(--blue); background: var(--blue-soft); } .app-V { color: var(--aqua); background: var(--aqua-soft); }
+  .app-C { color: var(--violet); background: var(--violet-soft); } .app-E { color: var(--amber); background: var(--amber-soft); }
+  table.cols { font-size: 13px; direction: ltr; }
+  table.cols th, table.cols td { text-align: left; }
+  table.cols th[dir="rtl"] { text-align: right; }
+  table.cols td.c-notes { direction: rtl; text-align: right; font-family: var(--font-ar); min-width: 260px; }
+  table.cols td.c-name code { background: none; padding: 0; font-weight: 500; }
+  table.cols td.c-type code { background: none; padding: 0; color: var(--violet); }
+  table.cols td.c-null { text-align: center; color: var(--aqua); }
+  table.cols td.c-def code { background: none; padding: 0; color: var(--muted); }
+  .tag { display: inline-block; font-family: var(--font-lat); font-size: 10.5px; font-weight: 700; padding: 0 6px; border-radius: 4px; background: var(--soft); color: var(--muted); }
+  .tag-pk { background: var(--amber-soft); color: var(--amber); } .tag-fk { background: var(--blue-soft); color: var(--blue); } .tag-gen { background: var(--aqua-soft); color: var(--aqua); }
+  details.more { border-top: 1px dashed var(--line); padding-top: 8px; }
+  details.more summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+  ul.defs { margin: 6px 0 0; padding-inline-start: 18px; display: grid; gap: 4px; font-size: 13px; }
+  code.def { white-space: normal; word-break: break-word; }
+  .enum-vals code { margin-inline-end: 4px; line-height: 2.1; }
+
+  .mermaid-box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; overflow-x: auto; }
+  pre.mermaid { background: none; border: 0; padding: 0; text-align: center; direction: ltr; }
+  .er-grid { display: grid; gap: 14px; }
+
+  ol.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; gap: 18px; }
+  ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; }
+  ol.steps > li::before { content: counter(s); font-family: var(--font-lat); font-weight: 800; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--blue); color: var(--surface); }
+  ol.steps > li > div { display: grid; gap: 8px; min-width: 0; }
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  footer { margin-top: 48px; padding-block: 24px 48px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+  @media (max-width: 1000px) { .shell { grid-template-columns: 1fr; } aside.toc { display: none; } }
+  @media (max-width: 700px) { .two { grid-template-columns: 1fr; } body { font-size: 15px; } }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="shell">
+<aside class="toc" aria-label="المحتويات">
+  <b>المحتويات</b>
+  <a href="#overview">نظرة عامة</a>
+  <a href="#apps">مين بيستخدم إيه</a>
+  <a href="#access">نموذج الوصول</a>
+  <a href="#conventions">الاصطلاحات</a>
+  <a href="#er">مخطط العلاقات</a>
+  <a href="#reference">مرجع الجداول</a>
+  <a href="#d-platform" class="sub">المنصة</a><a href="#d-washes" class="sub">المغاسل والفروع</a><a href="#d-team" class="sub">فريق المغسلة</a><a href="#d-customers" class="sub">العملاء</a><a href="#d-orders" class="sub">الطلبات</a><a href="#d-money" class="sub">المال</a><a href="#d-engagement" class="sub">التقييمات والعروض والشكاوى والانضمام</a><a href="#d-activity" class="sub">الإشعارات وسجل التدقيق</a>
+  <a href="#enums">الأنواع (enums)</a>
+  <a href="#functions">الدوال والـ triggers</a>
+  <a href="#security">الأمان والتخزين والدخول</a>
+  <a href="#seed">بيانات العرض</a>
+  <a href="#integrate">دليل الدمج مع مشروعك</a>
+  <a href="#flutter">للتطبيق (Flutter)</a>
+  <a href="#rpc">المرحلة 2: دوال العمليات</a>
+  <a href="#questions">أسئلة لك</a>
+</aside>
+
+<main>
+  <header class="cover">
+    <div class="brand"><i aria-hidden="true"></i> Carzen · كارزن</div>
+    <h1>قاعدة بيانات كارزن</h1>
+    <p class="lede">المرجع الكامل لقاعدة البيانات المشتركة بين السوبر أدمن وبوابة الشركاء وتطبيقي العميل والموظف، ودليل دمجها مع مشروع Supabase الحالي.</p>
+    <div class="meta">
+      <span>الإصدار: <b class="num">1.0</b></span>
+      <span>التاريخ: <b class="num">15 أكتوبر 2026</b></span>
+      <span>المحرك: <b class="lat">PostgreSQL 17 · Supabase</b></span>
+      <span>موجّه إلى: <b>مطور تطبيقات الموبايل</b></span>
+    </div>
+  </header>
+
+  <section class="sec" id="overview">
+    <span class="eyebrow">نظرة عامة</span>
+    <h2>قاعدة بيانات واحدة لكل تطبيقات كارزن</h2>
+    <div class="stats"><div class="stat"><span class="v num">40</span><span class="l">جدول</span></div><div class="stat"><span class="v num">378</span><span class="l">عمود</span></div><div class="stat"><span class="v num">235</span><span class="l">قيد</span></div><div class="stat"><span class="v num">105</span><span class="l">فهرس</span></div><div class="stat"><span class="v num">25</span><span class="l">نوع enum</span></div><div class="stat"><span class="v num">9</span><span class="l">دالة</span></div><div class="stat"><span class="v num">23</span><span class="l">trigger</span></div><div class="stat"><span class="v num">8</span><span class="l">migrations</span></div></div>
+    <p class="col">القاعدة مكتوبة كـ <b>migrations</b> (ملفات SQL مرقّمة) في فولدر <code>supabase/</code>، ومعاها بيانات عرض كاملة (<span class="num">9,039</span> صف) مطابقة للبيانات اللي اللوحتين شغالين عليها حاليًا. كل اللي في الصفحة دي متولّد من القاعدة نفسها بعد تطبيقها، فهو مطابق للملفات حرفيًا.</p>
+    <div class="callout ok">
+      <b>اتختبرت إزاي</b>
+      <ul>
+        <li>الـ 8 migrations اتطبقوا على Postgres حقيقي بالترتيب من غير أخطاء.</li>
+        <li>بيانات العرض اتحمّلت كلها وكل القيود اشتغلت عليها، والأرقام طابقت اللوحتين: <span class="num">1,078</span> طلب، <span class="num">928</span> مدفوع بإجمالي <span class="num">148,921</span> ج.م، وتقييم فرع مدينة نصر <span class="num">4.8</span> من <span class="num">20</span> تقييم.</li>
+        <li>الأدوار العامة (<code>anon</code> و<code>authenticated</code>) بتاخد «permission denied»، و<code>service_role</code> بيقرأ كل حاجة.</li>
+        <li>سجل التدقيق رفض التعديل والمسح، والترقيم طلّع <code>CZ-10001</code> و<code>CZ-20045</code> و<code>CZ-30023</code> و<code>TK-1040</code>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec" id="apps">
+    <span class="eyebrow">مين بيستخدم إيه</span>
+    <h2>كل مجال والتطبيقات اللي بتعتمد عليه</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>المجال</th><th class="ctr">سوبر أدمن</th><th class="ctr">بوابة الشركاء</th><th class="ctr">تطبيق العميل</th><th class="ctr">تطبيق الموظف</th></tr></thead>
+      <tbody><tr><td><a href="#d-platform">المنصة</a> <span class="muted small num">(6)</span></td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td></tr><tr><td><a href="#d-washes">المغاسل والفروع</a> <span class="muted small num">(8)</span></td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td></tr><tr><td><a href="#d-team">فريق المغسلة</a> <span class="muted small num">(3)</span></td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr"><span class='muted'>—</span></td><td class="ctr">●</td></tr><tr><td><a href="#d-customers">العملاء</a> <span class="muted small num">(3)</span></td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td></tr><tr><td><a href="#d-orders">الطلبات</a> <span class="muted small num">(4)</span></td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td></tr><tr><td><a href="#d-money">المال</a> <span class="muted small num">(4)</span></td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr"><span class='muted'>—</span></td><td class="ctr">●</td></tr><tr><td><a href="#d-engagement">التقييمات والعروض والشكاوى والانضمام</a> <span class="muted small num">(7)</span></td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td></tr><tr><td><a href="#d-activity">الإشعارات وسجل التدقيق</a> <span class="muted small num">(5)</span></td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td><td class="ctr">●</td></tr></tbody>
+    </table></div>
+    <p class="muted small">التفاصيل لكل جدول في مرجع الجداول تحت (الشارات الملوّنة تحت وصف كل جدول).</p>
+  </section>
+
+  <section class="sec" id="access">
+    <span class="eyebrow">نموذج الوصول</span>
+    <h2>مين يقرأ ويكتب في القاعدة، وإزاي</h2>
+    <div class="callout warn">
+      <b>مهم قبل أي حاجة: التطبيقات حاليًا لا تقرأ ولا تكتب في الجداول مباشرة</b>
+      <p>كل الجداول عليها RLS بدون أي policy، والصلاحيات مسحوبة من <code>anon</code> و<code>authenticated</code>. يعني لو التطبيق استخدم <code>supabase_flutter</code> بالـ anon key وعمل <code>select</code> على أي جدول، هيرجع <b>permission denied</b>. ده مقصود ومش عطل.</p>
+      <p>تسجيل الدخول (Auth) شغال عادي من التطبيق. الوصول للبيانات هيتفتح في <a href="#rpc">المرحلة 2</a> بطريقة محكومة.</p>
+    </div>
+    <div class="two">
+      <div class="callout">
+        <b>الآن</b>
+        <p>اللوحتين يوصلوا للبيانات من طبقة API على السيرفر بمفتاح <code>service_role</code>. منطق البزنس (التسعير، حالات الطلب، صلاحيات المالك والمدير) في الطبقة دي.</p>
+      </div>
+      <div class="callout">
+        <b>المرحلة 2 (المقترحة)</b>
+        <p>Supabase يبقى الباك إند الكامل للكل:</p>
+        <ul>
+          <li><b>القراءة:</b> policies ضيقة لكل دور. العميل يشوف بياناته بس، والموظف يشوف فرعه بس.</li>
+          <li><b>الكتابة:</b> دوال (RPC) فيها قواعد البزنس والتحقق من الصلاحيات. التطبيقات الأربعة تستخدم نفس الدوال، ومفيش كتابة مباشرة في الجداول.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="conventions">
+    <span class="eyebrow">الاصطلاحات</span>
+    <h2>القواعد اللي ماشية عليها كل الجداول</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>الموضوع</th><th>القاعدة</th><th>ليه</th></tr></thead>
+      <tbody>
+        <tr><td>المعرّفات</td><td><code>text</code> ببادئة: <code>ord_…</code>، <code>br_…</code>، <code>cu_…</code>. الافتراضي <code>gen_id('prefix')</code></td><td>مقروءة في اللوجات، ومطابقة للـ API الحالي، وينفع تخزن UUID قديمة كنص</td></tr>
+        <tr><td>التسمية</td><td><code>snake_case</code>، أسماء الجداول جمع، <code>created_at</code> و<code>updated_at</code></td><td>متوافقة مع Laravel لو اتنقلنا بعدين</td></tr>
+        <tr><td>النص بلغتين</td><td><code>jsonb</code> بالشكل <code>{"ar": "…", "en": "…"}</code></td><td>نفس شكل الواجهات الحالية</td></tr>
+        <tr><td>الفلوس</td><td><code>numeric(10,2)</code> بالجنيه</td><td>دقة كاملة من غير أخطاء الكسور</td></tr>
+        <tr><td>الوقت</td><td><code>timestamptz</code> دائمًا</td><td>مفيش لخبطة توقيت بين الأجهزة</td></tr>
+        <tr><td>التليفونات</td><td>صيغة E.164: <code>+201001234567</code> (قيد على العمود)</td><td>نفس صيغة Supabase Auth</td></tr>
+        <tr><td>اللوحات</td><td><code>plate</code> كما كُتبت + <code>plate_normalized</code> محسوبة تلقائيًا</td><td>التعرّف السريع على العميل</td></tr>
+        <tr><td>الحالات</td><td>أنواع <code>enum</code> صارمة (القائمة في <a href="#enums">الأنواع</a>)</td><td>مفيش قيمة غلط تدخل القاعدة</td></tr>
+        <tr><td>الحسابات</td><td>جداول الملفات (<code>customers</code>، <code>staff</code>، <code>admin_users</code>) فيها <code>user_id → auth.users</code></td><td>Auth لتسجيل الدخول، والجداول للبيانات</td></tr>
+        <tr><td>الأيام</td><td><code>0</code> = الأحد … <code>6</code> = السبت</td><td>نفس ترتيب الواجهات</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="sec" id="er">
+    <span class="eyebrow">مخطط العلاقات</span>
+    <h2>العلاقات الأساسية في ثلاث خرائط</h2>
+    <div class="er-grid">
+      <h4>المغاسل والفروع والفريق</h4>
+      <div class="mermaid-box"><pre class="mermaid">erDiagram
+  businesses ||--o{ branches : &quot;يملك&quot;
+  businesses ||--|| business_settings : &quot;إعدادات&quot;
+  businesses ||--o{ staff : &quot;يوظّف&quot;
+  staff |o--o| businesses : &quot;المالك&quot;
+  branches ||--o{ branch_working_hours : &quot;ساعات&quot;
+  branches ||--o{ branch_amenities : &quot;مزايا&quot;
+  amenities ||--o{ branch_amenities : &quot;&quot;
+  areas ||--o{ branches : &quot;منطقة&quot;
+  branches ||--o{ branch_blocked_slots : &quot;حجب&quot;
+  branches ||--o{ branch_photos : &quot;صور&quot;
+  branches ||--o{ services : &quot;أسعار&quot;
+  service_categories ||--o{ services : &quot;فئة&quot;
+  staff ||--o{ staff_shift_patterns : &quot;جدول&quot;
+  staff ||--o{ staff_shifts : &quot;ورديات&quot;
+  branches ||--o{ staff_shifts : &quot;&quot;</pre></div>
+      <h4>العملاء والطلبات والمال</h4>
+      <div class="mermaid-box"><pre class="mermaid">erDiagram
+  customers ||--o{ vehicles : &quot;يملك&quot;
+  customers ||--o{ orders : &quot;يحجز&quot;
+  vehicles |o--o{ orders : &quot;&quot;
+  branches ||--o{ orders : &quot;ينفّذ&quot;
+  businesses ||--o{ orders : &quot;&quot;
+  staff |o--o{ orders : &quot;مسؤول&quot;
+  offers |o--o{ orders : &quot;مطبّق&quot;
+  orders ||--o{ order_items : &quot;بنود&quot;
+  services |o--o{ order_items : &quot;نسخة من&quot;
+  orders ||--o{ order_events : &quot;مسار&quot;
+  orders ||--o{ order_notes : &quot;ملاحظات&quot;
+  orders ||--o{ payments : &quot;تحصيل&quot;
+  orders ||--o| transactions : &quot;عمولة&quot;
+  businesses ||--o{ payouts : &quot;مستحقات&quot;
+  branches ||--o{ day_closings : &quot;إغلاق يوم&quot;
+  day_closings |o--o{ orders : &quot;يقفل&quot;</pre></div>
+      <h4>التقييمات والعروض والشكاوى والإشعارات</h4>
+      <div class="mermaid-box"><pre class="mermaid">erDiagram
+  orders ||--o| reviews : &quot;تقييم&quot;
+  customers ||--o{ reviews : &quot;&quot;
+  branches ||--o{ reviews : &quot;&quot;
+  businesses |o--o{ offers : &quot;عرض مغسلة&quot;
+  offers ||--o{ offer_branches : &quot;&quot;
+  offers ||--o{ offer_categories : &quot;&quot;
+  customers ||--o{ complaints : &quot;يشتكي&quot;
+  complaints ||--o{ complaint_notes : &quot;&quot;
+  admin_users |o--o{ complaints : &quot;مسؤول&quot;
+  wash_applications |o--o| businesses : &quot;عند الموافقة&quot;
+  customers ||--o{ customer_favorites : &quot;&quot;
+  branches ||--o{ customer_favorites : &quot;&quot;
+  customers ||--o{ customer_notifications : &quot;&quot;
+  businesses ||--o{ vendor_notifications : &quot;&quot;
+  staff |o--o{ vendor_notifications : &quot;&quot;</pre></div>
+    </div>
+  </section>
+
+  <section class="sec" id="reference">
+    <span class="eyebrow">مرجع الجداول</span>
+    <h2>40 جدول، مقسّمة على 8 مجالات</h2>
+    <p class="col muted">لكل جدول: الغرض، التطبيقات اللي بتستخدمه، الأعمدة بأنواعها، والقيود والفهارس (افتح «القيود» تحت كل جدول). <span class="tag tag-pk">PK</span> مفتاح أساسي · <span class="tag tag-fk">FK</span> علاقة بجدول تاني · <span class="tag tag-gen">محسوب</span> القاعدة بتحسبه، متكتبش فيه.</p>
+  </section>
+  
+  <section class="domain" id="d-platform">
+    <span class="eyebrow">المجال</span>
+    <h3>المنصة</h3>
+    <p class="lede-s">إعدادات كارزن وفريقها: القوائم الثابتة (المناطق، فئات الخدمات، المزايا)، إعدادات اللوحة، وحسابات الأدمن وصلاحياتهم.</p>
+    <nav class="chips"><a href="#t-areas"><code>areas</code></a><a href="#t-service_categories"><code>service_categories</code></a><a href="#t-amenities"><code>amenities</code></a><a href="#t-platform_settings"><code>platform_settings</code></a><a href="#t-admin_users"><code>admin_users</code></a><a href="#t-admin_role_permissions"><code>admin_role_permissions</code></a></nav>
+    
+  <article class="tcard" id="t-areas">
+    <header class="thead">
+      <h4><code>areas</code></h4>
+      <span class="rows num">8 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">أحياء القاهرة التي يتبعها كل فرع (مدينة نصر، مصر الجديدة…). تُدار من إعدادات السوبر أدمن.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>active</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>true</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>sort_order</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (1) · الفهارس (0) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (is_localized(name))</code></li></ul>
+      
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">areas_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-service_categories">
+    <header class="thead">
+      <h4><code>service_categories</code></h4>
+      <span class="rows num">4 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">فئات الخدمات (غسيل خارجي، داخلي، كامل، تنظيف عميق). تُستخدم للفلترة وربط العروض.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>active</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>true</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>sort_order</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (1) · الفهارس (0) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (is_localized(name))</code></li></ul>
+      
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">service_categories_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-amenities">
+    <header class="thead">
+      <h4><code>amenities</code></h4>
+      <span class="rows num">6 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">مزايا الفرع (منطقة انتظار، تكييف، واي فاي، دفع بالبطاقة…).</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>active</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>true</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>sort_order</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (1) · الفهارس (0) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (is_localized(name))</code></li></ul>
+      
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">amenities_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-platform_settings">
+    <header class="thead">
+      <h4><code>platform_settings</code></h4>
+      <span class="rows num">5 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">صف لكل قسم من إعدادات المنصة: عام، قواعد الحجز الافتراضية، الشروط والخصوصية، قوالب الإشعارات، والعمولة الافتراضية (7٪). القيمة jsonb.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>key</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span>general · booking_defaults · legal · notification_templates · commission</span></td></tr><tr><td class="c-name"><code>value</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_by</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-admin_users" class="lat">admin_users</a></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (1) · الفهارس (0) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((key = ANY (ARRAY['general'::text, 'booking_defaults'::text, 'legal'::text, 'notification_templates'::text, 'commission'::text])))</code></li></ul>
+      
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">platform_settings_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-admin_users">
+    <header class="thead">
+      <h4><code>admin_users</code></h4>
+      <span class="rows num">5 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">فريق كارزن (سوبر، عمليات، مالية، دعم). الدخول بالإيميل عن طريق Supabase Auth، و user_id يربط الحساب بالملف.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('adm')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>user_id</code></td><td class="c-type"><code>uuid</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-auth.users" class="lat">auth.users</a> <span class="tag">UNIQUE</span> <span>يربط بـ auth.users (حساب الدخول)</span></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>email</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag">UNIQUE</span></td></tr><tr><td class="c-name"><code>role</code></td><td class="c-type"><code>admin_role</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>admin_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'active'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>last_login_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (2) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'::text))</code></li><li><code class="def">CHECK (((length(name) &gt;= 2) AND (length(name) &lt;= 80)))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE UNIQUE INDEX admin_users_email_key ON admin_users (email)</code></li><li><code class="def">CREATE UNIQUE INDEX admin_users_user_id_key ON admin_users (user_id)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">admin_users_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-admin_role_permissions">
+    <header class="thead">
+      <h4><code>admin_role_permissions</code></h4>
+      <span class="rows num">68 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">مصفوفة الأدوار × الوحدات (لا شيء / عرض / إدارة). سجل التدقيق لا يمكن أن يكون «إدارة» لأي دور.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>role</code></td><td class="c-type"><code>admin_role</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>permission_key</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>level</code></td><td class="c-type"><code>permission_level</code></td><td class="c-null">✓</td><td class="c-def"><code>'none'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (0) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((permission_key = ANY (ARRAY['dashboard'::text, 'customers'::text, 'staff'::text, 'washes'::text, 'applications'::text, 'branches'::text, 'orders'::text, 'reviews'::text, 'complaints'::text, 'offers'::text, 'finance'::text, 'reports'::text, 'notifications'::text, 'admins'::text, 'roles'::text, 'settings'::text, 'audit'::text])))</code></li><li><b>سجل التدقيق لا يكون «إدارة» لأي دور</b> <code class="def">CHECK ((NOT ((permission_key = 'audit'::text) AND (level = 'manage'::permission_level))))</code></li></ul>
+      
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">admin_role_permissions_updated_at</code></li></ul>
+    </details>
+  </article>
+  </section>
+  <section class="domain" id="d-washes">
+    <span class="eyebrow">المجال</span>
+    <h3>المغاسل والفروع</h3>
+    <p class="lede-s">الشركة (المغسلة) تملك فرعًا أو أكثر. لكل فرع ساعات عمل وسعة (عدد البايات) وقواعد حجز وقائمة خدمات بأسعارها.</p>
+    <nav class="chips"><a href="#t-businesses"><code>businesses</code></a><a href="#t-business_settings"><code>business_settings</code></a><a href="#t-branches"><code>branches</code></a><a href="#t-branch_working_hours"><code>branch_working_hours</code></a><a href="#t-branch_amenities"><code>branch_amenities</code></a><a href="#t-branch_blocked_slots"><code>branch_blocked_slots</code></a><a href="#t-branch_photos"><code>branch_photos</code></a><a href="#t-services"><code>services</code></a></nav>
+    
+  <article class="tcard" id="t-businesses">
+    <header class="thead">
+      <h4><code>businesses</code></h4>
+      <span class="rows num">10 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">المغسلة كشركة. حالتها (قيد المراجعة، نشطة، موقوفة…) وسبب الحالة، ونسبة عمولة خاصة إن وجدت (null = الافتراضية).</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('biz')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>owner_staff_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a> <span>المالك (صف في staff)</span></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>business_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'pending'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status_reason</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>commission_rate</code></td><td class="c-type"><code>numeric(5,2)</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span>null = العمولة الافتراضية من platform_settings</span></td></tr><tr><td class="c-name"><code>rating</code></td><td class="c-type"><code>numeric(2,1)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"><span>يتحدث تلقائيًا من التقييمات الظاهرة</span></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (3) · الفهارس (0) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (((commission_rate &gt;= (0)::numeric) AND (commission_rate &lt;= (30)::numeric)))</code></li><li><code class="def">CHECK (is_localized(name))</code></li><li><code class="def">CHECK (((rating &gt;= (0)::numeric) AND (rating &lt;= (5)::numeric)))</code></li></ul>
+      
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">businesses_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-business_settings">
+    <header class="thead">
+      <h4><code>business_settings</code></h4>
+      <span class="rows num">10 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">إعدادات المالك: هل يقدر مدير الفرع يعدّل الخدمات والأسعار، بيانات التواصل، وتفضيلات الإشعارات.</p>
+    <div class="apps"><span class="app app-V">بوابة الشركاء</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>manager_can_edit_services</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>contact_phone</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>contact_email</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>notification_prefs</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"><code>'{}'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (0) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((contact_phone ~ '^\+[1-9][0-9]{7,14}$'::text))</code></li><li><code class="def">CHECK ((jsonb_typeof(notification_prefs) = 'object'::text))</code></li></ul>
+      
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">business_settings_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-branches">
+    <header class="thead">
+      <h4><code>branches</code></h4>
+      <span class="rows num">14 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">الفرع: العنوان والإحداثيات والتليفون والسعة (عدد السيارات في نفس الوقت) وقواعد الحجز (تأكيد تلقائي، فترات المواعيد، مهلة الإلغاء المجاني، مهلة عدم الحضور، التذكير).</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('br')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>area_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-areas" class="lat">areas</a></td></tr><tr><td class="c-name"><code>address</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>lat</code></td><td class="c-type"><code>numeric(9,6)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>lng</code></td><td class="c-type"><code>numeric(9,6)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>phone</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>capacity</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span>عدد البايات = كم سيارة في نفس الوقت</span></td></tr><tr><td class="c-name"><code>active</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>true</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>featured</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>auto_confirm</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>slot_interval_min</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>30</code></td><td class="c-notes"><span>طول فترة الموعد بالدقائق</span></td></tr><tr><td class="c-name"><code>lead_time_min</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>60</code></td><td class="c-notes"><span>أقل وقت مسبق للحجز</span></td></tr><tr><td class="c-name"><code>max_advance_days</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>7</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>free_cancel_min</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>120</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>no_show_grace_min</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>15</code></td><td class="c-notes"><span>المهلة قبل اعتبار العميل «لم يحضر»</span></td></tr><tr><td class="c-name"><code>reminder_min</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>60</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>rating</code></td><td class="c-type"><code>numeric(2,1)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"><span>يتحدث تلقائيًا من التقييمات</span></td></tr><tr><td class="c-name"><code>review_count</code></td><td class="c-type"><code>integer</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"><span>يتحدث تلقائيًا</span></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (14) · الفهارس (2) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (is_localized(address))</code></li><li><code class="def">CHECK (((capacity &gt;= 1) AND (capacity &lt;= 30)))</code></li><li><code class="def">CHECK (((free_cancel_min &gt;= 0) AND (free_cancel_min &lt;= 1440)))</code></li><li><code class="def">CHECK (((lat &gt;= ('-90'::integer)::numeric) AND (lat &lt;= (90)::numeric)))</code></li><li><code class="def">CHECK (((lead_time_min &gt;= 0) AND (lead_time_min &lt;= 240)))</code></li><li><code class="def">CHECK (((lng &gt;= ('-180'::integer)::numeric) AND (lng &lt;= (180)::numeric)))</code></li><li><code class="def">CHECK (((max_advance_days &gt;= 1) AND (max_advance_days &lt;= 30)))</code></li><li><code class="def">CHECK (is_localized(name))</code></li><li><code class="def">CHECK (((no_show_grace_min &gt;= 5) AND (no_show_grace_min &lt;= 120)))</code></li><li><code class="def">CHECK ((phone ~ '^\+[1-9][0-9]{7,14}$'::text))</code></li><li><code class="def">CHECK (((rating &gt;= (0)::numeric) AND (rating &lt;= (5)::numeric)))</code></li><li><code class="def">CHECK (((reminder_min &gt;= 5) AND (reminder_min &lt;= 1440)))</code></li><li><code class="def">CHECK ((review_count &gt;= 0))</code></li><li><code class="def">CHECK ((slot_interval_min = ANY (ARRAY[15, 20, 30, 45, 60])))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX branches_area_id_idx ON branches (area_id) WHERE active</code></li><li><code class="def">CREATE INDEX branches_business_id_idx ON branches (business_id)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">branches_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-branch_working_hours">
+    <header class="thead">
+      <h4><code>branch_working_hours</code></h4>
+      <span class="rows num">98 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">ساعات العمل: صف لكل يوم (0 = الأحد … 6 = السبت). الإغلاق 00:00 يعني منتصف الليل.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>weekday</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>opens_at</code></td><td class="c-type"><code>time without time zone</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>closes_at</code></td><td class="c-type"><code>time without time zone</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>closed</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (0) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (((weekday &gt;= 0) AND (weekday &lt;= 6)))</code></li><li><b>الفتح قبل الإغلاق (أو الإغلاق منتصف الليل)</b> <code class="def">CHECK ((closed OR (closes_at = '00:00:00'::time without time zone) OR (opens_at &lt; closes_at)))</code></li></ul>
+      
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-branch_amenities">
+    <header class="thead">
+      <h4><code>branch_amenities</code></h4>
+      <span class="rows num">42 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">ربط الفرع بمزاياه (جدول وسيط).</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>amenity_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-amenities" class="lat">amenities</a></td></tr></tbody>
+    </table></div>
+    
+  </article>
+  <article class="tcard" id="t-branch_blocked_slots">
+    <header class="thead">
+      <h4><code>branch_blocked_slots</code></h4>
+      <span class="rows num">1 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">فترات محجوبة من الحجز (صيانة، حدث خاص). تختفي من مواعيد تطبيق العميل فورًا.</p>
+    <div class="apps"><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('blk')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>starts_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>ends_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>reason</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_by</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (1) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><b>نهاية الحجب بعد بدايته</b> <code class="def">CHECK ((ends_at &gt; starts_at))</code></li><li><code class="def">CHECK ((length(reason) &gt;= 3))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX branch_blocked_slots_branch_idx ON branch_blocked_slots (branch_id, starts_at)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-branch_photos">
+    <header class="thead">
+      <h4><code>branch_photos</code></h4>
+      <span class="rows num">4 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">صور الفرع في تطبيق العميل. الملف نفسه في bucket عام اسمه branch-photos.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('bph')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>storage_path</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span>المسار داخل bucket branch-photos</span></td></tr><tr><td class="c-name"><code>position</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (0) · الفهارس (1) · الـ triggers (0)</summary>
+      
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE UNIQUE INDEX branch_photos_position_unique ON branch_photos (branch_id, &quot;position&quot;)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-services">
+    <header class="thead">
+      <h4><code>services</code></h4>
+      <span class="rows num">98 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">قائمة الأسعار لكل فرع: خدمات أساسية وإضافات، بالسعر والمدة. السعر لا يُكتب يدويًا على الطلب أبدًا؛ يُنسخ من هنا.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('svc')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>type</code></td><td class="c-type"><code>service_type</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span>primary = خدمة أساسية (واحدة لكل طلب) · addon = إضافة</span></td></tr><tr><td class="c-name"><code>category_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-service_categories" class="lat">service_categories</a></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>description</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span>وصف للعميل {ar, en}</span></td></tr><tr><td class="c-name"><code>price</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>duration_min</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>active</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>true</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (4) · الفهارس (1) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (((description IS NULL) OR (jsonb_typeof(description) = 'object'::text)))</code></li><li><code class="def">CHECK (((duration_min &gt;= 2) AND (duration_min &lt;= 240)))</code></li><li><code class="def">CHECK (is_localized(name))</code></li><li><code class="def">CHECK (((price &gt;= (10)::numeric) AND (price &lt;= (5000)::numeric)))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX services_branch_idx ON services (branch_id, type) WHERE active</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">services_updated_at</code></li></ul>
+    </details>
+  </article>
+  </section>
+  <section class="domain" id="d-team">
+    <span class="eyebrow">المجال</span>
+    <h3>فريق المغسلة</h3>
+    <p class="lede-s">المالك ومديرو الفروع والموظفون، صلاحيات كل شخص، جدول وردياته الأسبوعي، والورديات الفعلية وتقفيلها النقدي.</p>
+    <nav class="chips"><a href="#t-staff"><code>staff</code></a><a href="#t-staff_shift_patterns"><code>staff_shift_patterns</code></a><a href="#t-staff_shifts"><code>staff_shifts</code></a></nav>
+    
+  <article class="tcard" id="t-staff">
+    <header class="thead">
+      <h4><code>staff</code></h4>
+      <span class="rows num">30 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">كل من يعمل في المغسلة. الدخول بالموبايل عن طريق Supabase Auth. صلاحيات كل شخص في permissions، وحد الخصم في max_discount_pct.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('st')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>user_id</code></td><td class="c-type"><code>uuid</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-auth.users" class="lat">auth.users</a> <span class="tag">UNIQUE</span> <span>يربط بـ auth.users</span></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a> <span>الفرع الأساسي (إلزامي لغير المالك)</span></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>phone</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag">UNIQUE</span></td></tr><tr><td class="c-name"><code>role</code></td><td class="c-type"><code>staff_role</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>account_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'active'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>max_discount_pct</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>permissions</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span>{confirmBooking, cancelOrder, closeShift, editServices, refund, collectPayment, runService, manageStaff}</span></td></tr><tr><td class="c-name"><code>joined_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>pin_hash</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span>PIN المدير مشفّر bcrypt — لاعتماد خصم أكبر من حد الموظف</span></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (6) · الفهارس (4) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><b>غير المالك لازم يكون له فرع</b> <code class="def">CHECK (((role = 'owner'::staff_role) OR (branch_id IS NOT NULL)))</code></li><li><code class="def">CHECK (((max_discount_pct &gt;= 0) AND (max_discount_pct &lt;= 100)))</code></li><li><code class="def">CHECK (((length(name) &gt;= 2) AND (length(name) &lt;= 80)))</code></li><li><code class="def">CHECK (((jsonb_typeof(permissions) = 'object'::text) AND (permissions ?&amp; ARRAY['confirmBooking'::text, 'cancelOrder'::text, 'closeShift'::text, 'editServices'::text, 'refund'::text, 'collectPayment'::text, 'runService'::text, 'manageStaff'::text])))</code></li><li><code class="def">CHECK ((phone ~ '^\+[1-9][0-9]{7,14}$'::text))</code></li><li><b>PIN للمالك والمدير فقط</b> <code class="def">CHECK (((pin_hash IS NULL) OR (role = ANY (ARRAY['owner'::staff_role, 'manager'::staff_role]))))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX staff_branch_idx ON staff (branch_id) WHERE (status = 'active'::account_status)</code></li><li><code class="def">CREATE INDEX staff_business_idx ON staff (business_id, role)</code></li><li><code class="def">CREATE UNIQUE INDEX staff_phone_key ON staff (phone)</code></li><li><code class="def">CREATE UNIQUE INDEX staff_user_id_key ON staff (user_id)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">staff_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-staff_shift_patterns">
+    <header class="thead">
+      <h4><code>staff_shift_patterns</code></h4>
+      <span class="rows num">20 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">الجدول الأسبوعي المتكرر لكل موظف (من، إلى، الأيام).</p>
+    <div class="apps"><span class="app app-V">بوابة الشركاء</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('pat')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>staff_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a></td></tr><tr><td class="c-name"><code>starts_at</code></td><td class="c-type"><code>time without time zone</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>ends_at</code></td><td class="c-type"><code>time without time zone</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>days</code></td><td class="c-type"><code>smallint[]</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (1) · الفهارس (1) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((((cardinality(days) &gt;= 1) AND (cardinality(days) &lt;= 7)) AND (days &lt;@ ARRAY[(0)::smallint, (1)::smallint, (2)::smallint, (3)::smallint, (4)::smallint, (5)::smallint, (6)::smallint])))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX staff_shift_patterns_staff_idx ON staff_shift_patterns (staff_id)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-staff_shifts">
+    <header class="thead">
+      <h4><code>staff_shifts</code></h4>
+      <span class="rows num">20 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">الوردية الفعلية: بدأت وانتهت إمتى، كام طلب، كام كاش وكارت، النقدية المتوقعة والفعلية والفرق وسببه، ثم مراجعة المدير.</p>
+    <div class="apps"><span class="app app-V">بوابة الشركاء</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('sh')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>staff_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>scheduled_start</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>scheduled_end</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>actual_start</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>actual_end</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>orders_completed</code></td><td class="c-type"><code>integer</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>cash_payments</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>card_payments</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>expected_cash</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"><span>المفروض يكون في الدرج</span></td></tr><tr><td class="c-name"><code>actual_cash</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>difference</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span>الفعلي − المتوقع (يحتاج سبب لو ≠ 0)</span></td></tr><tr><td class="c-name"><code>difference_reason</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>review_status</code></td><td class="c-type"><code>shift_review_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'open'</code></td><td class="c-notes"><span>open → submitted → reviewed / flagged</span></td></tr><tr><td class="c-name"><code>review_note</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>reviewed_by</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>opening_cash</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"><span>النقدية في الدرج عند بدء الوردية</span></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (5) · الفهارس (3) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><b>فرق النقدية في الوردية لازم له سبب</b> <code class="def">CHECK (((COALESCE(difference, (0)::numeric) = (0)::numeric) OR (difference_reason IS NOT NULL)))</code></li><li><code class="def">CHECK ((scheduled_end &gt; scheduled_start))</code></li><li><code class="def">CHECK (((difference_reason IS NULL) OR (jsonb_typeof(difference_reason) = 'object'::text)))</code></li><li><code class="def">CHECK ((opening_cash &gt;= (0)::numeric))</code></li><li><code class="def">CHECK ((orders_completed &gt;= 0))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX staff_shifts_branch_idx ON staff_shifts (branch_id, scheduled_start DESC)</code></li><li><code class="def">CREATE INDEX staff_shifts_review_idx ON staff_shifts (review_status) WHERE (review_status = ANY (ARRAY['submitted'::shift_review_status, 'flagged'::shift_review_status]))</code></li><li><code class="def">CREATE INDEX staff_shifts_staff_idx ON staff_shifts (staff_id, scheduled_start DESC)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">staff_shifts_updated_at</code></li></ul>
+    </details>
+  </article>
+  </section>
+  <section class="domain" id="d-customers">
+    <span class="eyebrow">المجال</span>
+    <h3>العملاء</h3>
+    <p class="lede-s">العميل يسجل برقم الموبايل، وله سيارة أو أكثر، ويقدر يحفظ فروع مفضلة.</p>
+    <nav class="chips"><a href="#t-customers"><code>customers</code></a><a href="#t-vehicles"><code>vehicles</code></a><a href="#t-customer_favorites"><code>customer_favorites</code></a></nav>
+    
+  <article class="tcard" id="t-customers">
+    <header class="thead">
+      <h4><code>customers</code></h4>
+      <span class="rows num">40 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">العميل. التسجيل بالموبايل + كود OTP. user_id يربط حساب الدخول.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('cu')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>user_id</code></td><td class="c-type"><code>uuid</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-auth.users" class="lat">auth.users</a> <span class="tag">UNIQUE</span> <span>يربط بـ auth.users</span></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>phone</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag">UNIQUE</span></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>account_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'active'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status_reason</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>last_active_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>locale</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>'ar'</code></td><td class="c-notes"><span>لغة التطبيق</span></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (3) · الفهارس (2) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((locale = ANY (ARRAY['ar'::text, 'en'::text])))</code></li><li><code class="def">CHECK (((length(name) &gt;= 2) AND (length(name) &lt;= 80)))</code></li><li><code class="def">CHECK ((phone ~ '^\+[1-9][0-9]{7,14}$'::text))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE UNIQUE INDEX customers_phone_key ON customers (phone)</code></li><li><code class="def">CREATE UNIQUE INDEX customers_user_id_key ON customers (user_id)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">customers_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-vehicles">
+    <header class="thead">
+      <h4><code>vehicles</code></h4>
+      <span class="rows num">55 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">سيارات العميل. اللوحة تُحفظ كما كُتبت، ونسخة موحّدة (بدون مسافات وبحروف كبيرة) للبحث والتعرّف السريع.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('veh')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>customer_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-customers" class="lat">customers</a></td></tr><tr><td class="c-name"><code>make</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>model</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>year</code></td><td class="c-type"><code>smallint</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>color</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>plate</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>plate_normalized</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-gen">محسوب</span> <span>محسوبة تلقائيًا — للبحث بالأوحة</span></td></tr><tr><td class="c-name"><code>is_default</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"><span>سيارة افتراضية واحدة فقط لكل عميل</span></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (1) · الفهارس (3) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (((year &gt;= 1950) AND (year &lt;= 2100)))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE UNIQUE INDEX vehicles_customer_plate_unique ON vehicles (customer_id, plate_normalized)</code></li><li><code class="def">CREATE UNIQUE INDEX vehicles_one_default_idx ON vehicles (customer_id) WHERE is_default</code></li><li><code class="def">CREATE INDEX vehicles_plate_idx ON vehicles (plate_normalized)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">vehicles_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-customer_favorites">
+    <header class="thead">
+      <h4><code>customer_favorites</code></h4>
+      <span class="rows num">2 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">الفروع المفضلة للعميل (القلب على كارت الفرع).</p>
+    <div class="apps"><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>customer_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-customers" class="lat">customers</a></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (0) · الفهارس (1) · الـ triggers (0)</summary>
+      
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX customer_favorites_branch_idx ON customer_favorites (branch_id)</code></li></ul>
+      
+    </details>
+  </article>
+  </section>
+  <section class="domain" id="d-orders">
+    <span class="eyebrow">المجال</span>
+    <h3>الطلبات</h3>
+    <p class="lede-s">قلب النظام. كل طلب (من التطبيق أو walk-in أو تليفون) له بنود خدمات، ومسار حالات زمني، وملاحظات طاقم.</p>
+    <nav class="chips"><a href="#t-orders"><code>orders</code></a><a href="#t-order_items"><code>order_items</code></a><a href="#t-order_events"><code>order_events</code></a><a href="#t-order_notes"><code>order_notes</code></a></nav>
+    
+  <article class="tcard" id="t-orders">
+    <header class="thead">
+      <h4><code>orders</code></h4>
+      <span class="rows num">1,078 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">الطلب/الحجز. المصدر (تطبيق، walk-in، تليفون)، الفرع، العميل والسيارة، المجموع والخصم والإجمالي، الموعد، الحالة، حالة الدفع، الموظف المسؤول، الإلغاء، وقفل إغلاق اليوم.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('ord')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>number</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag">UNIQUE</span> <span>CZ-1xxxx تطبيق · CZ-2xxxx walk-in · CZ-3xxxx تليفون — من next_order_number()</span></td></tr><tr><td class="c-name"><code>code</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_check_in_code()</code></td><td class="c-notes"><span>كود الاستلام 5 حروف يظهر للعميل</span></td></tr><tr><td class="c-name"><code>source</code></td><td class="c-type"><code>order_source</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>customer_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-customers" class="lat">customers</a></td></tr><tr><td class="c-name"><code>vehicle_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-vehicles" class="lat">vehicles</a></td></tr><tr><td class="c-name"><code>plate</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>plate_normalized</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-gen">محسوب</span> <span>محسوبة تلقائيًا</span></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>offer_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-offers" class="lat">offers</a> <span>العرض المطبّق إن وجد</span></td></tr><tr><td class="c-name"><code>subtotal</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>discount_amount</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>discount_pct</code></td><td class="c-type"><code>numeric(5,2)</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>discount_reason</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>total</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span>= subtotal − discount_amount (قيد في القاعدة)</span></td></tr><tr><td class="c-name"><code>duration_min</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>scheduled_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>order_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'pending'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>payment_status</code></td><td class="c-type"><code>order_payment_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'pending'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>payment_method</code></td><td class="c-type"><code>payment_method</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>assigned_staff_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a></td></tr><tr><td class="c-name"><code>cancel_reason</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>cancelled_by_type</code></td><td class="c-type"><code>actor_type</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>cancelled_by_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>cancelled_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>flag</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>closed_in_day_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-day_closings" class="lat">day_closings</a> <span>لو اتقفل بإغلاق اليوم لا يُعدّل</span></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (13) · الفهارس (9) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><b>طلب التطبيق لازم يكون مرتبط بعميل</b> <code class="def">CHECK (((source &lt;&gt; 'app'::order_source) OR (customer_id IS NOT NULL)))</code></li><li><b>الطلب الملغي لازم يكون له سبب ووقت إلغاء، والعكس</b> <code class="def">CHECK (((status = 'cancelled'::order_status) = ((cancelled_at IS NOT NULL) AND (cancel_reason IS NOT NULL))))</code></li><li><code class="def">CHECK ((length(code) = 5))</code></li><li><code class="def">CHECK ((discount_amount &gt;= (0)::numeric))</code></li><li><code class="def">CHECK (((discount_pct &gt;= (0)::numeric) AND (discount_pct &lt;= (100)::numeric)))</code></li><li><b>أي خصم لازم له سبب</b> <code class="def">CHECK (((discount_amount IS NULL) OR (discount_reason IS NOT NULL)))</code></li><li><code class="def">CHECK ((duration_min &gt; 0))</code></li><li><code class="def">CHECK ((flag = 'finance_review'::text))</code></li><li><code class="def">CHECK ((number ~ '^CZ-[0-9]{5}$'::text))</code></li><li><b>الطلب المدفوع لازم له طريقة دفع</b> <code class="def">CHECK (((payment_status = 'pending'::order_payment_status) OR (payment_method IS NOT NULL)))</code></li><li><code class="def">CHECK ((subtotal &gt;= (0)::numeric))</code></li><li><code class="def">CHECK ((total &gt;= (0)::numeric))</code></li><li><b>الإجمالي = المجموع − الخصم</b> <code class="def">CHECK ((total = (subtotal - COALESCE(discount_amount, (0)::numeric))))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX orders_branch_schedule_idx ON orders (branch_id, scheduled_at DESC)</code></li><li><code class="def">CREATE INDEX orders_business_status_idx ON orders (business_id, status)</code></li><li><code class="def">CREATE INDEX orders_code_idx ON orders (code)</code></li><li><code class="def">CREATE INDEX orders_customer_idx ON orders (customer_id, scheduled_at DESC) WHERE (customer_id IS NOT NULL)</code></li><li><code class="def">CREATE UNIQUE INDEX orders_number_key ON orders (number)</code></li><li><code class="def">CREATE INDEX orders_offer_idx ON orders (offer_id) WHERE (offer_id IS NOT NULL)</code></li><li><code class="def">CREATE INDEX orders_open_idx ON orders (branch_id, status) WHERE (status = ANY (ARRAY['pending'::order_status, 'confirmed'::order_status, 'waiting'::order_status, 'in_service'::order_status]))</code></li><li><code class="def">CREATE INDEX orders_plate_idx ON orders (plate_normalized)</code></li><li><code class="def">CREATE INDEX orders_unpaid_idx ON orders (branch_id) WHERE ((status = 'completed'::order_status) AND (payment_status = 'pending'::order_payment_status))</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">orders_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-order_items">
+    <header class="thead">
+      <h4><code>order_items</code></h4>
+      <span class="rows num">1,251 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">بنود الطلب: نسخة من الخدمة وقت الطلب (الاسم والسعر والمدة)، عشان تغيير الأسعار بعدين ما يغيّرش التاريخ.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('oi')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>order_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-orders" class="lat">orders</a></td></tr><tr><td class="c-name"><code>service_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-services" class="lat">services</a></td></tr><tr><td class="c-name"><code>name</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>type</code></td><td class="c-type"><code>service_type</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>price</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>duration_min</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>position</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (3) · الفهارس (2) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((duration_min &gt; 0))</code></li><li><code class="def">CHECK (is_localized(name))</code></li><li><code class="def">CHECK ((price &gt;= (0)::numeric))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX order_items_order_idx ON order_items (order_id, &quot;position&quot;)</code></li><li><code class="def">CREATE INDEX order_items_service_idx ON order_items (service_id)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-order_events">
+    <header class="thead">
+      <h4><code>order_events</code></h4>
+      <span class="rows num">4,059 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">المسار الزمني للطلب: كل انتقال حالة، مين عمله (عميل، موظف، أدمن، النظام)، وإمتى.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('oev')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>order_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-orders" class="lat">orders</a></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>order_status</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>actor_type</code></td><td class="c-type"><code>actor_type</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>actor_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (0) · الفهارس (1) · الـ triggers (0)</summary>
+      
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX order_events_order_idx ON order_events (order_id, at)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-order_notes">
+    <header class="thead">
+      <h4><code>order_notes</code></h4>
+      <span class="rows num">0 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">ملاحظات الطاقم على الطلب أو حالة السيارة.</p>
+    <div class="apps"><span class="app app-V">بوابة الشركاء</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('onote')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>order_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-orders" class="lat">orders</a></td></tr><tr><td class="c-name"><code>author_staff_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a></td></tr><tr><td class="c-name"><code>text</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (1) · الفهارس (1) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (((length(text) &gt;= 1) AND (length(text) &lt;= 500)))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX order_notes_order_idx ON order_notes (order_id, created_at)</code></li></ul>
+      
+    </details>
+  </article>
+  </section>
+  <section class="domain" id="d-money">
+    <span class="eyebrow">المجال</span>
+    <h3>المال</h3>
+    <p class="lede-s">التحصيل في المغسلة، دفتر عمولة كارزن، مستحقات المغاسل، وتسوية نهاية اليوم.</p>
+    <nav class="chips"><a href="#t-payments"><code>payments</code></a><a href="#t-transactions"><code>transactions</code></a><a href="#t-payouts"><code>payouts</code></a><a href="#t-day_closings"><code>day_closings</code></a></nav>
+    
+  <article class="tcard" id="t-payments">
+    <header class="thead">
+      <h4><code>payments</code></h4>
+      <span class="rows num">928 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">التحصيل الفعلي في المغسلة: المبلغ والطريقة ومين حصّل وإمتى. الاسترداد يغيّر الحالة.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('pay')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>order_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-orders" class="lat">orders</a></td></tr><tr><td class="c-name"><code>amount</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>method</code></td><td class="c-type"><code>payment_method</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>collected_by</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a></td></tr><tr><td class="c-name"><code>collected_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>payment_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'paid'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (1) · الفهارس (2) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((amount &gt;= (0)::numeric))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX payments_collected_idx ON payments (collected_by, collected_at)</code></li><li><code class="def">CREATE INDEX payments_order_idx ON payments (order_id)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-transactions">
+    <header class="thead">
+      <h4><code>transactions</code></h4>
+      <span class="rows num">944 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">دفتر العمولة: صف لكل طلب مدفوع (الإجمالي، نسبة العمولة، العمولة، صافي المغسلة). للقراءة فقط من الواجهات.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('tx')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>order_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-orders" class="lat">orders</a> <span class="tag">UNIQUE</span></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>gross</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>commission_rate</code></td><td class="c-type"><code>numeric(5,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>commission</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>net_to_wash</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span>= gross − commission (قيد)</span></td></tr><tr><td class="c-name"><code>date</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>transaction_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'pending'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>flag</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span>discrepancy = فرق بين المحصّل وقيمة الطلب</span></td></tr><tr><td class="c-name"><code>review_note</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (5) · الفهارس (3) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((commission &gt;= (0)::numeric))</code></li><li><code class="def">CHECK (((commission_rate &gt;= (0)::numeric) AND (commission_rate &lt;= (30)::numeric)))</code></li><li><code class="def">CHECK ((flag = 'discrepancy'::text))</code></li><li><code class="def">CHECK ((gross &gt;= (0)::numeric))</code></li><li><b>صافي المغسلة = الإجمالي − العمولة</b> <code class="def">CHECK ((net_to_wash = (gross - commission)))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX transactions_business_date_idx ON transactions (business_id, date DESC)</code></li><li><code class="def">CREATE INDEX transactions_flag_idx ON transactions (flag) WHERE (flag IS NOT NULL)</code></li><li><code class="def">CREATE UNIQUE INDEX transactions_order_id_key ON transactions (order_id)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">transactions_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-payouts">
+    <header class="thead">
+      <h4><code>payouts</code></h4>
+      <span class="rows num">5 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">مستحقات المغاسل من كارزن لكل فترة، وما اتدفع منها ومرجع التحويل.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('po')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>period_start</code></td><td class="c-type"><code>date</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>period_end</code></td><td class="c-type"><code>date</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>amount_due</code></td><td class="c-type"><code>numeric(12,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>amount_paid</code></td><td class="c-type"><code>numeric(12,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>payout_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'due'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>reference</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>paid_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (4) · الفهارس (1) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((amount_due &gt;= (0)::numeric))</code></li><li><code class="def">CHECK ((amount_paid &gt;= (0)::numeric))</code></li><li><b>المستحق المدفوع لازم له مرجع ووقت</b> <code class="def">CHECK (((status = 'due'::payout_status) OR ((reference IS NOT NULL) AND (paid_at IS NOT NULL))))</code></li><li><code class="def">CHECK ((period_end &gt;= period_start))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE UNIQUE INDEX payouts_one_per_period ON payouts (business_id, period_start, period_end)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">payouts_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-day_closings">
+    <header class="thead">
+      <h4><code>day_closings</code></h4>
+      <span class="rows num">3 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">تسوية نهاية اليوم لكل فرع: المتوقع والفعلي لكل طريقة دفع، الفرق وسببه. مرة واحدة لكل فرع في اليوم، وبتقفل طلبات اليوم المدفوعة.</p>
+    <div class="apps"><span class="app app-V">بوابة الشركاء</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('dc')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>date</code></td><td class="c-type"><code>date</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>expected_cash</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>expected_card</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>expected_online</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>actual_cash</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>actual_card</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>actual_online</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>difference</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-gen">محسوب</span> <span>محسوب تلقائيًا = الفعلي − المتوقع</span></td></tr><tr><td class="c-name"><code>reason</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>orders_locked</code></td><td class="c-type"><code>integer</code></td><td class="c-null">✓</td><td class="c-def"><code>0</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>closed_by</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a></td></tr><tr><td class="c-name"><code>closed_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (1) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((orders_locked &gt;= 0))</code></li><li><b>فرق إغلاق اليوم لازم له سبب</b> <code class="def">CHECK (((((actual_cash + actual_card) + actual_online) = ((expected_cash + expected_card) + expected_online)) OR (reason IS NOT NULL)))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE UNIQUE INDEX day_closings_once ON day_closings (branch_id, date)</code></li></ul>
+      
+    </details>
+  </article>
+  </section>
+  <section class="domain" id="d-engagement">
+    <span class="eyebrow">المجال</span>
+    <h3>التقييمات والعروض والشكاوى والانضمام</h3>
+    <p class="lede-s">ما يربط العميل بالمغسلة وبكارزن بعد الخدمة، وطلبات انضمام المغاسل الجديدة.</p>
+    <nav class="chips"><a href="#t-reviews"><code>reviews</code></a><a href="#t-offers"><code>offers</code></a><a href="#t-offer_branches"><code>offer_branches</code></a><a href="#t-offer_categories"><code>offer_categories</code></a><a href="#t-complaints"><code>complaints</code></a><a href="#t-complaint_notes"><code>complaint_notes</code></a><a href="#t-wash_applications"><code>wash_applications</code></a></nav>
+    
+  <article class="tcard" id="t-reviews">
+    <header class="thead">
+      <h4><code>reviews</code></h4>
+      <span class="rows num">120 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">تقييم العميل للطلب (طلب واحد = تقييم واحد). رد المغسلة مرة واحدة، والإبلاغ لكارزن، والإخفاء من الأدمن. تقييم الفرع والمغسلة يتحدث تلقائيًا.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('rev')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>order_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-orders" class="lat">orders</a> <span class="tag">UNIQUE</span></td></tr><tr><td class="c-name"><code>customer_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-customers" class="lat">customers</a></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>service_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-services" class="lat">services</a></td></tr><tr><td class="c-name"><code>stars</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>comment</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>tags</code></td><td class="c-type"><code>text[]</code></td><td class="c-null">✓</td><td class="c-def"><code>'{}'[]</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>reply</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span>رد المغسلة (5–400 حرف، مرة واحدة)</span></td></tr><tr><td class="c-name"><code>reply_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>reported_by_wash</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>report_reason</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>review_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'visible'</code></td><td class="c-notes"><span>visible / hidden — المخفي لا يُحسب في التقييم</span></td></tr><tr><td class="c-name"><code>hidden_reason</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (6) · الفهارس (4) · الـ triggers (2)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((jsonb_typeof(comment) = 'object'::text))</code></li><li><b>التقييم المخفي لازم له سبب</b> <code class="def">CHECK (((status = 'visible'::review_status) OR (hidden_reason IS NOT NULL)))</code></li><li><code class="def">CHECK (((reply IS NULL) OR ((length(reply) &gt;= 5) AND (length(reply) &lt;= 400))))</code></li><li><b>الرد ووقته يتسجلوا مع بعض</b> <code class="def">CHECK (((reply IS NULL) = (reply_at IS NULL)))</code></li><li><b>الإبلاغ لكارزن لازم له سبب</b> <code class="def">CHECK (((NOT reported_by_wash) OR (report_reason IS NOT NULL)))</code></li><li><code class="def">CHECK (((stars &gt;= 1) AND (stars &lt;= 5)))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX reviews_branch_idx ON reviews (branch_id, created_at DESC)</code></li><li><code class="def">CREATE INDEX reviews_business_idx ON reviews (business_id, status)</code></li><li><code class="def">CREATE UNIQUE INDEX reviews_order_id_key ON reviews (order_id)</code></li><li><code class="def">CREATE INDEX reviews_reported_idx ON reviews (created_at DESC) WHERE reported_by_wash</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">reviews_refresh_ratings</code></li><li><code class="def">reviews_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-offers">
+    <header class="thead">
+      <h4><code>offers</code></h4>
+      <span class="rows num">6 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">العروض: من كارزن (platform) أو من المغسلة (wash). نسبة (≤ 50٪) أو مبلغ ثابت، بفترة زمنية. التسعير يطبّق أفضل عرض تلقائيًا.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('of')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>scope</code></td><td class="c-type"><code>offer_scope</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>title</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>description</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>discount_type</code></td><td class="c-type"><code>discount_type</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>discount_value</code></td><td class="c-type"><code>numeric(10,2)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>starts_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>ends_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>offer_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'draft'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>featured</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (6) · الفهارس (2) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((jsonb_typeof(description) = 'object'::text))</code></li><li><code class="def">CHECK ((discount_value &gt; (0)::numeric))</code></li><li><b>الخصم بالنسبة لا يزيد عن 50٪</b> <code class="def">CHECK (((discount_type &lt;&gt; 'percent'::discount_type) OR (discount_value &lt;= (50)::numeric)))</code></li><li><b>نهاية العرض بعد بدايته</b> <code class="def">CHECK ((ends_at &gt; starts_at))</code></li><li><b>عرض المغسلة لازم مرتبط بمغسلة، وعرض كارزن لا</b> <code class="def">CHECK (((scope = 'wash'::offer_scope) = (business_id IS NOT NULL)))</code></li><li><code class="def">CHECK (is_localized(title))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX offers_business_idx ON offers (business_id) WHERE (business_id IS NOT NULL)</code></li><li><code class="def">CREATE INDEX offers_live_idx ON offers (starts_at, ends_at) WHERE (status = ANY (ARRAY['scheduled'::offer_status, 'active'::offer_status]))</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">offers_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-offer_branches">
+    <header class="thead">
+      <h4><code>offer_branches</code></h4>
+      <span class="rows num">18 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">الفروع اللي العرض شغال فيها.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>offer_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-offers" class="lat">offers</a></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (0) · الفهارس (1) · الـ triggers (0)</summary>
+      
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX offer_branches_branch_idx ON offer_branches (branch_id)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-offer_categories">
+    <header class="thead">
+      <h4><code>offer_categories</code></h4>
+      <span class="rows num">6 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">فئات الخدمات اللي العرض بيتطبق عليها (لا شيء = كل الفئات).</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>offer_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-offers" class="lat">offers</a></td></tr><tr><td class="c-name"><code>category_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-pk">PK</span> <span class="tag tag-fk">FK</span> <a href="#t-service_categories" class="lat">service_categories</a></td></tr></tbody>
+    </table></div>
+    
+  </article>
+  <article class="tcard" id="t-complaints">
+    <header class="thead">
+      <h4><code>complaints</code></h4>
+      <span class="rows num">9 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">شكاوى العملاء لكارزن، برقم تذكرة TK-xxxx، والمسؤول عنها، والحل.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('cmp')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>ticket</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>next_complaint_ticket()</code></td><td class="c-notes"><span class="tag">UNIQUE</span> <span>TK-1040… من next_complaint_ticket()</span></td></tr><tr><td class="c-name"><code>customer_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-customers" class="lat">customers</a></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>order_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-orders" class="lat">orders</a></td></tr><tr><td class="c-name"><code>category</code></td><td class="c-type"><code>complaint_category</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>description</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>complaint_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'open'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>assigned_admin_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-admin_users" class="lat">admin_users</a></td></tr><tr><td class="c-name"><code>resolution</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (3) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((length(description) &gt;= 5))</code></li><li><b>الشكوى المحلولة أو المغلقة لازم لها حل مكتوب</b> <code class="def">CHECK (((status &lt;&gt; ALL (ARRAY['resolved'::complaint_status, 'closed'::complaint_status])) OR (resolution IS NOT NULL)))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX complaints_business_idx ON complaints (business_id)</code></li><li><code class="def">CREATE INDEX complaints_status_idx ON complaints (status, created_at DESC)</code></li><li><code class="def">CREATE UNIQUE INDEX complaints_ticket_key ON complaints (ticket)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">complaints_updated_at</code></li></ul>
+    </details>
+  </article>
+  <article class="tcard" id="t-complaint_notes">
+    <header class="thead">
+      <h4><code>complaint_notes</code></h4>
+      <span class="rows num">6 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">ملاحظات فريق الدعم الداخلية على الشكوى.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('cnote')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>complaint_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-complaints" class="lat">complaints</a></td></tr><tr><td class="c-name"><code>author_admin_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-admin_users" class="lat">admin_users</a></td></tr><tr><td class="c-name"><code>text</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (1) · الفهارس (1) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK (((length(text) &gt;= 1) AND (length(text) &lt;= 1000)))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX complaint_notes_complaint_idx ON complaint_notes (complaint_id, created_at)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-wash_applications">
+    <header class="thead">
+      <h4><code>wash_applications</code></h4>
+      <span class="rows num">4 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">طلبات انضمام المغاسل الجديدة كما قدّمها صاحبها (البيانات، الخدمات، الساعات، المستندات في bucket خاص)، ثم قرار المراجعة.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('app')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>business_name</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>owner_name</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>phone</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>email</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>area_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-areas" class="lat">areas</a></td></tr><tr><td class="c-name"><code>address</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>lat</code></td><td class="c-type"><code>numeric(9,6)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>lng</code></td><td class="c-type"><code>numeric(9,6)</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>capacity</code></td><td class="c-type"><code>smallint</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>working_hours</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>services</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>documents</code></td><td class="c-type"><code>text[]</code></td><td class="c-null">✓</td><td class="c-def"><code>'{}'[]</code></td><td class="c-notes"><span>مسارات داخل bucket application-documents (خاص)</span></td></tr><tr><td class="c-name"><code>status</code></td><td class="c-type"><code>application_status</code></td><td class="c-null">✓</td><td class="c-def"><code>'pending'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>review_note</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a> <span>المغسلة اللي اتعملت عند الموافقة</span></td></tr><tr><td class="c-name"><code>submitted_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>reviewed_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>updated_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (6) · الفهارس (1) · الـ triggers (1)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><b>الطلب الموافق عليه لازم مرتبط بالمغسلة اللي اتعملت</b> <code class="def">CHECK (((status &lt;&gt; 'approved'::application_status) OR (business_id IS NOT NULL)))</code></li><li><b>أي قرار على الطلب لازم له وقت مراجعة</b> <code class="def">CHECK (((status = 'pending'::application_status) OR (reviewed_at IS NOT NULL)))</code></li><li><code class="def">CHECK (((capacity &gt;= 1) AND (capacity &lt;= 30)))</code></li><li><code class="def">CHECK ((phone ~ '^\+[1-9][0-9]{7,14}$'::text))</code></li><li><code class="def">CHECK ((jsonb_typeof(services) = 'array'::text))</code></li><li><code class="def">CHECK ((jsonb_typeof(working_hours) = 'array'::text))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX wash_applications_status_idx ON wash_applications (status, submitted_at DESC)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">wash_applications_updated_at</code></li></ul>
+    </details>
+  </article>
+  </section>
+  <section class="domain" id="d-activity">
+    <span class="eyebrow">المجال</span>
+    <h3>الإشعارات وسجل التدقيق</h3>
+    <p class="lede-s">صناديق إشعارات لكل طرف، أجهزة الـ Push، وسجل تدقيق لا يُعدّل ولا يُمسح.</p>
+    <nav class="chips"><a href="#t-admin_notifications"><code>admin_notifications</code></a><a href="#t-vendor_notifications"><code>vendor_notifications</code></a><a href="#t-customer_notifications"><code>customer_notifications</code></a><a href="#t-push_devices"><code>push_devices</code></a><a href="#t-audit_logs"><code>audit_logs</code></a></nav>
+    
+  <article class="tcard" id="t-admin_notifications">
+    <header class="thead">
+      <h4><code>admin_notifications</code></h4>
+      <span class="rows num">6 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">جرس إشعارات فريق كارزن.</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('an')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>type</code></td><td class="c-type"><code>admin_notification_type</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>title</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>body</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>href</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>'/'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>read</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (1) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((jsonb_typeof(body) = 'object'::text))</code></li><li><code class="def">CHECK (is_localized(title))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX admin_notifications_unread_idx ON admin_notifications (created_at DESC) WHERE (NOT read)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-vendor_notifications">
+    <header class="thead">
+      <h4><code>vendor_notifications</code></h4>
+      <span class="rows num">7 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">جرس إشعارات المغسلة: للمغسلة كلها، أو لفرع، أو لموظف واحد (staff_id).</p>
+    <div class="apps"><span class="app app-V">بوابة الشركاء</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('vn')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>business_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-businesses" class="lat">businesses</a></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>type</code></td><td class="c-type"><code>vendor_notification_type</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>title</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>body</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>href</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>'/'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>read</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>staff_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-staff" class="lat">staff</a> <span>null = للجميع · قيمة = لموظف بعينه</span></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (3) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((jsonb_typeof(body) = 'object'::text))</code></li><li><code class="def">CHECK (is_localized(title))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX vendor_notifications_business_idx ON vendor_notifications (business_id, created_at DESC)</code></li><li><code class="def">CREATE INDEX vendor_notifications_staff_idx ON vendor_notifications (staff_id, created_at DESC) WHERE (staff_id IS NOT NULL)</code></li><li><code class="def">CREATE INDEX vendor_notifications_unread_idx ON vendor_notifications (business_id) WHERE (NOT read)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-customer_notifications">
+    <header class="thead">
+      <h4><code>customer_notifications</code></h4>
+      <span class="rows num">2 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">صندوق إشعارات العميل: تأكيد وتذكير الحجز، «قيّم زيارتك»، العروض، تحديثات الشكوى.</p>
+    <div class="apps"><span class="app app-C">تطبيق العميل</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('cn')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>customer_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-customers" class="lat">customers</a></td></tr><tr><td class="c-name"><code>type</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>title</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>body</code></td><td class="c-type"><code>jsonb</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>href</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>'/'</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>order_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-orders" class="lat">orders</a></td></tr><tr><td class="c-name"><code>read</code></td><td class="c-type"><code>boolean</code></td><td class="c-null">✓</td><td class="c-def"><code>false</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (3) · الفهارس (2) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((jsonb_typeof(body) = 'object'::text))</code></li><li><code class="def">CHECK (is_localized(title))</code></li><li><code class="def">CHECK ((type = ANY (ARRAY['booking_confirmed'::text, 'booking_cancelled'::text, 'booking_reminder'::text, 'order_ready'::text, 'review_reminder'::text, 'offer'::text, 'complaint_update'::text, 'system'::text])))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX customer_notifications_inbox_idx ON customer_notifications (customer_id, created_at DESC)</code></li><li><code class="def">CREATE INDEX customer_notifications_unread_idx ON customer_notifications (customer_id) WHERE (NOT read)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-push_devices">
+    <header class="thead">
+      <h4><code>push_devices</code></h4>
+      <span class="rows num">0 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">أجهزة الموبايل لإرسال إشعارات Push (FCM / APNs): الجهاز والتطبيق والمنصة.</p>
+    <div class="apps"><span class="app app-C">تطبيق العميل</span><span class="app app-E">تطبيق الموظف</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('dev')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>user_id</code></td><td class="c-type"><code>uuid</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-auth.users" class="lat">auth.users</a></td></tr><tr><td class="c-name"><code>app</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>platform</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>token</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"><span class="tag">UNIQUE</span></td></tr><tr><td class="c-name"><code>app_version</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>last_seen_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>created_at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (2) · الفهارس (2) · الـ triggers (0)</summary>
+      <h5>قيود التحقق</h5><ul class="defs"><li><code class="def">CHECK ((app = ANY (ARRAY['customer'::text, 'employee'::text, 'partner'::text])))</code></li><li><code class="def">CHECK ((platform = ANY (ARRAY['ios'::text, 'android'::text, 'web'::text])))</code></li></ul>
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE UNIQUE INDEX push_devices_token_key ON push_devices (token)</code></li><li><code class="def">CREATE INDEX push_devices_user_idx ON push_devices (user_id)</code></li></ul>
+      
+    </details>
+  </article>
+  <article class="tcard" id="t-audit_logs">
+    <header class="thead">
+      <h4><code>audit_logs</code></h4>
+      <span class="rows num">47 صف في بيانات العرض</span>
+    </header>
+    <p class="tdesc">سجل تدقيق لكل إجراء حساس: مين، عمل إيه، على إيه، القيمة قبل وبعد، والسبب. لا يمكن تعديله أو مسحه (trigger).</p>
+    <div class="apps"><span class="app app-A">سوبر أدمن</span><span class="app app-V">بوابة الشركاء</span></div>
+    <div class="scroll"><table class="cols" dir="ltr">
+      <thead><tr><th>column</th><th>type</th><th>not null</th><th>default</th><th dir="rtl">ملاحظات</th></tr></thead>
+      <tbody><tr><td class="c-name"><code>id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"><code>gen_id('aud')</code></td><td class="c-notes"><span class="tag tag-pk">PK</span></td></tr><tr><td class="c-name"><code>actor_type</code></td><td class="c-type"><code>actor_type</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>actor_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>actor_name</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>action</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>entity</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>entity_id</code></td><td class="c-type"><code>text</code></td><td class="c-null">✓</td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>branch_id</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"><span class="tag tag-fk">FK</span> <a href="#t-branches" class="lat">branches</a></td></tr><tr><td class="c-name"><code>old_value</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>new_value</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>reason</code></td><td class="c-type"><code>text</code></td><td class="c-null"></td><td class="c-def"></td><td class="c-notes"></td></tr><tr><td class="c-name"><code>at</code></td><td class="c-type"><code>timestamptz</code></td><td class="c-null">✓</td><td class="c-def"><code>now()</code></td><td class="c-notes"></td></tr></tbody>
+    </table></div>
+    <details class="more"><summary>القيود (0) · الفهارس (4) · الـ triggers (1)</summary>
+      
+      <h5>الفهارس</h5><ul class="defs"><li><code class="def">CREATE INDEX audit_logs_actor_idx ON audit_logs (actor_id, at DESC)</code></li><li><code class="def">CREATE INDEX audit_logs_at_idx ON audit_logs (at DESC)</code></li><li><code class="def">CREATE INDEX audit_logs_branch_idx ON audit_logs (branch_id, at DESC) WHERE (branch_id IS NOT NULL)</code></li><li><code class="def">CREATE INDEX audit_logs_entity_idx ON audit_logs (entity, entity_id, at DESC)</code></li></ul>
+      <h5>Triggers</h5><ul class="defs"><li><code class="def">audit_logs_no_update_delete</code></li></ul>
+    </details>
+  </article>
+  </section>
+
+  <section class="sec" id="enums">
+    <span class="eyebrow">الأنواع</span>
+    <h2>25 نوع enum</h2>
+    <div class="scroll"><table><thead><tr><th>النوع</th><th>القيم</th></tr></thead><tbody><tr><td><code>account_status</code></td><td dir="ltr" class="enum-vals"><code>active</code> <code>suspended</code></td></tr><tr><td><code>actor_type</code></td><td dir="ltr" class="enum-vals"><code>customer</code> <code>staff</code> <code>admin</code> <code>system</code></td></tr><tr><td><code>admin_notification_type</code></td><td dir="ltr" class="enum-vals"><code>application</code> <code>complaint</code> <code>critical_review</code> <code>payment_issue</code> <code>unusual_activity</code> <code>system</code> <code>finance_flag</code></td></tr><tr><td><code>admin_role</code></td><td dir="ltr" class="enum-vals"><code>super</code> <code>operations</code> <code>finance</code> <code>support</code></td></tr><tr><td><code>admin_status</code></td><td dir="ltr" class="enum-vals"><code>active</code> <code>inactive</code></td></tr><tr><td><code>application_status</code></td><td dir="ltr" class="enum-vals"><code>pending</code> <code>needs_changes</code> <code>approved</code> <code>rejected</code></td></tr><tr><td><code>business_status</code></td><td dir="ltr" class="enum-vals"><code>pending</code> <code>approved</code> <code>active</code> <code>suspended</code> <code>rejected</code></td></tr><tr><td><code>complaint_category</code></td><td dir="ltr" class="enum-vals"><code>quality</code> <code>pricing</code> <code>behavior</code> <code>booking</code> <code>refund</code> <code>other</code></td></tr><tr><td><code>complaint_status</code></td><td dir="ltr" class="enum-vals"><code>open</code> <code>in_review</code> <code>waiting</code> <code>resolved</code> <code>closed</code></td></tr><tr><td><code>discount_type</code></td><td dir="ltr" class="enum-vals"><code>percent</code> <code>fixed</code></td></tr><tr><td><code>offer_scope</code></td><td dir="ltr" class="enum-vals"><code>platform</code> <code>wash</code></td></tr><tr><td><code>offer_status</code></td><td dir="ltr" class="enum-vals"><code>draft</code> <code>scheduled</code> <code>active</code> <code>expired</code> <code>disabled</code></td></tr><tr><td><code>order_payment_status</code></td><td dir="ltr" class="enum-vals"><code>pending</code> <code>paid</code> <code>refunded</code></td></tr><tr><td><code>order_source</code></td><td dir="ltr" class="enum-vals"><code>app</code> <code>walk_in</code> <code>phone</code></td></tr><tr><td><code>order_status</code></td><td dir="ltr" class="enum-vals"><code>pending</code> <code>confirmed</code> <code>waiting</code> <code>in_service</code> <code>completed</code> <code>cancelled</code> <code>no_show</code></td></tr><tr><td><code>payment_method</code></td><td dir="ltr" class="enum-vals"><code>cash</code> <code>card</code> <code>online</code></td></tr><tr><td><code>payment_status</code></td><td dir="ltr" class="enum-vals"><code>paid</code> <code>refunded</code></td></tr><tr><td><code>payout_status</code></td><td dir="ltr" class="enum-vals"><code>due</code> <code>paid</code></td></tr><tr><td><code>permission_level</code></td><td dir="ltr" class="enum-vals"><code>none</code> <code>view</code> <code>manage</code></td></tr><tr><td><code>review_status</code></td><td dir="ltr" class="enum-vals"><code>visible</code> <code>hidden</code></td></tr><tr><td><code>service_type</code></td><td dir="ltr" class="enum-vals"><code>primary</code> <code>addon</code></td></tr><tr><td><code>shift_review_status</code></td><td dir="ltr" class="enum-vals"><code>open</code> <code>submitted</code> <code>reviewed</code> <code>flagged</code></td></tr><tr><td><code>staff_role</code></td><td dir="ltr" class="enum-vals"><code>owner</code> <code>manager</code> <code>employee</code></td></tr><tr><td><code>transaction_status</code></td><td dir="ltr" class="enum-vals"><code>pending</code> <code>paid</code> <code>refunded</code> <code>settled</code></td></tr><tr><td><code>vendor_notification_type</code></td><td dir="ltr" class="enum-vals"><code>new_booking</code> <code>booking_cancelled</code> <code>cash_difference</code> <code>high_cancellation</code> <code>branch_issue</code> <code>daily_summary</code> <code>review</code> <code>platform</code> <code>payout</code> <code>shift</code></td></tr></tbody></table></div>
+  </section>
+
+  <section class="sec" id="functions">
+    <span class="eyebrow">الدوال والـ triggers</span>
+    <h2>اللي القاعدة بتعمله لوحدها</h2>
+    <div class="scroll"><table><thead><tr><th>الدالة</th><th>بتعمل إيه</th></tr></thead><tbody><tr><td dir="ltr"><code>audit_logs_immutable()</code> → <code>trigger</code></td><td>Trigger يرفض أي UPDATE أو DELETE على سجل التدقيق.</td></tr><tr><td dir="ltr"><code>gen_check_in_code()</code> → <code>text</code></td><td>كود استلام من 5 حروف بدون الحروف المتشابهة (0/O/1/I).</td></tr><tr><td dir="ltr"><code>gen_id(prefix text)</code> → <code>text</code></td><td>يولّد معرّف بادئته تدل على الجدول، مثل gen_id('ord') → ord_3f9c2a7b1d4e8f60. هو القيمة الافتراضية لكل id.</td></tr><tr><td dir="ltr"><code>is_localized(value jsonb)</code> → <code>boolean</code></td><td>يتحقق إن القيمة {ar, en} صحيحة.</td></tr><tr><td dir="ltr"><code>next_complaint_ticket()</code> → <code>text</code></td><td>رقم تذكرة الشكوى التالي (TK-1040…).</td></tr><tr><td dir="ltr"><code>next_order_number(src order_source)</code> → <code>text</code></td><td>رقم الطلب التالي حسب المصدر (CZ-10001 / CZ-20045 / CZ-30023). ذرّي: لا يتكرر حتى مع طلبات متزامنة.</td></tr><tr><td dir="ltr"><code>normalize_plate(plate text)</code> → <code>text</code></td><td>توحيد اللوحة: إزالة المسافات والشرطات وتحويل للحروف الكبيرة — نفس قاعدة الـ API.</td></tr><tr><td dir="ltr"><code>refresh_review_ratings()</code> → <code>trigger</code> <span class="tag">security definer</span></td><td>Trigger يعيد حساب تقييم الفرع والمغسلة بعد أي تغيير في التقييمات.</td></tr><tr><td dir="ltr"><code>set_updated_at()</code> → <code>trigger</code></td><td>Trigger يحدّث updated_at مع كل تعديل.</td></tr></tbody></table></div>
+    <p class="col muted small">كل جدول فيه <code>updated_at</code> عليه trigger يحدّثه. والتقييمات عليها trigger يحدّث تقييم الفرع والمغسلة. وسجل التدقيق عليه trigger يمنع التعديل والمسح.</p>
+  </section>
+
+  <section class="sec" id="security">
+    <span class="eyebrow">الأمان والتخزين والدخول</span>
+    <h2>الحماية مفروضة من القاعدة نفسها</h2>
+    <div class="two">
+      <div class="callout">
+        <b>الصلاحيات</b>
+        <ul>
+          <li>RLS مفعّل على كل الجداول الـ 40، من غير policies حاليًا.</li>
+          <li>كل الصلاحيات مسحوبة من <code>anon</code> و<code>authenticated</code> على الجداول والـ sequences والدوال، وأي جدول جديد بعد كده بنفس القاعدة.</li>
+          <li><code>service_role</code> للسيرفر فقط. ممنوع يتحط في التطبيق أبدًا.</li>
+        </ul>
+      </div>
+      <div class="callout">
+        <b>التخزين (Storage)</b>
+        <ul>
+          <li><code>application-documents</code>: <b>خاص</b>. للمستندات (PDF/JPG/PNG)، حد أقصى <span class="num">10</span> ميجا، والوصول بروابط مؤقتة.</li>
+          <li><code>branch-photos</code>: <b>عام</b>. لصور الفروع (JPG/PNG/WebP)، حد أقصى <span class="num">5</span> ميجا.</li>
+        </ul>
+      </div>
+      <div class="callout">
+        <b>تسجيل الدخول (Auth)</b>
+        <ul>
+          <li>العملاء: بالموبايل + كود OTP، والتسجيل مفتوح.</li>
+          <li>فريق المغسلة: بالموبايل + كلمة سر. الحسابات بيعملها المالك.</li>
+          <li>فريق كارزن: بالإيميل + كلمة سر، والتسجيل الذاتي مقفول.</li>
+          <li>كلمة السر <span class="num">8</span> حروف على الأقل، وإعادة إرسال الكود كل <span class="num">60</span> ثانية، ونص الرسالة: «رمز الدخول إلى كارزن».</li>
+        </ul>
+      </div>
+      <div class="callout">
+        <b>الرسائل (SMS)</b>
+        <p>Supabase بيدعم Twilio وVonage وMessageBird. Twilio Verify هو الوحيد اللي يبعت الكود على واتساب كمان. لازم تراجعوا تسجيل اسم المرسل في مصر.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="seed">
+    <span class="eyebrow">بيانات العرض</span>
+    <h2>بيانات جاهزة تجرّب عليها</h2>
+    <p class="col">ملف <code>seed.sql</code> متولّد من بيانات اللوحتين نفسها، فالأرقام في التطبيق هتطابق اللوحتين. وفي آخره خطوة بتحرّك كل التواريخ لليوم اللي اتطبق فيه، فالداتا دايمًا شكلها حالي.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>الحساب</th><th>الدخول</th><th>الدور</th></tr></thead>
+      <tbody>
+        <tr><td>أحمد حسن</td><td dir="ltr"><code>+201001234567</code> · OTP <code>123456</code></td><td>عميل، عنده سيارتين (ABC123 وKLM482)</td></tr>
+        <tr><td>خالد منصور</td><td dir="ltr"><code>+201200000000</code> · <code>demo1234</code></td><td>مالك «كارزن ووش»، فرعين</td></tr>
+        <tr><td>محمد عادل</td><td dir="ltr"><code>+201005550102</code> · <code>demo1234</code></td><td>مدير فرع مدينة نصر · PIN <code>1234</code></td></tr>
+        <tr><td>سمير</td><td dir="ltr"><code>st_samir</code></td><td>موظف في مدينة نصر (له إشعار وردية)</td></tr>
+        <tr><td>سارة نبيل</td><td dir="ltr"><code>sara@carzen.demo</code> · <code>demo1234</code></td><td>سوبر أدمن</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted small">حسابات الدخول نفسها بيعملها سكربت <code>npm run db:users:demo</code> بعد تطبيق القاعدة، وبيربط كل حساب بملفه.</p>
+  </section>
+
+  <section class="sec" id="integrate">
+    <span class="eyebrow">دليل الدمج</span>
+    <h2>تطبيق القاعدة دي على مشروع Supabase بتاعك</h2>
+    <div class="callout stop">
+      <b>قبل أي خطوة</b>
+      <ul>
+        <li>خُد <b>نسخة احتياطية</b> من المشروع (Dashboard → Database → Backups، أو <code>npx supabase db dump</code>).</li>
+        <li>جرّب الأول على مشروع تجريبي أو Branch، مش على المشروع اللي عليه مستخدمين.</li>
+        <li>متعدّلش أي migration من الـ 8 بعد ما تتطبق. أي تغيير يبقى migration جديدة.</li>
+      </ul>
+    </div>
+    <ol class="steps">
+      <li><div>
+        <h4>اربط المشروع ووثّق اللي عندك</h4>
+        <p>من فولدر المشروع اللي فيه <code>supabase/</code>:</p>
+        <pre><code>npx supabase login
+npx supabase link --project-ref tbcmgdwzarfdgzzmmele
+npx supabase db dump --schema-only -f current-schema.sql   # ابعتهولنا</code></pre>
+      </div></li>
+      <li><div>
+        <h4>حدّد حالتك</h4>
+        <div class="two">
+          <div class="callout ok"><b>الحالة أ: المشروع فاضي أو فيه تجارب بس</b><p>لا توجد بيانات مهمة. امسح جداول التجارب (أو ابدأ مشروع جديد)، وطبّق القاعدة مباشرة (الخطوة 4).</p></div>
+          <div class="callout warn"><b>الحالة ب: فيه جداول عليها بيانات تهمك</b><p>نعمل خريطة بين جداولك وجداولنا وننقل البيانات (الخطوة 3). هنا مكان جدول واحد لكل مفهوم: ممنوع يفضل جدولين لنفس الشيء (مثلًا <code>bookings</code> و<code>orders</code>).</p></div>
+        </div>
+      </div></li>
+      <li><div>
+        <h4>الحالة ب: خريطة الدمج ونقل البيانات</h4>
+        <p>اربط كل جدول عندك بالجدول المقابل هنا. الأسماء الشائعة:</p>
+        <div class="scroll"><table class="plain"><thead><tr><th>عندك غالبًا</th><th>المقابل هنا</th><th>ملاحظة</th></tr></thead><tbody>
+          <tr><td><code>profiles</code> / <code>users</code></td><td><code>customers</code> · <code>staff</code> · <code>admin_users</code></td><td>ملف لكل نوع، وكلهم بـ <code>user_id → auth.users</code></td></tr>
+          <tr><td><code>cars</code></td><td><code>vehicles</code></td><td>اللوحة الموحّدة تتحسب لوحدها</td></tr>
+          <tr><td><code>bookings</code> / <code>reservations</code></td><td><code>orders</code> + <code>order_items</code> + <code>order_events</code></td><td>البنود والمسار الزمني في جداول منفصلة</td></tr>
+          <tr><td><code>washes</code> / <code>centers</code> / <code>shops</code></td><td><code>businesses</code> + <code>branches</code></td><td>الشركة ممكن يكون لها أكتر من فرع</td></tr>
+          <tr><td><code>services</code> / <code>packages</code></td><td><code>services</code></td><td>لكل فرع، <code>type</code> = <code>primary</code> أو <code>addon</code></td></tr>
+          <tr><td><code>ratings</code></td><td><code>reviews</code></td><td>تقييم واحد لكل طلب</td></tr>
+          <tr><td><code>notifications</code></td><td><code>customer_notifications</code> · <code>vendor_notifications</code></td><td>صندوق لكل طرف</td></tr>
+          <tr><td><code>favorites</code></td><td><code>customer_favorites</code></td><td></td></tr>
+          <tr><td><code>device_tokens</code> / <code>fcm_tokens</code></td><td><code>push_devices</code></td><td></td></tr>
+        </tbody></table></div>
+        <p>طريقة النقل الآمنة:</p>
+        <pre><code>-- 1) غيّر اسم جدولك القديم عشان مايتعارضش (ولو فيه enum بنفس الاسم غيّره كمان)
+alter table public.bookings rename to legacy_bookings;
+
+-- 2) طبّق الـ migrations (الخطوة 4)، وبعدين انقل البيانات. مثال لعميل:
+insert into public.customers (id, user_id, name, phone, created_at)
+select 'cu_' || replace(p.id::text, '-', ''),   -- UUID القديم يتحفظ كنص ببادئة
+       p.id,                                     -- لو profiles.id هو نفسه auth.users.id
+       p.full_name, p.phone, p.created_at
+  from public.legacy_profiles p;
+
+-- 3) قارن الأعداد، وبعد ما تتأكد احذف القديم
+select (select count(*) from public.legacy_profiles) as old, (select count(*) from public.customers) as new;
+drop table public.legacy_profiles;</code></pre>
+        <p class="muted small">التليفونات لازم تبقى E.164 (<code>+20…</code>) عشان القيد. لو عندك صيغ تانية، وحّدها في الـ <code>select</code>.</p>
+      </div></li>
+      <li><div>
+        <h4>طبّق الـ migrations وبيانات العرض</h4>
+        <pre><code>npx supabase db push --dry-run          # يعرض اللي هيتطبق من غير ما يطبقه
+npx supabase db push --include-seed     # الجداول + بيانات العرض (لمشروع تجريبي)
+npx supabase db push                    # الجداول بس (لمشروع عليه بيانات حقيقية)</code></pre>
+        <p class="muted small">لو المشروع اتعمل من الـ Dashboard من غير migrations، و<code>db push</code> طلب history: نفّذ <code>npx supabase db pull</code> الأول. ده بيسجّل الحالة الحالية كـ migration أساس، وبعدها ادفع.</p>
+      </div></li>
+      <li><div>
+        <h4>الحسابات والإعدادات</h4>
+        <pre><code>cp supabase/.env.example supabase/.env   # حط SUPABASE_URL و SUPABASE_SERVICE_ROLE_KEY
+npm run db:users:demo                    # حسابات العرض + ربطها بالملفات
+npx supabase config push                 # إعدادات الدخول من config.toml (اختياري)
+npx supabase gen types --lang typescript --linked > database.types.ts</code></pre>
+        <p class="muted small">لـ Flutter: الأنواع ممكن تتولد بأدوات زي <code>supabase_codegen</code>، أو تستخدم النماذج اللي هنبعتها مع دوال المرحلة 2.</p>
+      </div></li>
+      <li><div>
+        <h4>اتأكد</h4>
+        <pre><code>select count(*) from orders;                         -- 1078 (لو طبّقت بيانات العرض)
+select count(*) from pg_tables where schemaname = 'public' and rowsecurity;   -- 40
+select public.next_order_number('walk_in');          -- CZ-20045 على بيانات عرض جديدة</code></pre>
+        <p>وبعدين Dashboard → Advisors: هتلاقي ملاحظة <b>INFO</b> «RLS enabled, no policy» على الجداول. دي متوقعة ومقصودة لحد المرحلة 2.</p>
+      </div></li>
+    </ol>
+  </section>
+
+  <section class="sec" id="flutter">
+    <span class="eyebrow">للتطبيق</span>
+    <h2>اللي تقدر تعمله من Flutter من النهارده</h2>
+    <p class="col">تسجيل الدخول بالموبايل شغال مباشرة. أول ما العميل يدخل، ملفه في <code>customers</code> بيتربط بـ <code>auth.uid()</code> عن طريق <code>user_id</code>.</p>
+    <pre><code>// طلب الكود
+await supabase.auth.signInWithOtp(phone: '+201001234567');
+
+// التحقق من الكود
+final res = await supabase.auth.verifyOTP(
+  type: OtpType.sms,
+  phone: '+201001234567',
+  token: '123456',
+);
+final userId = res.user!.id;   // = customers.user_id</code></pre>
+    <div class="callout warn">
+      <b>الوصول للبيانات</b>
+      <p>استعلامات زي <code>supabase.from('orders').select()</code> هترجع permission denied لحد ما نتفق على المرحلة 2. لما تتنفذ، التطبيق هيستخدم <code>supabase.rpc('app_create_booking', params: {...})</code> للعمليات، وقراءات محكومة بالـ policies.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="rpc">
+    <span class="eyebrow">المرحلة 2 · مقترح</span>
+    <h2>دوال العمليات المقترحة للتطبيقين</h2>
+    <p class="col">دي <b>لسه مش متنفذة</b>. هي العقد اللي هنبنيه، عشان تخطط عليه وتقولنا رأيك قبل التنفيذ. كل دالة بتتحقق من صاحب الطلب بـ <code>auth.uid()</code>، وبتطبّق نفس قواعد اللوحتين (التسعير من الخدمات وأفضل عرض، السعة، حدود الخصم، المهل)، وبتكتب في سجل التدقيق.</p>
+    <h4>تطبيق العميل</h4><div class="scroll"><table class="plain"><thead><tr><th>الدالة المقترحة</th><th>الغرض</th></tr></thead><tbody><tr><td dir="ltr"><code>app_register_customer(name, locale)</code></td><td>إنشاء ملف العميل بعد أول دخول بالـ OTP وربطه بـ auth.uid()</td></tr><tr><td dir="ltr"><code>app_branches_nearby(lat, lng, area?, category?)</code></td><td>الفروع النشطة + الخدمات + أفضل عرض + التقييم (قراءة)</td></tr><tr><td dir="ltr"><code>app_availability(branch_id, date, service_ids[])</code></td><td>المواعيد المتاحة حسب السعة والحجب وقواعد الحجز</td></tr><tr><td dir="ltr"><code>app_price_preview(branch_id, service_ids[])</code></td><td>السعر النهائي بعد أفضل عرض — يُحسب في القاعدة</td></tr><tr><td dir="ltr"><code>app_create_booking(branch_id, vehicle_id, service_ids[], scheduled_at)</code></td><td>إنشاء حجز تطبيق (رقم CZ-1xxxx + كود استلام)</td></tr><tr><td dir="ltr"><code>app_cancel_booking(order_id, reason) · app_reschedule_booking(order_id, scheduled_at)</code></td><td>إلغاء/تغيير الموعد حسب مهلة الإلغاء المجاني</td></tr><tr><td dir="ltr"><code>app_submit_review(order_id, stars, comment, tags[]) · app_submit_complaint(...)</code></td><td>تقييم وشكوى</td></tr><tr><td dir="ltr"><code>app_save_vehicle(...) · app_toggle_favorite(branch_id) · app_register_device(token, platform)</code></td><td>السيارات والمفضلة وأجهزة الـ Push</td></tr></tbody></table></div><h4>تطبيق الموظف</h4><div class="scroll"><table class="plain"><thead><tr><th>الدالة المقترحة</th><th>الغرض</th></tr></thead><tbody><tr><td dir="ltr"><code>emp_start_shift(opening_cash) · emp_end_shift(actual_cash, reason?)</code></td><td>بدء وإنهاء الوردية مع مطابقة النقدية</td></tr><tr><td dir="ltr"><code>emp_create_walk_in(plate, phone?, service_ids[])</code></td><td>طلب walk-in (رقم CZ-2xxxx) مع التعرّف على العميل باللوحة/الموبايل</td></tr><tr><td dir="ltr"><code>emp_check_in(code_or_order_id)</code></td><td>استلام سيارة حجز التطبيق بكود الـ 5 حروف</td></tr><tr><td dir="ltr"><code>emp_start_service(order_id) · emp_complete_service(order_id)</code></td><td>بدء وإنهاء الخدمة (يحتاج باي فاضي)</td></tr><tr><td dir="ltr"><code>emp_add_service(order_id, service_id) · emp_add_note(order_id, text)</code></td><td>إضافة خدمة أو ملاحظة</td></tr><tr><td dir="ltr"><code>emp_apply_discount(order_id, pct, reason, manager_pin?)</code></td><td>خصم في حدود الموظف، أو أكبر باعتماد PIN المدير</td></tr><tr><td dir="ltr"><code>emp_collect_payment(order_id, method, received)</code></td><td>التحصيل (الكاش لازم ≥ الإجمالي)</td></tr></tbody></table></div>
+  </section>
+
+  <section class="sec" id="questions">
+    <span class="eyebrow">أسئلة لك</span>
+    <h2>محتاجين ردك عليها</h2>
+    <ol class="col" style="display:grid; gap:8px; padding-inline-start:22px; margin:0">
+      <li>المشروع <code>tbcmgdwzarfdgzzmmele</code> فيه جداول عليها بيانات حقيقية، ولا تجارب؟ (ابعت <code>current-schema.sql</code> من الخطوة 1.)</li>
+      <li>التطبيق هيكلم Supabase مباشرة بـ <code>supabase_flutter</code>؟ لو أيوه، أسماء دوال المرحلة 2 مناسبة ليك، ولا تحب تقسيم تاني؟</li>
+      <li>هتعمل تطبيق العميل وتطبيق الموظف كتطبيقين منفصلين، ولا تطبيق واحد بدورين؟</li>
+      <li>مزود الرسائل: Twilio Verify (يدعم واتساب)، ولا مزود محلي؟</li>
+      <li>إشعارات Push: Firebase Cloud Messaging؟</li>
+    </ol>
+  </section>
+
+  <section class="sec" id="files">
+    <span class="eyebrow">الملفات</span>
+    <h2>محتوى الحزمة</h2>
+    <div class="scroll"><table class="plain"><thead><tr><th>الملف</th><th>المحتوى</th></tr></thead><tbody>
+      <tr><td dir="ltr"><code>supabase/migrations/20261015090000_foundation.sql</code></td><td>الدوال المساعدة وكل أنواع الـ enum</td></tr><tr><td dir="ltr"><code>supabase/migrations/20261015090100_platform.sql</code></td><td>القوائم، إعدادات المنصة، الأدمن وصلاحياتهم</td></tr><tr><td dir="ltr"><code>supabase/migrations/20261015090200_washes.sql</code></td><td>المغاسل، الفروع، الخدمات، الفريق، الورديات</td></tr><tr><td dir="ltr"><code>supabase/migrations/20261015090300_customers_orders.sql</code></td><td>العملاء، السيارات، الطلبات، الترقيم، المال، إغلاق اليوم</td></tr><tr><td dir="ltr"><code>supabase/migrations/20261015090400_engagement.sql</code></td><td>التقييمات، العروض، الشكاوى، طلبات الانضمام</td></tr><tr><td dir="ltr"><code>supabase/migrations/20261015090500_activity.sql</code></td><td>الإشعارات وسجل التدقيق</td></tr><tr><td dir="ltr"><code>supabase/migrations/20261015090600_security_storage.sql</code></td><td>RLS والصلاحيات وأماكن التخزين</td></tr><tr><td dir="ltr"><code>supabase/migrations/20261015090700_mobile_apps.sql</code></td><td>إضافات تطبيقات الموبايل: المفضلة، إشعارات العميل والموظف، الأجهزة، صور الفروع، PIN المدير، النقدية الافتتاحية</td></tr>
+      <tr><td dir="ltr"><code>supabase/seed.sql</code></td><td>بيانات العرض (متولّدة)</td></tr>
+      <tr><td dir="ltr"><code>supabase/config.toml</code></td><td>إعدادات الدخول والتشغيل المحلي</td></tr>
+      <tr><td dir="ltr"><code>supabase/scripts/create-demo-users.mjs</code></td><td>حسابات العرض وربطها</td></tr>
+      <tr><td dir="ltr"><code>supabase/scripts/generate-seed.ts</code></td><td>يعيد توليد بيانات العرض (يحتاج المستودع الكامل)</td></tr>
+      <tr><td dir="ltr"><code>supabase/README.md</code></td><td>نفس خطوات التطبيق باختصار</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <footer>Carzen · مرجع قاعدة البيانات v1.0 · 15 أكتوبر 2026 · متولّد من القاعدة بعد تطبيق الـ migrations الثمانية.</footer>
+</main>
+</div>
+
+<script>
+  // Mermaid: artifact viewers render <pre class="mermaid"> natively. When this file is
+  // opened on its own, load the library as a fallback.
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      if (document.querySelector("pre.mermaid svg")) return;
+      var s = document.createElement("script");
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js";
+      s.onload = function () {
+        var dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        window.mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "neutral", er: { useMaxWidth: true } });
+        window.mermaid.run({ querySelector: "pre.mermaid" });
+      };
+      document.head.appendChild(s);
+    }, 1200);
+  });
+</script>

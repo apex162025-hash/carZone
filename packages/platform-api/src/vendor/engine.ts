@@ -464,7 +464,9 @@ const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 function nextNumber(db: MockDatabase, source: Order["source"]): string {
   const base = source === "app" ? 10000 : source === "walk_in" ? 20000 : 30000;
+  // Only this source's numbers: seeded history of another source may sit in this range.
   const max = db.orders
+    .filter((o) => o.source === source)
     .map((o) => Number(o.number.replace("CZ-", "")))
     .filter((n) => n >= base && n < base + 10000)
     .reduce((a, b) => Math.max(a, b), base);

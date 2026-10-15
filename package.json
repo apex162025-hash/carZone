@@ -16,7 +16,12 @@
     "dev:platform": "concurrently -k -n admin,vendor -c blue,cyan \"npm:dev:admin\" \"npm:dev:vendor\"",
     "build": "npm run build -w super-admin && npm run build -w vendor-portal",
     "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:seed:generate": "node --conditions=react-server supabase/scripts/generate-seed.ts",
+    "db:users:demo": "node --env-file-if-exists=supabase/.env supabase/scripts/create-demo-users.mjs",
+    "db:push": "npx supabase db push",
+    "db:push:seed": "npx supabase db push --include-seed",
+    "db:guide": "node supabase/scripts/build-setup-guide.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

@@ -16,3 +16,8 @@ out/
 *.tsbuildinfo
 npm-debug.log*
 .DS_Store
+
+# handoff bundles built for external developers
+handoff/
+# local archives (copies of folders already in the repo)
+*.zip
